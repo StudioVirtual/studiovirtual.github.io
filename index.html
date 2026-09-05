@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio Virtual</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
+  body{background:#0d1117;color:#e6edf3;min-height:100vh}
+  .topo{background:linear-gradient(90deg,#161b22,#1f2937);padding:18px 30px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #30363d}
+  .logo{font-size:26px;font-weight:bold}
+  .logo span{color:#58a6ff}
+  .saldo{font-size:14px;color:#8b949e}
+  .container{display:flex;min-height:calc(100vh - 66px)}
+  .menu{width:230px;background:#161b22;padding:20px 0;border-right:1px solid #30363d}
+  .menu a{display:block;padding:13px 24px;color:#c9d1d9;text-decoration:none;font-size:15px;border-left:3px solid transparent}
+  .menu a:hover,.menu a.ativo{background:#1f2937;border-left:3px solid #58a6ff;color:#fff}
+  .conteudo{flex:1;padding:30px}
+  h2{margin-bottom:6px}
+  .sub{color:#8b949e;margin-bottom:24px;font-size:14px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:30px}
+  .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:20px}
+  .card h3{font-size:14px;color:#8b949e;margin-bottom:8px}
+  .card .num{font-size:32px;font-weight:bold;color:#58a6ff}
+  .card .det{font-size:12px;color:#8b949e;margin-top:6px}
+  .secao{display:none}
+  .secao.ativa{display:block}
+  .botao{display:inline-block;background:#238636;color:#fff;border:none;padding:12px 22px;border-radius:8px;font-size:15px;cursor:pointer;text-decoration:none;margin:6px 6px 6px 0}
+  .botao:hover{background:#2ea043}
+  .botao.azul{background:#1f6feb}.botao.azul:hover{background:#388bfd}
+  .aviso{background:#1f2937;border:1px solid #30363d;border-radius:10px;padding:16px;margin-top:16px;font-size:14px;color:#c9d1d9;line-height:1.6}
+  input,textarea,select{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;padding:11px;font-size:14px;margin:6px 0 14px}
+  label{font-size:13px;color:#8b949e}
+  .tag{display:inline-block;background:#1f6feb33;color:#58a6ff;padding:3px 10px;border-radius:20px;font-size:12px;margin-right:6px}
+</style>
+</head>
+<body>
+
+<div class="topo">
+  <div class="logo">🎬 Studio <span>Virtual</span></div>
+  <div class="saldo">⛽ Créditos: Replicate + RunPod ativos</div>
+</div>
+
+<div class="container">
+  <div class="menu">
+    <a href="#" class="ativo" onclick="ir('dashboard',this)">📊 Dashboard</a>
+    <a href="#" onclick="ir('musica',this)">🎵 Fábrica de Música</a>
+    <a href="#" onclick="ir('clipes',this)">🎬 Fábrica de Clipes</a>
+    <a href="#" onclick="ir('capas',this)">🖼️ Capas & Thumbnails</a>
+    <a href="#" onclick="ir('cofre',this)">🔐 Cofre</a>
+    <a href="#" onclick="ir('artistas',this)">🎭 Artistas & Nichos</a>
+    <a href="#" onclick="ir('creditos',this)">💰 Créditos</a>
+    <a href="#" onclick="ir('config',this)">⚙️ Configurações</a>
+    <a href="#" onclick="ir('manual',this)">📖 Manual</a>
+  </div>
+
+  <div class="conteudo">
+
+    <div id="dashboard" class="secao ativa">
+      <h2>📊 Dashboard</h2>
+      <p class="sub">Visão geral da fábrica — Projeto: 100 músicas no cofre</p>
+      <div class="cards">
+        <div class="card"><h3>🎵 Músicas no Cofre</h3><div class="num" id="totalMusicas">0</div><div class="det">meta: 100</div></div>
+        <div class="card"><h3>🎬 Clipes Prontos</h3><div class="num">0</div><div class="det">fase 4 do projeto</div></div>
+        <div class="card"><h3>📜 Registradas</h3><div class="num">0</div><div class="det">direitos autorais</div></div>
+        <div class="card"><h3>📺 Publicadas</h3><div class="num">0</div><div class="det">YouTube</div></div>
+      </div>
+      <div class="aviso">🏆 <b>Marco histórico:</b> primeira música gerada com voz em português no ACE-Step 1.5 — fábrica validada!<br>
+      <span class="tag">motor música: ace-step $0,062</span><span class="tag">motor vídeo: ltx $0,043</span><span class="tag">imagens: flux/imagen</span></div>
+    </div>
+
+    <div id="musica" class="secao">
+      <h2>🎵 Fábrica de Música</h2>
+      <p class="sub">Fluxo artesanal: gerar → ouvir → aprovar → Cofre</p>
+      <div class="aviso">🔌 O botão RUN interno será conectado na próxima etapa da obra (v1.1).<br>
+      Por enquanto, o atalho abre o motor direto:</div>
+      <a class="botao" href="https://replicate.com/fishaudio/ace-step-1.5" target="_blank">▶️ Abrir motor de música (ACE-Step)</a>
+    </div>
+
+    <div id="clipes" class="secao">
+      <h2>🎬 Fábrica de Clipes</h2>
+      <p class="sub">Fase 4 do projeto — motor já contratado e cotado</p>
+      <a class="botao" href="https://replicate.com/lightricks/ltx-video" target="_blank">▶️ Abrir motor de vídeo (LTX $0,043/cena)</a>
+    </div>
+
+    <div id="capas" class="secao">
+      <h2>🖼️ Capas & Thumbnails</h2>
+      <a class="botao azul" href="https://replicate.com/black-forest-labs/flux-1.1-pro" target="_blank">🎨 Flux 1.1 Pro</a>
+      <a class="botao azul" href="https://replicate.com/google/imagen-4" target="_blank">🎨 Imagen 4 (Google)</a>
+      <a class="botao azul" href="https://replicate.com/ideogram-ai/ideogram-v3-turbo" target="_blank">🎨 Ideogram (texto em capa)</a>
+    </div>
+
+    <div id="cofre" class="secao">
+      <h2>🔐 Cofre</h2>
+      <p class="sub">Músicas, letras, partituras e documentos — tudo na nuvem</p>
+      <div class="aviso">📦 O Cofre na nuvem será ligado na etapa v1.2 (armazenamento gratuito, zero no seu PC).</div>
+    </div>
+
+    <div id="artistas" class="secao">
+      <h2>🎭 Artistas & Nichos</h2>
+      <span class="tag">Sertanejo</span><span class="tag">Notícias</span><span class="tag">Finanças</span><span class="tag">Esporte</span><span class="tag">Surf</span><span class="tag">Histórias</span><span class="tag">Música p/ dormir</span>
+      <div class="aviso">Cada nicho terá seu cofre e identidade própria (etapa v1.2).</div>
+    </div>
+
+    <div id="creditos" class="secao">
+      <h2>💰 Painel de Créditos</h2>
+      <p class="sub">Recarregue sem precisar lembrar nome de site</p>
+      <a class="botao" href="https://replicate.com/account/billing" target="_blank">🟢 Recarregar REPLICATE (música+vídeo)</a>
+      <a class="botao" href="https://www.runpod.io/console/user/billing" target="_blank">🟣 Recarregar RUNPOD (reserva $24)</a>
+    </div>
+
+    <div id="config" class="secao">
+      <h2>⚙️ Configurações</h2>
+      <label>🔑 Chave API do Replicate (fica salva SÓ neste navegador)</label>
+      <input type="password" id="chave" placeholder="r8_...">
+      <button class="botao" onclick="salvarChave()">💾 Salvar chave</button>
+      <div class="aviso" id="statusChave">Nenhuma chave salva ainda.</div>
+    </div>
+
+    <div id="manual" class="secao">
+      <h2>📖 Manual do Studio</h2>
+      <div class="aviso">
+      <b>Como o Studio foi construído:</b><br>
+      • Site hospedado grátis no GitHub Pages (repositório studiovirtual.github.io)<br>
+      • Motor de música: fishaudio/ace-step-1.5 no Replicate ($0,062/música, até 10 min, letra própria)<br>
+      • Motor de vídeo: lightricks/ltx-video ($0,043/cena)<br>
+      • Imagens: Flux / Imagen 4 / Ideogram<br>
+      • Créditos: Replicate (principal) + RunPod ($24 reserva)<br>
+      • Chave API: salva apenas no navegador do dono (localStorage)<br>
+      • Fluxo: música gerada → ouvida → aprovada → Cofre → registro → clipe → YouTube</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function ir(id,el){
+  document.querySelectorAll('.secao').forEach(s=>s.classList.remove('ativa'));
+  document.getElementById(id).classList.add('ativa');
+  document.querySelectorAll('.menu a').forEach(a=>a.classList.remove('ativo'));
+  el.classList.add('ativo');
+}
+function salvarChave(){
+  const v=document.getElementById('chave').value.trim();
+  if(v){localStorage.setItem('chaveReplicate',v);
+  document.getElementById('statusChave').innerHTML='✅ Chave salva neste navegador!';}
+}
+if(localStorage.getItem('chaveReplicate')){
+  document.getElementById('statusChave').innerHTML='✅ Já existe uma chave salva neste navegador.';
+}
+</script>
+</body>
+</html>
