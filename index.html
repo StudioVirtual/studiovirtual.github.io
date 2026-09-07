@@ -28,13 +28,14 @@
   .botao.verm{background:#da3633}.botao.verm:hover{background:#f85149}
   .aviso{background:#1f2937;border:1px solid #30363d;border-radius:10px;padding:16px;margin-top:16px;font-size:14px;line-height:1.6}
   input,textarea,select{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;padding:11px;font-size:14px;margin:6px 0 14px}
-  textarea{min-height:180px;font-family:inherit}
+  textarea{min-height:140px;font-family:inherit}
   label{font-size:13px;color:#8b949e}
   .tag{display:inline-block;background:#1f6feb33;color:#58a6ff;padding:3px 10px;border-radius:20px;font-size:12px;margin:2px 6px 2px 0}
+  .tag.suno{background:#e3b34133;color:#e3b341}
   .item{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:18px;margin-bottom:14px}
   .item h4{margin-bottom:6px}
   audio{width:100%;margin:10px 0}
-  #statusGer{font-size:15px;margin-top:10px}
+  #statusGer,#statusImp{font-size:15px;margin-top:10px}
   .rodando{color:#e3b341}.pronto{color:#3fb950}.falha{color:#f85149}
 </style>
 </head>
@@ -42,16 +43,15 @@
 
 <div class="topo">
   <div class="logo">🎬 Studio <span>Virtual</span></div>
-  <div class="saldo">⛽ Motor: ACE-Step $0,062/música</div>
+  <div class="saldo">⛽ ACE-Step $0,062/música</div>
 </div>
 
 <div class="container">
   <div class="menu">
     <a class="ativo" onclick="ir('dashboard',this)">📊 Dashboard</a>
     <a onclick="ir('musica',this)">🎵 Fábrica de Música</a>
+    <a onclick="ir('importar',this)">📦 Importar do Suno</a>
     <a onclick="ir('cofre',this)">🔐 Cofre</a>
-    <a onclick="ir('clipes',this)">🎬 Fábrica de Clipes</a>
-    <a onclick="ir('capas',this)">🖼️ Capas & Thumbnails</a>
     <a onclick="ir('creditos',this)">💰 Créditos</a>
     <a onclick="ir('manual',this)">📖 Manual</a>
   </div>
@@ -60,32 +60,25 @@
 
     <div id="dashboard" class="secao ativa">
       <h2>📊 Dashboard</h2>
-      <p class="sub">Projeto: 100 músicas no cofre — uma por uma, com aprovação</p>
+      <p class="sub">Projeto: 100 músicas no cofre</p>
       <div class="cards">
         <div class="card"><h3>🎵 Músicas no Cofre</h3><div class="num" id="contCofre">0</div><div class="det">meta: 100</div></div>
-        <div class="card"><h3>🎬 Clipes</h3><div class="num">0</div><div class="det">fase 4</div></div>
-        <div class="card"><h3>📜 Registradas</h3><div class="num">0</div><div class="det">direitos autorais</div></div>
+        <div class="card"><h3>📦 Importadas do Suno</h3><div class="num" id="contSuno">0</div><div class="det">acervo antigo</div></div>
       </div>
-      <div class="aviso">✅ Motor de música LIGADO dentro do Studio.<br>Fluxo: gerar → ouvir → aprovar → Cofre.</div>
+      <div class="aviso">✅ Fábrica ligada + Importação do Suno ativa.</div>
     </div>
 
     <div id="musica" class="secao">
       <h2>🎵 Fábrica de Música</h2>
-      <p class="sub">Preencha, clique GERAR e ouça sem sair do Studio</p>
-      <label>Nome da música (pra guardar no Cofre)</label>
+      <p class="sub">Gerar → ouvir → aprovar → Cofre</p>
+      <label>Nome da música</label>
       <input id="mNome" placeholder="Ex: Estrada de Poeira">
-      <label>Estilo / gênero (em inglês funciona melhor)</label>
-      <input id="mEstilo" value="Brazilian sertanejo romantic ballad, male vocals, acoustic guitar, accordion, emotional, professional production">
-      <label>Letra (em português! Use [Verse], [Chorus]...)</label>
-      <textarea id="mLetra">[Verse 1]
-Lembro do teu sorriso na varanda
-A lua clareando o nosso chão
-
-[Chorus]
-E eu canto pra te ver voltar
-Nessa estrada de poeira e saudade</textarea>
-      <label>Duração (segundos — ex: 180 = 3 min, máx 600)</label>
-      <input id="mDur" type="number" value="180">
+      <label>Estilo / gênero (em inglês)</label>
+      <input id="mEstilo" value="Brazilian sertanejo universitario, upbeat, male vocal duo harmony, acoustic guitar, accordion, energetic, modern radio production">
+      <label>Letra (português, use [Verse], [Chorus]...)</label>
+      <textarea id="mLetra"></textarea>
+      <label>Duração (segundos, máx 600)</label>
+      <input id="mDur" type="number" value="150">
       <button class="botao" id="btnGerar" onclick="gerarMusica()">▶️ GERAR MÚSICA ($0,062)</button>
       <div id="statusGer"></div>
       <div id="resultado" style="display:none">
@@ -95,20 +88,28 @@ Nessa estrada de poeira e saudade</textarea>
       </div>
     </div>
 
+    <div id="importar" class="secao">
+      <h2>📦 Importar do Suno</h2>
+      <p class="sub">Traga seu acervo antigo pro Cofre — por arquivo MP3 (recomendado) ou link</p>
+      <label>Nome da música *</label>
+      <input id="iNome" placeholder="Ex: Coração na Contramão">
+      <label>Estilo / observações (opcional)</label>
+      <input id="iEstilo" placeholder="Ex: sertanejo universitário, feita no Suno v3">
+      <label>Letra (opcional — cole pra guardar junto)</label>
+      <textarea id="iLetra"></textarea>
+      <label>📁 Arquivo MP3 do seu PC (baixado do Suno)</label>
+      <input type="file" id="iArquivo" accept="audio/*">
+      <label>🔗 OU link da música (se não tiver o arquivo)</label>
+      <input id="iLink" placeholder="https://...">
+      <button class="botao" onclick="importarMusica()">📦 Importar pro Cofre</button>
+      <div id="statusImp"></div>
+      <div class="aviso">💡 No Suno: menu "⋯" da música → Download → MP3 Audio. O arquivo fica guardado no armazenamento interno do navegador — e a música entra no Cofre como as demais.</div>
+    </div>
+
     <div id="cofre" class="secao">
       <h2>🔐 Cofre</h2>
-      <p class="sub">Suas músicas aprovadas — baixe o MP3 de cada uma como backup!</p>
+      <p class="sub">Todas as suas músicas — geradas e importadas</p>
       <div id="listaCofre"></div>
-    </div>
-
-    <div id="clipes" class="secao">
-      <h2>🎬 Fábrica de Clipes</h2>
-      <div class="aviso">Próxima etapa da obra (v1.2) — motor LTX já contratado ($0,043/cena).</div>
-    </div>
-
-    <div id="capas" class="secao">
-      <h2>🖼️ Capas & Thumbnails</h2>
-      <div class="aviso">Etapa v1.2 — motores Flux/Imagen prontos na casa de máquinas.</div>
     </div>
 
     <div id="creditos" class="secao">
@@ -121,12 +122,11 @@ Nessa estrada de poeira e saudade</textarea>
       <h2>📖 Manual do Studio</h2>
       <div class="aviso">
       <b>Arquitetura:</b><br>
-      • Site: GitHub Pages (repo studiovirtual.github.io)<br>
-      • Adaptador: Cloudflare Worker "studio-motor" (guarda a chave r8_ como Secret REPLICATE_KEY)<br>
-      • Motor música: fishaudio/ace-step-1.5 ($0,062, até 600s)<br>
-      • Motor vídeo: lightricks/ltx-video ($0,043/cena)<br>
-      • Cofre: salvo no navegador (localStorage) — SEMPRE baixe o MP3 como backup<br>
-      • Fluxo: gerar → ouvir → aprovar → Cofre → registrar → clipe → YouTube</div>
+      • Site: GitHub Pages | Adaptador: Cloudflare Worker "studio-motor" (Secret REPLICATE_KEY)<br>
+      • Motor música: fishaudio/ace-step-1.5 via /gerar e /status<br>
+      • Cofre: dados no localStorage + áudios importados no IndexedDB do navegador<br>
+      • Importação Suno: arquivo MP3 (fica no navegador) ou link externo<br>
+      • ⚠️ Backup: sempre baixe o MP3 das músicas geradas (links do Replicate expiram)</div>
     </div>
 
   </div>
@@ -135,6 +135,14 @@ Nessa estrada de poeira e saudade</textarea>
 <script>
 const MOTOR = "https://studio-motor.alexmedeirosbsb.workers.dev";
 let musicaAtual = null;
+let db;
+const rq = indexedDB.open('studioDB', 1);
+rq.onupgradeneeded = e => { e.target.result.createObjectStore('audios'); };
+rq.onsuccess = e => { db = e.target.result; };
+
+function salvarAudio(k, blob){ return new Promise((res,rej)=>{ const tx=db.transaction('audios','readwrite'); tx.objectStore('audios').put(blob,k); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); }
+function lerAudio(k){ return new Promise((res,rej)=>{ const r=db.transaction('audios').objectStore('audios').get(k); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+function apagarAudio(k){ return new Promise((res)=>{ const tx=db.transaction('audios','readwrite'); tx.objectStore('audios').delete(k); tx.oncomplete=res; }); }
 
 function ir(id,el){
   document.querySelectorAll('.secao').forEach(s=>s.classList.remove('ativa'));
@@ -145,78 +153,101 @@ function ir(id,el){
 }
 
 async function gerarMusica(){
-  const nome = document.getElementById('mNome').value.trim() || 'Sem nome';
-  const estilo = document.getElementById('mEstilo').value.trim();
-  const letra = document.getElementById('mLetra').value;
-  const dur = parseInt(document.getElementById('mDur').value)||180;
-  const st = document.getElementById('statusGer');
+  const nome=document.getElementById('mNome').value.trim()||'Sem nome';
+  const estilo=document.getElementById('mEstilo').value.trim();
+  const letra=document.getElementById('mLetra').value;
+  const dur=parseInt(document.getElementById('mDur').value)||150;
+  const st=document.getElementById('statusGer');
   document.getElementById('resultado').style.display='none';
-  document.getElementById('btnGerar').disabled = true;
+  document.getElementById('btnGerar').disabled=true;
   st.className='rodando'; st.textContent='⏳ Enviando pro motor...';
   try{
-    const r = await fetch(MOTOR + "/gerar",{
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ modelo:"fishaudio/ace-step-1.5",
-        input:{ prompt: estilo, lyrics: letra, duration: dur } })
-    });
-    let d = await r.json();
-    if(d.erro || d.detail){ throw new Error(d.erro||d.detail); }
-    st.textContent='🎵 Gerando a música... (1 a 3 min, pode aguardar aqui)';
-    while(d.status!=='succeeded' && d.status!=='failed' && d.status!=='canceled'){
+    const r=await fetch(MOTOR+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({modelo:"fishaudio/ace-step-1.5",input:{prompt:estilo,lyrics:letra,duration:dur}})});
+    let d=await r.json();
+    if(d.erro||d.detail) throw new Error(d.erro||d.detail);
+    st.textContent='🎵 Gerando... (1 a 3 min)';
+    while(d.status!=='succeeded'&&d.status!=='failed'&&d.status!=='canceled'){
       await new Promise(x=>setTimeout(x,4000));
-      const rs = await fetch(MOTOR + "/status?id=" + d.id);
-      d = await rs.json();
+      d=await (await fetch(MOTOR+"/status?id="+d.id)).json();
     }
-    if(d.status!=='succeeded') throw new Error('Geração falhou: '+(d.error||d.status));
-    const audio = Array.isArray(d.output)? d.output[0] : d.output;
-    musicaAtual = { nome, estilo, letra, dur, url: audio, data: new Date().toLocaleDateString('pt-BR') };
-    document.getElementById('player').src = audio;
+    if(d.status!=='succeeded') throw new Error('Falhou: '+(d.error||d.status));
+    const audio=Array.isArray(d.output)?d.output[0]:d.output;
+    musicaAtual={nome,estilo,letra,url:audio,origem:'studio',data:new Date().toLocaleDateString('pt-BR')};
+    document.getElementById('player').src=audio;
     document.getElementById('resultado').style.display='block';
-    st.className='pronto'; st.textContent='✅ Música pronta! Aperte o play e decida.';
-  }catch(e){
-    st.className='falha'; st.textContent='❌ Erro: '+e.message;
-  }
-  document.getElementById('btnGerar').disabled = false;
+    st.className='pronto'; st.textContent='✅ Pronta! Ouça e decida.';
+  }catch(e){ st.className='falha'; st.textContent='❌ Erro: '+e.message; }
+  document.getElementById('btnGerar').disabled=false;
 }
 
 function aprovar(){
   if(!musicaAtual) return;
-  const cofre = JSON.parse(localStorage.getItem('cofre')||'[]');
-  cofre.push(musicaAtual);
-  localStorage.setItem('cofre', JSON.stringify(cofre));
+  const c=JSON.parse(localStorage.getItem('cofre')||'[]');
+  c.push(musicaAtual); localStorage.setItem('cofre',JSON.stringify(c));
   musicaAtual=null;
   document.getElementById('resultado').style.display='none';
   document.getElementById('statusGer').textContent='🔐 Guardada no Cofre!';
-  atualizarContador();
+  contadores();
 }
 function descartar(){
   musicaAtual=null;
   document.getElementById('resultado').style.display='none';
-  document.getElementById('statusGer').textContent='🗑️ Descartada. Ajuste e gere de novo.';
+  document.getElementById('statusGer').textContent='🗑️ Descartada.';
 }
-function listarCofre(){
-  const cofre = JSON.parse(localStorage.getItem('cofre')||'[]');
-  const el = document.getElementById('listaCofre');
-  if(!cofre.length){ el.innerHTML='<div class="aviso">Cofre vazio — aprove sua primeira música!</div>'; return; }
-  el.innerHTML = cofre.map((m,i)=>`
-    <div class="item">
-      <h4>🎵 ${m.nome} <span class="tag">${m.data}</span></h4>
-      <audio controls src="${m.url}"></audio>
-      <a class="botao azul" href="${m.url}" target="_blank" download>⬇️ Baixar MP3 (backup!)</a>
-      <button class="botao verm" onclick="removerCofre(${i})">Remover</button>
-    </div>`).join('');
+
+async function importarMusica(){
+  const nome=document.getElementById('iNome').value.trim();
+  const estilo=document.getElementById('iEstilo').value.trim();
+  const letra=document.getElementById('iLetra').value;
+  const arq=document.getElementById('iArquivo').files[0];
+  const link=document.getElementById('iLink').value.trim();
+  const st=document.getElementById('statusImp');
+  if(!nome){ st.className='falha'; st.textContent='❌ Dê um nome pra música.'; return; }
+  if(!arq && !link){ st.className='falha'; st.textContent='❌ Escolha um arquivo OU cole um link.'; return; }
+  st.className='rodando'; st.textContent='⏳ Importando...';
+  try{
+    const c=JSON.parse(localStorage.getItem('cofre')||'[]');
+    const m={nome,estilo,letra,origem:'suno',data:new Date().toLocaleDateString('pt-BR')};
+    if(arq){ m.fileKey='suno_'+Date.now(); await salvarAudio(m.fileKey,arq); }
+    else{ m.url=link; }
+    c.push(m); localStorage.setItem('cofre',JSON.stringify(c));
+    st.className='pronto'; st.textContent='✅ "'+nome+'" importada pro Cofre!';
+    document.getElementById('iNome').value=''; document.getElementById('iEstilo').value='';
+    document.getElementById('iLetra').value=''; document.getElementById('iArquivo').value=''; document.getElementById('iLink').value='';
+    contadores();
+  }catch(e){ st.className='falha'; st.textContent='❌ Erro: '+e.message; }
 }
-function removerCofre(i){
-  const cofre = JSON.parse(localStorage.getItem('cofre')||'[]');
-  cofre.splice(i,1);
-  localStorage.setItem('cofre', JSON.stringify(cofre));
-  listarCofre(); atualizarContador();
+
+async function listarCofre(){
+  const c=JSON.parse(localStorage.getItem('cofre')||'[]');
+  const el=document.getElementById('listaCofre');
+  if(!c.length){ el.innerHTML='<div class="aviso">Cofre vazio.</div>'; return; }
+  let html='';
+  for(let i=0;i<c.length;i++){
+    const m=c[i];
+    let src=m.url||'';
+    if(m.fileKey){ const b=await lerAudio(m.fileKey); if(b) src=URL.createObjectURL(b); }
+    html+='<div class="item"><h4>🎵 '+m.nome+' <span class="tag'+(m.origem==='suno'?' suno':'')+'">'+(m.origem==='suno'?'📦 Suno':'🎬 Studio')+'</span><span class="tag">'+m.data+'</span></h4>'+
+      (m.estilo?'<div class="sub">'+m.estilo+'</div>':'')+
+      (src?'<audio controls src="'+src+'"></audio>':'<div class="sub">⚠️ áudio indisponível</div>')+
+      (src?'<a class="botao azul" href="'+src+'" download="'+m.nome+'.mp3">⬇️ Baixar MP3</a>':'')+
+      '<button class="botao verm" onclick="removerCofre('+i+')">Remover</button></div>';
+  }
+  el.innerHTML=html;
 }
-function atualizarContador(){
-  const cofre = JSON.parse(localStorage.getItem('cofre')||'[]');
-  document.getElementById('contCofre').textContent = cofre.length;
+async function removerCofre(i){
+  const c=JSON.parse(localStorage.getItem('cofre')||'[]');
+  if(c[i]&&c[i].fileKey) await apagarAudio(c[i].fileKey);
+  c.splice(i,1); localStorage.setItem('cofre',JSON.stringify(c));
+  listarCofre(); contadores();
 }
-atualizarContador();
+function contadores(){
+  const c=JSON.parse(localStorage.getItem('cofre')||'[]');
+  document.getElementById('contCofre').textContent=c.length;
+  document.getElementById('contSuno').textContent=c.filter(m=>m.origem==='suno').length;
+}
+contadores();
 </script>
 </body>
 </html>
