@@ -9,25 +9,26 @@
   body{background:#0d1117;color:#e6edf3;min-height:100vh}
   .topo{background:linear-gradient(90deg,#161b22,#1f2937);padding:18px 30px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #30363d}
   .logo{font-size:26px;font-weight:bold}.logo span{color:#58a6ff}
-  .saldo{font-size:14px;color:#8b949e}
+  .saldo{font-size:13px;color:#8b949e}
   .container{display:flex;min-height:calc(100vh - 66px)}
   .menu{width:230px;background:#161b22;padding:20px 0;border-right:1px solid #30363d}
-  .menu a{display:block;padding:13px 24px;color:#c9d1d9;text-decoration:none;font-size:15px;border-left:3px solid transparent;cursor:pointer}
+  .menu a{display:block;padding:12px 24px;color:#c9d1d9;text-decoration:none;font-size:15px;border-left:3px solid transparent;cursor:pointer}
   .menu a:hover,.menu a.ativo{background:#1f2937;border-left:3px solid #58a6ff;color:#fff}
   .conteudo{flex:1;padding:30px;max-width:900px}
-  h2{margin-bottom:6px}.sub{color:#8b949e;margin-bottom:24px;font-size:14px}
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:30px}
+  h2{margin-bottom:6px}.sub{color:#8b949e;margin-bottom:20px;font-size:14px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
   .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:20px}
-  .card h3{font-size:14px;color:#8b949e;margin-bottom:8px}
-  .card .num{font-size:32px;font-weight:bold;color:#58a6ff}
-  .card .det{font-size:12px;color:#8b949e;margin-top:6px}
+  .card h3{font-size:13px;color:#8b949e;margin-bottom:8px}
+  .card .num{font-size:30px;font-weight:bold;color:#58a6ff}
   .secao{display:none}.secao.ativa{display:block}
   .botao{display:inline-block;background:#238636;color:#fff;border:none;padding:12px 22px;border-radius:8px;font-size:15px;cursor:pointer;text-decoration:none;margin:6px 6px 6px 0}
   .botao:hover{background:#2ea043}
   .botao.azul{background:#1f6feb}.botao.azul:hover{background:#388bfd}
   .botao.verm{background:#da3633}.botao.verm:hover{background:#f85149}
   .botao.roxo{background:#8957e5}.botao.roxo:hover{background:#a371f7}
-  .aviso{background:#1f2937;border:1px solid #30363d;border-radius:10px;padding:16px;margin-top:16px;font-size:14px;line-height:1.6}
+  .botao.mini{padding:5px 10px;font-size:13px;margin:2px}
+  .botao:disabled{opacity:.5;cursor:not-allowed}
+  .aviso{background:#1f2937;border:1px solid #30363d;border-radius:10px;padding:16px;margin-top:14px;font-size:14px;line-height:1.6}
   input,textarea,select{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;padding:11px;font-size:14px;margin:6px 0 14px}
   textarea{min-height:120px;font-family:inherit}
   label{font-size:13px;color:#8b949e}
@@ -39,18 +40,19 @@
   .sugestao:hover{background:#1f2937}
   audio{width:100%;margin:10px 0}
   video{width:100%;border-radius:10px;margin:10px 0;background:#000}
-  #statusGer,#statusImp,#statusVid,#statusRot{font-size:15px;margin-top:10px}
+  .st{font-size:15px;margin-top:10px}
   .rodando{color:#e3b341}.pronto{color:#3fb950}.falha{color:#f85149}
   .progresso{background:#0d1117;border:1px solid #30363d;border-radius:10px;padding:12px;margin:10px 0;font-size:14px}
   .barra{height:10px;background:#21262d;border-radius:6px;margin-top:8px;overflow:hidden}
   .barra div{height:100%;background:#58a6ff;border-radius:6px;transition:width .4s}
+  #palco{width:100%;border-radius:10px;background:#000;margin:10px 0}
 </style>
 </head>
 <body>
 
 <div class="topo">
   <div class="logo">🎬 Studio <span>Virtual</span></div>
-  <div class="saldo">⛽ Música $0,062 | Cena $0,043 | Roteirista ~$0,001</div>
+  <div class="saldo">☁️ Acervo na nuvem R2 | Música $0,062 | Cena $0,043</div>
 </div>
 
 <div class="container">
@@ -58,10 +60,12 @@
     <a class="ativo" onclick="ir('dashboard',this)">📊 Dashboard</a>
     <a onclick="ir('musica',this)">🎵 Fábrica de Música</a>
     <a onclick="ir('clipes',this)">🎬 Fábrica de Clipes</a>
+    <a onclick="ir('montadora',this)">🎞️ Montadora</a>
+    <a onclick="ir('cofreclipes',this)">🏆 Cofre de Clipes</a>
     <a onclick="ir('capas',this)">🖼️ Capas & Thumbnails</a>
     <a onclick="ir('importar',this)">📦 Importar do Suno</a>
-    <a onclick="ir('cofre',this)">🔐 Cofre</a>
-    <a onclick="ir('creditos',this)">💰 Créditos</a>
+    <a onclick="ir('cofre',this)">🔐 Cofre de Músicas</a>
+    <a onclick="ir('creditos',this)">💰 Créditos & Cobrança</a>
     <a onclick="ir('manual',this)">📖 Manual</a>
   </div>
 
@@ -69,128 +73,162 @@
 
     <div id="dashboard" class="secao ativa">
       <h2>📊 Dashboard</h2>
-      <p class="sub">Projeto: 100 músicas no cofre</p>
+      <p class="sub">☁️ Tudo salvo na nuvem — nada no seu PC, nada expira</p>
       <div class="cards">
-        <div class="card"><h3>🎵 Músicas no Cofre</h3><div class="num" id="contCofre">0</div><div class="det">meta: 100</div></div>
-        <div class="card"><h3>📦 Do Suno</h3><div class="num" id="contSuno">0</div><div class="det">acervo</div></div>
-        <div class="card"><h3>🎬 Cenas aprovadas</h3><div class="num" id="contCenas">0</div><div class="det">todas as músicas</div></div>
+        <div class="card"><h3>🎵 Músicas</h3><div class="num" id="cMus">…</div></div>
+        <div class="card"><h3>🎞️ Cenas</h3><div class="num" id="cCen">…</div></div>
+        <div class="card"><h3>🏆 Clipes prontos</h3><div class="num" id="cCli">…</div></div>
       </div>
-      <div class="aviso">✅ v1.4: Clipe sincronizado com a música do Cofre + Roteirista IA lendo a letra.</div>
+      <div class="aviso" id="avisoDash">☁️ Carregando acervo da nuvem...</div>
     </div>
 
     <div id="musica" class="secao">
       <h2>🎵 Fábrica de Música</h2>
-      <label>Nome da música</label>
-      <input id="mNome" placeholder="Ex: Estrada de Poeira">
-      <label>Estilo / gênero (em inglês)</label>
+      <label>Nome da música</label><input id="mNome">
+      <label>Estilo (inglês)</label>
       <input id="mEstilo" value="Brazilian sertanejo universitario, upbeat, male vocal duo harmony, acoustic guitar, accordion, energetic, modern radio production">
-      <label>Letra (português, use [Verse], [Chorus]...)</label>
-      <textarea id="mLetra"></textarea>
-      <label>Duração (segundos, máx 600)</label>
-      <input id="mDur" type="number" value="150">
+      <label>Letra (use [Verse], [Chorus]...)</label><textarea id="mLetra"></textarea>
+      <label>Duração (s, máx 600)</label><input id="mDur" type="number" value="150">
       <button class="botao" id="btnGerar" onclick="gerarMusica()">▶️ GERAR MÚSICA ($0,062)</button>
-      <div id="statusGer"></div>
-      <div id="resultado" style="display:none">
-        <audio id="player" controls></audio>
-        <button class="botao" onclick="aprovar()">✅ Aprovar → Cofre</button>
-        <button class="botao verm" onclick="descartar()">🗑️ Descartar</button>
+      <div class="st" id="stMus"></div>
+      <div id="resMus" style="display:none">
+        <audio id="playerMus" controls></audio>
+        <button class="botao" onclick="aprovarMusica()">✅ Aprovar → salvar na NUVEM</button>
+        <button class="botao verm" onclick="descartarMusica()">🗑️ Descartar</button>
       </div>
     </div>
 
     <div id="clipes" class="secao">
       <h2>🎬 Fábrica de Clipes</h2>
-      <p class="sub">1) Escolha a música do Cofre → 2) Peça sugestões ao Roteirista ou escreva a cena → 3) Gere, aprove, baixe</p>
-
-      <label>🎵 Música do Cofre (sincroniza o tamanho do clipe)</label>
-      <select id="vSelMusica" onchange="selecionarMusica()"><option value="">— escolher música —</option></select>
-      <div id="infoMusica" class="progresso" style="display:none"></div>
-
-      <button class="botao roxo" onclick="sugerirCenas()">🤖 Roteirista IA: sugerir cenas pela LETRA (~$0,001)</button>
-      <div id="statusRot"></div>
-      <div id="listaSugestoes"></div>
-
-      <label style="margin-top:14px;display:block">✍️ Descrição da cena (escreva a sua OU clique numa sugestão acima — inglês funciona melhor)</label>
+      <label>🎵 Música do Cofre</label>
+      <select id="selClipe" onchange="selMusicaClipe()"><option value="">— escolher —</option></select>
+      <div id="infoClipe" class="progresso" style="display:none"></div>
+      <button class="botao roxo" onclick="sugerirCenas()">🤖 Roteirista IA: cenas pela LETRA</button>
+      <div class="st" id="stRot"></div><div id="sugestoes"></div>
+      <label style="margin-top:12px;display:block">✍️ Descrição da cena (inglês)</label>
       <textarea id="vPrompt"></textarea>
-      <button class="botao" id="btnVid" onclick="gerarCena()">▶️ GERAR CENA ($0,043)</button>
-      <div id="statusVid"></div>
-      <div id="resultadoVid" style="display:none">
-        <video id="playerVid" controls></video>
-        <button class="botao" onclick="aprovarCena()">✅ Aprovar cena</button>
+      <button class="botao" id="btnCena" onclick="gerarCena()">▶️ GERAR CENA ($0,043)</button>
+      <div class="st" id="stCena"></div>
+      <div id="resCena" style="display:none">
+        <video id="playerCena" controls></video>
+        <button class="botao" onclick="aprovarCena()">✅ Aprovar → salvar na NUVEM</button>
         <button class="botao verm" onclick="descartarCena()">🗑️ Descartar</button>
       </div>
-      <h2 style="margin-top:30px">🎞️ Cenas aprovadas</h2>
-      <div id="listaCenas"></div>
+      <h2 style="margin-top:26px">🎞️ Cenas desta música</h2>
+      <div id="listaCenas"><div class="aviso">Escolha uma música acima.</div></div>
+    </div>
+
+    <div id="montadora" class="secao">
+      <h2>🎞️ Montadora</h2>
+      <p class="sub">Sem repetição: só monta com a cota completa de cenas</p>
+      <label>🎵 Música</label>
+      <select id="selMont" onchange="prepMontagem()"><option value="">— escolher —</option></select>
+      <div id="infoMont" class="progresso" style="display:none"></div>
+      <div id="ordem"></div>
+      <button class="botao" id="btnMont" onclick="montar()" style="display:none">🎞️ MONTAR CLIPE COMPLETO</button>
+      <div class="st" id="stMont"></div>
+      <canvas id="palco" width="1280" height="720" style="display:none"></canvas>
+      <div id="resMont" style="display:none">
+        <video id="playerMont" controls></video>
+        <div class="st pronto">☁️ Clipe salvo automaticamente no Cofre de Clipes!</div>
+      </div>
+      <div class="aviso">⚠️ Durante a montagem NÃO minimize a janela. Tempo ≈ duração da música.</div>
+    </div>
+
+    <div id="cofreclipes" class="secao">
+      <h2>🏆 Cofre de Clipes</h2>
+      <p class="sub">Clipes completos, guardados pra sempre na nuvem</p>
+      <div id="listaClipes"></div>
     </div>
 
     <div id="capas" class="secao">
       <h2>🖼️ Capas & Thumbnails</h2>
-      <a class="botao azul" href="https://replicate.com/black-forest-labs/flux-1.1-pro" target="_blank">🎨 Flux 1.1 Pro</a>
+      <a class="botao azul" href="https://replicate.com/black-forest-labs/flux-1.1-pro" target="_blank">🎨 Flux</a>
       <a class="botao azul" href="https://replicate.com/google/imagen-4" target="_blank">🎨 Imagen 4</a>
       <a class="botao azul" href="https://replicate.com/ideogram-ai/ideogram-v3-turbo" target="_blank">🎨 Ideogram</a>
     </div>
 
     <div id="importar" class="secao">
-      <h2>📦 Importar do Suno</h2>
-      <label>Nome da música *</label>
-      <input id="iNome">
-      <label>Estilo (opcional)</label>
-      <input id="iEstilo">
-      <label>Letra (IMPORTANTE pro Roteirista IA! Cole sempre)</label>
-      <textarea id="iLetra"></textarea>
-      <label>📁 Arquivo MP3</label>
-      <input type="file" id="iArquivo" accept="audio/*">
-      <label>🔗 OU link</label>
-      <input id="iLink">
-      <button class="botao" onclick="importarMusica()">📦 Importar pro Cofre</button>
-      <div id="statusImp"></div>
+      <h2>📦 Importar do Suno → NUVEM</h2>
+      <label>Nome *</label><input id="iNome">
+      <label>Estilo</label><input id="iEstilo">
+      <label>Letra (importante pro Roteirista!)</label><textarea id="iLetra"></textarea>
+      <label>📁 Arquivo MP3</label><input type="file" id="iArq" accept="audio/*">
+      <button class="botao" onclick="importar()">📦 Subir pra NUVEM</button>
+      <div class="st" id="stImp"></div>
     </div>
 
     <div id="cofre" class="secao">
-      <h2>🔐 Cofre</h2>
-      <div id="listaCofre"></div>
+      <h2>🔐 Cofre de Músicas</h2>
+      <div id="listaMusicas"></div>
     </div>
 
     <div id="creditos" class="secao">
-      <h2>💰 Painel de Créditos</h2>
-      <a class="botao" href="https://replicate.com/account/billing" target="_blank">🟢 Recarregar REPLICATE</a>
-      <a class="botao azul" href="https://www.runpod.io/console/user/billing" target="_blank">🟣 Recarregar RUNPOD</a>
+      <h2>💰 Créditos & Cobrança</h2>
+      <p class="sub">Recargas e gestão de cartão — como você pediu</p>
+      <a class="botao" href="https://replicate.com/account/billing" target="_blank">🟢 REPLICATE — recarga e cartão</a><br>
+      <a class="botao azul" href="https://www.runpod.io/console/user/billing" target="_blank">🟣 RUNPOD — recarga e cartão ($24 reserva)</a><br>
+      <a class="botao roxo" href="https://dash.cloudflare.com/?to=/:account/billing" target="_blank">🟠 CLOUDFLARE — cartão do R2 (deve estar $0/mês)</a>
+      <div class="aviso">☁️ R2: grátis até 10GB. Confira o uso em: Cloudflare → Armazenamento de Objetos R2 → studio-acervo.</div>
     </div>
 
     <div id="manual" class="secao">
-      <h2>📖 Manual do Studio</h2>
+      <h2>📖 Manual</h2>
       <div class="aviso">
-      <b>Arquitetura:</b> GitHub Pages + Cloudflare Worker "studio-motor" (Secret REPLICATE_KEY).<br>
-      • Música: fishaudio/ace-step-1.5 | Clipes: lightricks/ltx-video 16:9 | Roteirista: meta-llama-3-8b-instruct<br>
-      • Sincronização: o Studio lê a duração do MP3 do Cofre e calcula as cenas de ~5s necessárias<br>
-      • Roteirista lê a LETRA salva no Cofre (por isso importar sempre com letra!)<br>
-      • ⚠️ Baixar sempre MP3/MP4 aprovados (links do Replicate expiram)</div>
+      <b>Arquitetura v2.0 (era da nuvem):</b><br>
+      • Site: GitHub Pages | Motor: Worker "studio-motor" v3 (REPLICATE_KEY + binding ACERVO→studio-acervo)<br>
+      • R2: pastas musicas/ cenas/ clipes/ meta/ — fichas do acervo em meta/dados.json<br>
+      • Música: ace-step-1.5 | Cenas: ltx-video 16:9 | Roteirista: llama-3-8b<br>
+      • Aprovou → worker baixa do Replicate e grava no R2 (nada no PC, nada expira)<br>
+      • Montadora: sem repetição, trava até cota (duração/5 cenas), clipe final salvo no R2</div>
     </div>
 
   </div>
 </div>
 
 <script>
-const MOTOR = "https://studio-motor.alexmedeirosbsb.workers.dev";
-let musicaAtual=null, cenaAtual=null, db, musicaClipe=null;
-const rq=indexedDB.open('studioDB',1);
-rq.onupgradeneeded=e=>{e.target.result.createObjectStore('audios');};
-rq.onsuccess=e=>{db=e.target.result;};
-function salvarAudio(k,b){return new Promise((res,rej)=>{const tx=db.transaction('audios','readwrite');tx.objectStore('audios').put(b,k);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});}
-function lerAudio(k){return new Promise((res,rej)=>{const r=db.transaction('audios').objectStore('audios').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
-function apagarAudio(k){return new Promise(res=>{const tx=db.transaction('audios','readwrite');tx.objectStore('audios').delete(k);tx.oncomplete=res;});}
+const MOTOR="https://studio-motor.alexmedeirosbsb.workers.dev";
+let META={musicas:[],cenas:[],clipes:[]};
+let metaChave=null, musicaAtual=null, cenaAtual=null, musClipe=null, musMont=null;
 
+const arq=c=>MOTOR+"/arquivo?chave="+encodeURIComponent(c);
+
+async function carregarMeta(){
+  try{
+    const l=await(await fetch(MOTOR+"/listar?pasta=meta/")).json();
+    if(l.arquivos&&l.arquivos.length){
+      l.arquivos.sort((a,b)=>a.chave<b.chave?1:-1);
+      metaChave=l.arquivos[0].chave;
+      META=await(await fetch(arq(metaChave))).json();
+    }
+  }catch(e){}
+  contadores();
+  document.getElementById('avisoDash').innerHTML='☁️ Acervo carregado da nuvem. Músicas: '+META.musicas.length+' | Cenas: '+META.cenas.length+' | Clipes: '+META.clipes.length;
+}
+async function salvarMeta(){
+  const antiga=metaChave;
+  const r=await fetch(MOTOR+"/upload?pasta=meta&nome=dados.json",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(META)});
+  const d=await r.json();
+  if(d.ok){metaChave=d.chave;if(antiga)fetch(MOTOR+"/apagar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chave:antiga})});}
+  contadores();
+}
+function contadores(){
+  document.getElementById('cMus').textContent=META.musicas.length;
+  document.getElementById('cCen').textContent=META.cenas.length;
+  document.getElementById('cCli').textContent=META.clipes.length;
+}
 function ir(id,el){
   document.querySelectorAll('.secao').forEach(s=>s.classList.remove('ativa'));
   document.getElementById(id).classList.add('ativa');
   document.querySelectorAll('.menu a').forEach(a=>a.classList.remove('ativo'));
   el.classList.add('ativo');
-  if(id==='cofre')listarCofre();
-  if(id==='clipes'){popularSelect();listarCenas();}
+  if(id==='cofre')listarMusicas();
+  if(id==='clipes')popular('selClipe');
+  if(id==='montadora')popular('selMont');
+  if(id==='cofreclipes')listarClipes();
 }
-
 async function rodarMotor(modelo,input,st,msg){
-  const r=await fetch(MOTOR+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({modelo,input})});
+  const r=await fetch(MOTOR+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({modelo,input})});
   let d=await r.json();
   if(d.erro||d.detail)throw new Error(d.erro||d.detail);
   if(st)st.textContent=msg;
@@ -201,191 +239,220 @@ async function rodarMotor(modelo,input,st,msg){
   if(d.status!=='succeeded')throw new Error('Falhou: '+(d.error||d.status));
   return d.output;
 }
+async function guardarNaNuvem(urlOrigem,pasta,nome){
+  const r=await fetch(MOTOR+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:urlOrigem,pasta,nome})});
+  const d=await r.json();
+  if(!d.ok)throw new Error(d.erro||'Falha ao salvar na nuvem');
+  return d.chave;
+}
 
-/* ===== FABRICA DE MUSICA ===== */
+/* MUSICA */
 async function gerarMusica(){
+  const st=document.getElementById('stMus');
   const nome=document.getElementById('mNome').value.trim()||'Sem nome';
-  const estilo=document.getElementById('mEstilo').value.trim();
-  const letra=document.getElementById('mLetra').value;
-  const dur=parseInt(document.getElementById('mDur').value)||150;
-  const st=document.getElementById('statusGer');
-  document.getElementById('resultado').style.display='none';
+  document.getElementById('resMus').style.display='none';
   document.getElementById('btnGerar').disabled=true;
-  st.className='rodando';st.textContent='⏳ Enviando...';
+  st.className='st rodando';st.textContent='⏳ Enviando...';
   try{
-    const out=await rodarMotor("fishaudio/ace-step-1.5",{prompt:estilo,lyrics:letra,duration:dur},st,'🎵 Gerando... (1-3 min)');
-    const audio=Array.isArray(out)?out[0]:out;
-    musicaAtual={nome,estilo,letra,url:audio,origem:'studio',data:new Date().toLocaleDateString('pt-BR')};
-    document.getElementById('player').src=audio;
-    document.getElementById('resultado').style.display='block';
-    st.className='pronto';st.textContent='✅ Pronta!';
-  }catch(e){st.className='falha';st.textContent='❌ '+e.message;}
+    const out=await rodarMotor("fishaudio/ace-step-1.5",{prompt:document.getElementById('mEstilo').value,lyrics:document.getElementById('mLetra').value,duration:parseInt(document.getElementById('mDur').value)||150},st,'🎵 Gerando...');
+    const u=Array.isArray(out)?out[0]:out;
+    musicaAtual={nome,estilo:document.getElementById('mEstilo').value,letra:document.getElementById('mLetra').value,urlTemp:u,origem:'studio',data:new Date().toLocaleDateString('pt-BR')};
+    document.getElementById('playerMus').src=u;
+    document.getElementById('resMus').style.display='block';
+    st.className='st pronto';st.textContent='✅ Pronta! Ouça e decida.';
+  }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
   document.getElementById('btnGerar').disabled=false;
 }
-function aprovar(){
-  if(!musicaAtual)return;
-  const c=JSON.parse(localStorage.getItem('cofre')||'[]');
-  c.push(musicaAtual);localStorage.setItem('cofre',JSON.stringify(c));
-  musicaAtual=null;
-  document.getElementById('resultado').style.display='none';
-  document.getElementById('statusGer').textContent='🔐 No Cofre!';
-  contadores();
+async function aprovarMusica(){
+  const st=document.getElementById('stMus');
+  st.className='st rodando';st.textContent='☁️ Salvando na nuvem...';
+  try{
+    const chave=await guardarNaNuvem(musicaAtual.urlTemp,'musicas',musicaAtual.nome+'.mp3');
+    delete musicaAtual.urlTemp;musicaAtual.chave=chave;
+    META.musicas.push(musicaAtual);await salvarMeta();
+    musicaAtual=null;document.getElementById('resMus').style.display='none';
+    st.className='st pronto';st.textContent='☁️ Guardada NA NUVEM pra sempre!';
+  }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
 }
-function descartar(){musicaAtual=null;document.getElementById('resultado').style.display='none';document.getElementById('statusGer').textContent='🗑️ Descartada.';}
+function descartarMusica(){musicaAtual=null;document.getElementById('resMus').style.display='none';document.getElementById('stMus').textContent='🗑️ Descartada.';}
 
-/* ===== FABRICA DE CLIPES ===== */
-function popularSelect(){
-  const c=JSON.parse(localStorage.getItem('cofre')||'[]');
-  const sel=document.getElementById('vSelMusica');
-  const atual=sel.value;
-  sel.innerHTML='<option value="">— escolher música —</option>'+c.map((m,i)=>'<option value="'+i+'">'+m.nome+(m.origem==='suno'?' (Suno)':'')+'</option>').join('');
-  sel.value=atual;
+/* CLIPES */
+function popular(id){
+  const sel=document.getElementById(id);const v=sel.value;
+  sel.innerHTML='<option value="">— escolher —</option>'+META.musicas.map((m,i)=>'<option value="'+i+'">'+m.nome+'</option>').join('');
+  sel.value=v;
 }
-async function selecionarMusica(){
-  const i=document.getElementById('vSelMusica').value;
-  const info=document.getElementById('infoMusica');
-  if(i===''){musicaClipe=null;info.style.display='none';return;}
-  const c=JSON.parse(localStorage.getItem('cofre')||'[]');
-  musicaClipe=c[i];
-  let src=musicaClipe.url||'';
-  if(musicaClipe.fileKey){const b=await lerAudio(musicaClipe.fileKey);if(b)src=URL.createObjectURL(b);}
-  if(!src){info.style.display='block';info.innerHTML='⚠️ Áudio indisponível pra medir a duração.';return;}
-  const a=new Audio();a.src=src;
-  a.onloadedmetadata=()=>{
-    musicaClipe.duracao=Math.round(a.duration);
-    atualizarProgresso();
-  };
+function cenasDe(nome){return META.cenas.filter(c=>c.musica===nome);}
+async function selMusicaClipe(){
+  const i=document.getElementById('selClipe').value;
+  if(i===''){musClipe=null;return;}
+  musClipe=META.musicas[i];
+  const a=new Audio();a.src=arq(musClipe.chave);
+  a.onloadedmetadata=()=>{musClipe.duracao=a.duration;infoClipe();listarCenasMusica();};
 }
-function atualizarProgresso(){
-  if(!musicaClipe||!musicaClipe.duracao)return;
-  const dur=musicaClipe.duracao;
-  const total=Math.ceil(dur/5);
-  const cenas=JSON.parse(localStorage.getItem('cenas')||'[]').filter(s=>s.musica===musicaClipe.nome).length;
-  const min=Math.floor(dur/60), seg=String(dur%60).padStart(2,'0');
-  const pct=Math.min(100,Math.round(cenas/total*100));
-  const info=document.getElementById('infoMusica');
-  info.style.display='block';
-  info.innerHTML='🎵 <b>'+musicaClipe.nome+'</b> — duração <b>'+min+':'+seg+'</b> → precisa de <b>~'+total+' cenas</b> de 5s'+
-    '<br>🎞️ Aprovadas: <b>'+cenas+' / '+total+'</b> (custo total estimado: $'+(total*0.043).toFixed(2)+')'+
-    '<div class="barra"><div style="width:'+pct+'%"></div></div>';
+function infoClipe(){
+  if(!musClipe||!musClipe.duracao)return;
+  const total=Math.ceil(musClipe.duracao/5),tem=cenasDe(musClipe.nome).length;
+  const pct=Math.min(100,Math.round(tem/total*100));
+  const el=document.getElementById('infoClipe');
+  el.style.display='block';
+  el.innerHTML='🎵 <b>'+musClipe.nome+'</b> — '+Math.floor(musClipe.duracao/60)+':'+String(Math.round(musClipe.duracao%60)).padStart(2,'0')+' → cota: <b>'+total+' cenas</b> | tem <b>'+tem+'</b> | '+(tem>=total?'✅ COTA COMPLETA!':'faltam <b>'+(total-tem)+'</b>')+'<div class="barra"><div style="width:'+pct+'%"></div></div>';
 }
 async function sugerirCenas(){
-  const st=document.getElementById('statusRot');
-  if(!musicaClipe){st.className='falha';st.textContent='❌ Escolha primeiro a música do Cofre.';return;}
-  if(!musicaClipe.letra){st.className='falha';st.textContent='❌ Essa música não tem letra salva no Cofre. Edite a importação e cole a letra.';return;}
-  st.className='rodando';st.textContent='🤖 Roteirista lendo a letra...';
+  const st=document.getElementById('stRot');
+  if(!musClipe){st.className='st falha';st.textContent='❌ Escolha a música.';return;}
+  if(!musClipe.letra){st.className='st falha';st.textContent='❌ Música sem letra salva.';return;}
+  st.className='st rodando';st.textContent='🤖 Lendo a letra...';
   try{
-    const instrucao="You are a music video director. Read these Brazilian song lyrics and the style. Create 8 numbered cinematic scene descriptions in ENGLISH for a music video (16:9, live-action, no text on screen). Each scene must be one line, visual and specific (location, characters, action, camera, light). Style: "+(musicaClipe.estilo||'sertanejo')+". Lyrics:\n"+musicaClipe.letra;
-    const out=await rodarMotor("meta/meta-llama-3-8b-instruct",{prompt:instrucao,max_tokens:700},st,'🤖 Escrevendo o roteiro...');
-    const texto=Array.isArray(out)?out.join(''):out;
-    const linhas=texto.split(/\n/).filter(l=>/^\s*\d/.test(l)).map(l=>l.replace(/^\s*\d+[\).\-:]?\s*/,''));
-    const el=document.getElementById('listaSugestoes');
-    if(!linhas.length){el.innerHTML='<div class="aviso">'+texto+'</div>';}
-    else{el.innerHTML='<div class="sub" style="margin-top:10px">👇 Clique numa cena pra usar (depois pode editar):</div>'+
-      linhas.map(l=>'<div class="sugestao" onclick="usarSugestao(this)">🎬 '+l+'</div>').join('');}
-    st.className='pronto';st.textContent='✅ Roteiro pronto!';
-  }catch(e){st.className='falha';st.textContent='❌ '+e.message;}
-}
-function usarSugestao(el){
-  document.getElementById('vPrompt').value=el.textContent.replace('🎬 ','').trim();
-  document.getElementById('vPrompt').scrollIntoView({behavior:'smooth'});
+    const out=await rodarMotor("meta/meta-llama-3-8b-instruct",{prompt:"You are a music video director. Read these Brazilian song lyrics. Create 8 numbered cinematic scene descriptions in ENGLISH (16:9, live-action, no text on screen). One line each, visual and specific. Style: "+(musClipe.estilo||'sertanejo')+". Lyrics:\n"+musClipe.letra,max_tokens:700},st,'🤖 Escrevendo...');
+    const t=Array.isArray(out)?out.join(''):out;
+    const ls=t.split(/\n/).filter(l=>/^\s*\d/.test(l)).map(l=>l.replace(/^\s*\d+[\).\-:]?\s*/,''));
+    document.getElementById('sugestoes').innerHTML=ls.length?ls.map(l=>'<div class="sugestao" onclick="document.getElementById(\'vPrompt\').value=this.textContent.replace(\'🎬 \',\'\').trim()">🎬 '+l+'</div>').join(''):'<div class="aviso">'+t+'</div>';
+    st.className='st pronto';st.textContent='✅ Clique numa cena pra usar.';
+  }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
 }
 async function gerarCena(){
-  const prompt=document.getElementById('vPrompt').value.trim();
-  const st=document.getElementById('statusVid');
-  if(!musicaClipe){st.className='falha';st.textContent='❌ Escolha a música do Cofre primeiro.';return;}
-  if(!prompt){st.className='falha';st.textContent='❌ Escreva ou escolha uma cena.';return;}
-  document.getElementById('resultadoVid').style.display='none';
-  document.getElementById('btnVid').disabled=true;
-  st.className='rodando';st.textContent='⏳ Enviando...';
+  const st=document.getElementById('stCena');
+  const p=document.getElementById('vPrompt').value.trim();
+  if(!musClipe){st.className='st falha';st.textContent='❌ Escolha a música.';return;}
+  if(!p){st.className='st falha';st.textContent='❌ Escreva a cena.';return;}
+  document.getElementById('resCena').style.display='none';
+  document.getElementById('btnCena').disabled=true;
+  st.className='st rodando';st.textContent='⏳...';
   try{
-    const out=await rodarMotor("lightricks/ltx-video",{prompt:prompt,aspect_ratio:"16:9"},st,'🎬 Gerando cena... (~1 min)');
-    const video=Array.isArray(out)?out[0]:out;
-    cenaAtual={musica:musicaClipe.nome,prompt,url:video,data:new Date().toLocaleDateString('pt-BR')};
-    document.getElementById('playerVid').src=video;
-    document.getElementById('resultadoVid').style.display='block';
-    st.className='pronto';st.textContent='✅ Cena pronta!';
-  }catch(e){st.className='falha';st.textContent='❌ '+e.message;}
-  document.getElementById('btnVid').disabled=false;
+    const out=await rodarMotor("lightricks/ltx-video",{prompt:p,aspect_ratio:"16:9"},st,'🎬 Gerando cena...');
+    const u=Array.isArray(out)?out[0]:out;
+    cenaAtual={musica:musClipe.nome,prompt:p,urlTemp:u,data:new Date().toLocaleDateString('pt-BR')};
+    document.getElementById('playerCena').src=u;
+    document.getElementById('resCena').style.display='block';
+    st.className='st pronto';st.textContent='✅ Assista e decida.';
+  }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
+  document.getElementById('btnCena').disabled=false;
 }
-function aprovarCena(){
-  if(!cenaAtual)return;
-  const c=JSON.parse(localStorage.getItem('cenas')||'[]');
-  c.push(cenaAtual);localStorage.setItem('cenas',JSON.stringify(c));
-  cenaAtual=null;
-  document.getElementById('resultadoVid').style.display='none';
-  document.getElementById('statusVid').textContent='🎞️ Aprovada! Baixe o MP4 abaixo.';
-  listarCenas();contadores();atualizarProgresso();
+async function aprovarCena(){
+  const st=document.getElementById('stCena');
+  st.className='st rodando';st.textContent='☁️ Salvando na nuvem...';
+  try{
+    const chave=await guardarNaNuvem(cenaAtual.urlTemp,'cenas',cenaAtual.musica+'_cena.mp4');
+    delete cenaAtual.urlTemp;cenaAtual.chave=chave;
+    META.cenas.push(cenaAtual);await salvarMeta();
+    cenaAtual=null;document.getElementById('resCena').style.display='none';
+    st.className='st pronto';st.textContent='☁️ Cena na nuvem!';
+    infoClipe();listarCenasMusica();
+  }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
 }
-function descartarCena(){cenaAtual=null;document.getElementById('resultadoVid').style.display='none';document.getElementById('statusVid').textContent='🗑️ Descartada.';}
-function listarCenas(){
-  const c=JSON.parse(localStorage.getItem('cenas')||'[]');
+function descartarCena(){cenaAtual=null;document.getElementById('resCena').style.display='none';document.getElementById('stCena').textContent='🗑️ Descartada.';}
+function listarCenasMusica(){
   const el=document.getElementById('listaCenas');
-  if(!c.length){el.innerHTML='<div class="aviso">Nenhuma cena aprovada ainda.</div>';return;}
-  el.innerHTML=c.map((s,i)=>'<div class="item"><h4>🎬 '+s.musica+' <span class="tag">'+s.data+'</span></h4>'+
-    '<div class="sub">'+s.prompt.substring(0,100)+'...</div>'+
-    '<video controls src="'+s.url+'"></video>'+
-    '<a class="botao azul" href="'+s.url+'" download>⬇️ Baixar MP4</a>'+
-    '<button class="botao verm" onclick="removerCena('+i+')">Remover</button></div>').join('');
+  if(!musClipe){el.innerHTML='<div class="aviso">Escolha uma música.</div>';return;}
+  const cs=cenasDe(musClipe.nome);
+  el.innerHTML=cs.length?cs.map((c,i)=>'<div class="item"><div class="sub">'+c.prompt.substring(0,90)+'...</div><video controls preload="none" src="'+arq(c.chave)+'"></video><button class="botao verm mini" onclick="removerCena(\''+c.chave+'\')">Remover</button></div>').join(''):'<div class="aviso">Nenhuma cena ainda.</div>';
 }
-function removerCena(i){
-  const c=JSON.parse(localStorage.getItem('cenas')||'[]');
-  c.splice(i,1);localStorage.setItem('cenas',JSON.stringify(c));
-  listarCenas();contadores();atualizarProgresso();
+async function removerCena(chave){
+  await fetch(MOTOR+"/apagar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chave})});
+  META.cenas=META.cenas.filter(c=>c.chave!==chave);await salvarMeta();
+  infoClipe();listarCenasMusica();
 }
 
-/* ===== IMPORTAR / COFRE ===== */
-async function importarMusica(){
-  const nome=document.getElementById('iNome').value.trim();
-  const estilo=document.getElementById('iEstilo').value.trim();
-  const letra=document.getElementById('iLetra').value;
-  const arq=document.getElementById('iArquivo').files[0];
-  const link=document.getElementById('iLink').value.trim();
-  const st=document.getElementById('statusImp');
-  if(!nome){st.className='falha';st.textContent='❌ Dê um nome.';return;}
-  if(!arq&&!link){st.className='falha';st.textContent='❌ Arquivo OU link.';return;}
-  st.className='rodando';st.textContent='⏳ Importando...';
+/* MONTADORA — SEM repetição */
+async function prepMontagem(){
+  const i=document.getElementById('selMont').value;
+  const info=document.getElementById('infoMont'),btn=document.getElementById('btnMont');
+  document.getElementById('resMont').style.display='none';
+  if(i===''){musMont=null;info.style.display='none';btn.style.display='none';return;}
+  musMont=META.musicas[i];
+  const a=new Audio();a.src=arq(musMont.chave);
+  a.onloadedmetadata=()=>{
+    musMont.duracao=a.duration;
+    const total=Math.ceil(a.duration/5),cs=cenasDe(musMont.nome);
+    info.style.display='block';
+    info.innerHTML='🎵 <b>'+musMont.nome+'</b> — cota: <b>'+total+'</b> cenas | tem <b>'+cs.length+'</b>'+(cs.length>=total?' — ✅ <b>LIBERADO!</b>':' — 🔒 faltam <b>'+(total-cs.length)+'</b> (gere na Fábrica de Clipes)');
+    btn.style.display='inline-block';btn.disabled=cs.length<total;
+    document.getElementById('ordem').innerHTML=cs.map((s,x)=>'<div class="item" style="padding:10px"><b>'+(x+1)+'.</b> '+s.prompt.substring(0,60)+'... <button class="botao mini azul" onclick="mover(\''+musMont.nome.replace(/'/g,"\\'")+'\','+x+',-1)">↑</button><button class="botao mini azul" onclick="mover(\''+musMont.nome.replace(/'/g,"\\'")+'\','+x+',1)">↓</button></div>').join('');
+  };
+}
+function mover(nome,pos,dir){
+  const idx=[];META.cenas.forEach((c,i)=>{if(c.musica===nome)idx.push(i);});
+  const a=pos+dir;if(a<0||a>=idx.length)return;
+  const t=META.cenas[idx[pos]];META.cenas[idx[pos]]=META.cenas[idx[a]];META.cenas[idx[a]]=t;
+  salvarMeta();prepMontagem();
+}
+async function montar(){
+  const st=document.getElementById('stMont'),btn=document.getElementById('btnMont');
+  const cs=cenasDe(musMont.nome);
+  btn.disabled=true;st.className='st rodando';st.textContent='🎞️ Preparando...';
   try{
-    const c=JSON.parse(localStorage.getItem('cofre')||'[]');
-    const m={nome,estilo,letra,origem:'suno',data:new Date().toLocaleDateString('pt-BR')};
-    if(arq){m.fileKey='suno_'+Date.now();await salvarAudio(m.fileKey,arq);}else{m.url=link;}
-    c.push(m);localStorage.setItem('cofre',JSON.stringify(c));
-    st.className='pronto';st.textContent='✅ "'+nome+'" no Cofre!';
-    ['iNome','iEstilo','iLetra','iLink'].forEach(x=>document.getElementById(x).value='');
-    document.getElementById('iArquivo').value='';
-    contadores();
-  }catch(e){st.className='falha';st.textContent='❌ '+e.message;}
+    const canvas=document.getElementById('palco');canvas.style.display='block';
+    const ctx=canvas.getContext('2d');
+    const audioEl=new Audio(arq(musMont.chave));audioEl.crossOrigin="anonymous";
+    const AC=new (window.AudioContext||window.webkitAudioContext)();
+    const fonte=AC.createMediaElementSource(audioEl);
+    const dest=AC.createMediaStreamDestination();
+    fonte.connect(dest);fonte.connect(AC.destination);
+    const stream=new MediaStream([...canvas.captureStream(30).getVideoTracks(),...dest.stream.getAudioTracks()]);
+    const rec=new MediaRecorder(stream,{mimeType:MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm',videoBitsPerSecond:5000000});
+    const pedacos=[];rec.ondataavailable=e=>{if(e.data.size)pedacos.push(e.data);};
+    const fim=new Promise(r=>{rec.onstop=r;});
+    const vid=document.createElement('video');vid.crossOrigin="anonymous";vid.muted=true;vid.playsInline=true;
+    let rodando=true;
+    (function desenhar(){if(!rodando)return;
+      if(vid.readyState>=2){const r=Math.min(canvas.width/vid.videoWidth,canvas.height/vid.videoHeight);const w=vid.videoWidth*r,h=vid.videoHeight*r;ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(vid,(canvas.width-w)/2,(canvas.height-h)/2,w,h);}
+      requestAnimationFrame(desenhar);})();
+    rec.start(1000);audioEl.play();
+    let i=0;
+    while(!audioEl.ended&&audioEl.currentTime<musMont.duracao&&i<cs.length){
+      await new Promise((res,rej)=>{vid.src=arq(cs[i].chave);vid.onended=res;vid.onerror=()=>rej(new Error('cena inacessível'));vid.play().catch(rej);});
+      i++;
+      st.textContent='🎞️ Montando... '+Math.round(audioEl.currentTime)+'s / '+Math.round(musMont.duracao)+'s — NÃO minimize!';
+    }
+    rodando=false;rec.stop();audioEl.pause();await fim;
+    const blob=new Blob(pedacos,{type:'video/webm'});
+    st.textContent='☁️ Subindo o clipe pra nuvem...';
+    const up=await fetch(MOTOR+"/upload?pasta=clipes&nome="+encodeURIComponent(musMont.nome+'_clipe.webm'),{method:"PUT",headers:{"Content-Type":"video/webm"},body:blob});
+    const d=await up.json();
+    if(!d.ok)throw new Error('falha ao subir clipe');
+    META.clipes.push({musica:musMont.nome,chave:d.chave,data:new Date().toLocaleDateString('pt-BR')});
+    await salvarMeta();
+    document.getElementById('playerMont').src=URL.createObjectURL(blob);
+    document.getElementById('resMont').style.display='block';
+    canvas.style.display='none';
+    st.className='st pronto';st.textContent='✅ CLIPE PRONTO e guardado na nuvem!';
+  }catch(e){st.className='st falha';st.textContent='❌ '+e.message;document.getElementById('palco').style.display='none';}
+  btn.disabled=false;
 }
-async function listarCofre(){
-  const c=JSON.parse(localStorage.getItem('cofre')||'[]');
-  const el=document.getElementById('listaCofre');
-  if(!c.length){el.innerHTML='<div class="aviso">Cofre vazio.</div>';return;}
-  let html='';
-  for(let i=0;i<c.length;i++){
-    const m=c[i];let src=m.url||'';
-    if(m.fileKey){const b=await lerAudio(m.fileKey);if(b)src=URL.createObjectURL(b);}
-    html+='<div class="item"><h4>🎵 '+m.nome+' <span class="tag'+(m.origem==='suno'?' suno':'')+'">'+(m.origem==='suno'?'📦 Suno':'🎬 Studio')+'</span><span class="tag">'+m.data+'</span></h4>'+
-      (m.estilo?'<div class="sub">'+m.estilo+'</div>':'')+
-      (m.letra?'<span class="tag">📝 letra salva</span>':'<span class="tag" style="background:#da363333;color:#f85149">sem letra</span>')+
-      (src?'<audio controls src="'+src+'"></audio><a class="botao azul" href="'+src+'" download="'+m.nome+'.mp3">⬇️ Baixar MP3</a>':'<div class="sub">⚠️ áudio indisponível</div>')+
-      '<button class="botao verm" onclick="removerCofre('+i+')">Remover</button></div>';
-  }
-  el.innerHTML=html;
+function listarClipes(){
+  const el=document.getElementById('listaClipes');
+  el.innerHTML=META.clipes.length?META.clipes.map(c=>'<div class="item"><h4>🏆 '+c.musica+' <span class="tag">'+c.data+'</span></h4><video controls preload="none" src="'+arq(c.chave)+'"></video><a class="botao azul" href="'+arq(c.chave)+'" download="'+c.musica+'_clipe.webm">⬇️ Baixar</a></div>').join(''):'<div class="aviso">Nenhum clipe montado ainda.</div>';
 }
-async function removerCofre(i){
-  const c=JSON.parse(localStorage.getItem('cofre')||'[]');
-  if(c[i]&&c[i].fileKey)await apagarAudio(c[i].fileKey);
-  c.splice(i,1);localStorage.setItem('cofre',JSON.stringify(c));
-  listarCofre();contadores();
+
+/* IMPORTAR / COFRE */
+async function importar(){
+  const st=document.getElementById('stImp');
+  const nome=document.getElementById('iNome').value.trim();
+  const f=document.getElementById('iArq').files[0];
+  if(!nome||!f){st.className='st falha';st.textContent='❌ Nome + arquivo MP3.';return;}
+  st.className='st rodando';st.textContent='☁️ Subindo pra nuvem...';
+  try{
+    const r=await fetch(MOTOR+"/upload?pasta=musicas&nome="+encodeURIComponent(nome+'.mp3'),{method:"PUT",headers:{"Content-Type":f.type||'audio/mpeg'},body:f});
+    const d=await r.json();
+    if(!d.ok)throw new Error(d.erro||'falha no upload');
+    META.musicas.push({nome,estilo:document.getElementById('iEstilo').value,letra:document.getElementById('iLetra').value,chave:d.chave,origem:'suno',data:new Date().toLocaleDateString('pt-BR')});
+    await salvarMeta();
+    st.className='st pronto';st.textContent='☁️ "'+nome+'" na nuvem pra sempre!';
+    ['iNome','iEstilo','iLetra'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('iArq').value='';
+  }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
 }
-function contadores(){
-  const c=JSON.parse(localStorage.getItem('cofre')||'[]');
-  const s=JSON.parse(localStorage.getItem('cenas')||'[]');
-  document.getElementById('contCofre').textContent=c.length;
-  document.getElementById('contSuno').textContent=c.filter(m=>m.origem==='suno').length;
-  document.getElementById('contCenas').textContent=s.length;
+function listarMusicas(){
+  const el=document.getElementById('listaMusicas');
+  el.innerHTML=META.musicas.length?META.musicas.map((m,i)=>'<div class="item"><h4>🎵 '+m.nome+' <span class="tag'+(m.origem==='suno'?' suno':'')+'">'+(m.origem==='suno'?'📦 Suno':'🎬 Studio')+'</span><span class="tag">'+m.data+'</span></h4>'+(m.letra?'<span class="tag">📝 letra</span>':'<span class="tag" style="background:#da363333;color:#f85149">sem letra</span>')+'<audio controls preload="none" src="'+arq(m.chave)+'"></audio><a class="botao azul mini" href="'+arq(m.chave)+'" download="'+m.nome+'.mp3">⬇️</a><button class="botao verm mini" onclick="removerMusica('+i+')">Remover</button></div>').join(''):'<div class="aviso">Cofre vazio.</div>';
 }
-contadores();
+async function removerMusica(i){
+  const m=META.musicas[i];
+  await fetch(MOTOR+"/apagar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chave:m.chave})});
+  META.musicas.splice(i,1);await salvarMeta();listarMusicas();
+}
+carregarMeta();
 </script>
 </body>
 </html>
