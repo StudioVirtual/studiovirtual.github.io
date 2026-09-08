@@ -35,7 +35,8 @@
   .item{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:18px;margin-bottom:14px}
   .item h4{margin-bottom:6px}
   audio{width:100%;margin:10px 0}
-  #statusGer,#statusImp{font-size:15px;margin-top:10px}
+  video{width:100%;border-radius:10px;margin:10px 0;background:#000}
+  #statusGer,#statusImp,#statusVid{font-size:15px;margin-top:10px}
   .rodando{color:#e3b341}.pronto{color:#3fb950}.falha{color:#f85149}
 </style>
 </head>
@@ -43,13 +44,15 @@
 
 <div class="topo">
   <div class="logo">🎬 Studio <span>Virtual</span></div>
-  <div class="saldo">⛽ ACE-Step $0,062/música</div>
+  <div class="saldo">⛽ Música $0,062 | Cena de clipe $0,043</div>
 </div>
 
 <div class="container">
   <div class="menu">
     <a class="ativo" onclick="ir('dashboard',this)">📊 Dashboard</a>
     <a onclick="ir('musica',this)">🎵 Fábrica de Música</a>
+    <a onclick="ir('clipes',this)">🎬 Fábrica de Clipes</a>
+    <a onclick="ir('capas',this)">🖼️ Capas & Thumbnails</a>
     <a onclick="ir('importar',this)">📦 Importar do Suno</a>
     <a onclick="ir('cofre',this)">🔐 Cofre</a>
     <a onclick="ir('creditos',this)">💰 Créditos</a>
@@ -63,9 +66,10 @@
       <p class="sub">Projeto: 100 músicas no cofre</p>
       <div class="cards">
         <div class="card"><h3>🎵 Músicas no Cofre</h3><div class="num" id="contCofre">0</div><div class="det">meta: 100</div></div>
-        <div class="card"><h3>📦 Importadas do Suno</h3><div class="num" id="contSuno">0</div><div class="det">acervo antigo</div></div>
+        <div class="card"><h3>📦 Do Suno</h3><div class="num" id="contSuno">0</div><div class="det">acervo antigo</div></div>
+        <div class="card"><h3>🎬 Cenas de Clipe</h3><div class="num" id="contCenas">0</div><div class="det">aprovadas</div></div>
       </div>
-      <div class="aviso">✅ Fábrica ligada + Importação do Suno ativa.</div>
+      <div class="aviso">✅ Fábricas ligadas: Música + Clipes (YouTube horizontal 16:9) + Importação Suno.</div>
     </div>
 
     <div id="musica" class="secao">
@@ -88,27 +92,50 @@
       </div>
     </div>
 
+    <div id="clipes" class="secao">
+      <h2>🎬 Fábrica de Clipes</h2>
+      <p class="sub">Gere cena por cena (~5s cada, 16:9 horizontal) → aprove as boas → baixe e monte o clipe</p>
+      <label>Pra qual música é esta cena?</label>
+      <input id="vMusica" placeholder="Ex: Estrada de Poeira — cena do pôr do sol">
+      <label>Descrição da cena (em inglês funciona melhor)</label>
+      <textarea id="vPrompt">Two brazilian country singers with cowboy hats performing on an outdoor stage at golden hour, crowd in the background, cinematic camera movement, warm light, music video style</textarea>
+      <button class="botao" id="btnVid" onclick="gerarCena()">▶️ GERAR CENA ($0,043)</button>
+      <div id="statusVid"></div>
+      <div id="resultadoVid" style="display:none">
+        <video id="playerVid" controls></video>
+        <button class="botao" onclick="aprovarCena()">✅ Aprovar cena</button>
+        <button class="botao verm" onclick="descartarCena()">🗑️ Descartar</button>
+      </div>
+      <h2 style="margin-top:30px">🎞️ Cenas aprovadas</h2>
+      <div id="listaCenas"></div>
+    </div>
+
+    <div id="capas" class="secao">
+      <h2>🖼️ Capas & Thumbnails</h2>
+      <p class="sub">Motores prontos (RUN interno chega na v1.4)</p>
+      <a class="botao azul" href="https://replicate.com/black-forest-labs/flux-1.1-pro" target="_blank">🎨 Flux 1.1 Pro</a>
+      <a class="botao azul" href="https://replicate.com/google/imagen-4" target="_blank">🎨 Imagen 4</a>
+      <a class="botao azul" href="https://replicate.com/ideogram-ai/ideogram-v3-turbo" target="_blank">🎨 Ideogram (texto na capa)</a>
+    </div>
+
     <div id="importar" class="secao">
       <h2>📦 Importar do Suno</h2>
-      <p class="sub">Traga seu acervo antigo pro Cofre — por arquivo MP3 (recomendado) ou link</p>
       <label>Nome da música *</label>
       <input id="iNome" placeholder="Ex: Coração na Contramão">
       <label>Estilo / observações (opcional)</label>
-      <input id="iEstilo" placeholder="Ex: sertanejo universitário, feita no Suno v3">
-      <label>Letra (opcional — cole pra guardar junto)</label>
+      <input id="iEstilo" placeholder="Ex: sertanejo universitário, Suno v3">
+      <label>Letra (opcional)</label>
       <textarea id="iLetra"></textarea>
-      <label>📁 Arquivo MP3 do seu PC (baixado do Suno)</label>
+      <label>📁 Arquivo MP3</label>
       <input type="file" id="iArquivo" accept="audio/*">
-      <label>🔗 OU link da música (se não tiver o arquivo)</label>
+      <label>🔗 OU link</label>
       <input id="iLink" placeholder="https://...">
       <button class="botao" onclick="importarMusica()">📦 Importar pro Cofre</button>
       <div id="statusImp"></div>
-      <div class="aviso">💡 No Suno: menu "⋯" da música → Download → MP3 Audio. O arquivo fica guardado no armazenamento interno do navegador — e a música entra no Cofre como as demais.</div>
     </div>
 
     <div id="cofre" class="secao">
       <h2>🔐 Cofre</h2>
-      <p class="sub">Todas as suas músicas — geradas e importadas</p>
       <div id="listaCofre"></div>
     </div>
 
@@ -123,10 +150,9 @@
       <div class="aviso">
       <b>Arquitetura:</b><br>
       • Site: GitHub Pages | Adaptador: Cloudflare Worker "studio-motor" (Secret REPLICATE_KEY)<br>
-      • Motor música: fishaudio/ace-step-1.5 via /gerar e /status<br>
-      • Cofre: dados no localStorage + áudios importados no IndexedDB do navegador<br>
-      • Importação Suno: arquivo MP3 (fica no navegador) ou link externo<br>
-      • ⚠️ Backup: sempre baixe o MP3 das músicas geradas (links do Replicate expiram)</div>
+      • Música: fishaudio/ace-step-1.5 | Clipes: lightricks/ltx-video (16:9 horizontal)<br>
+      • Cofre: localStorage + IndexedDB do navegador<br>
+      • ⚠️ Links do Replicate expiram: SEMPRE baixar MP3/MP4 das aprovadas</div>
     </div>
 
   </div>
@@ -134,22 +160,35 @@
 
 <script>
 const MOTOR = "https://studio-motor.alexmedeirosbsb.workers.dev";
-let musicaAtual = null;
-let db;
-const rq = indexedDB.open('studioDB', 1);
-rq.onupgradeneeded = e => { e.target.result.createObjectStore('audios'); };
-rq.onsuccess = e => { db = e.target.result; };
-
-function salvarAudio(k, blob){ return new Promise((res,rej)=>{ const tx=db.transaction('audios','readwrite'); tx.objectStore('audios').put(blob,k); tx.oncomplete=res; tx.onerror=()=>rej(tx.error); }); }
-function lerAudio(k){ return new Promise((res,rej)=>{ const r=db.transaction('audios').objectStore('audios').get(k); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
-function apagarAudio(k){ return new Promise((res)=>{ const tx=db.transaction('audios','readwrite'); tx.objectStore('audios').delete(k); tx.oncomplete=res; }); }
+let musicaAtual=null, cenaAtual=null, db;
+const rq=indexedDB.open('studioDB',1);
+rq.onupgradeneeded=e=>{e.target.result.createObjectStore('audios');};
+rq.onsuccess=e=>{db=e.target.result;};
+function salvarAudio(k,b){return new Promise((res,rej)=>{const tx=db.transaction('audios','readwrite');tx.objectStore('audios').put(b,k);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});}
+function lerAudio(k){return new Promise((res,rej)=>{const r=db.transaction('audios').objectStore('audios').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+function apagarAudio(k){return new Promise(res=>{const tx=db.transaction('audios','readwrite');tx.objectStore('audios').delete(k);tx.oncomplete=res;});}
 
 function ir(id,el){
   document.querySelectorAll('.secao').forEach(s=>s.classList.remove('ativa'));
   document.getElementById(id).classList.add('ativa');
   document.querySelectorAll('.menu a').forEach(a=>a.classList.remove('ativo'));
   el.classList.add('ativo');
-  if(id==='cofre') listarCofre();
+  if(id==='cofre')listarCofre();
+  if(id==='clipes')listarCenas();
+}
+
+async function rodarMotor(modelo,input,st,msgProgresso){
+  const r=await fetch(MOTOR+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({modelo,input})});
+  let d=await r.json();
+  if(d.erro||d.detail)throw new Error(d.erro||d.detail);
+  st.textContent=msgProgresso;
+  while(d.status!=='succeeded'&&d.status!=='failed'&&d.status!=='canceled'){
+    await new Promise(x=>setTimeout(x,4000));
+    d=await(await fetch(MOTOR+"/status?id="+d.id)).json();
+  }
+  if(d.status!=='succeeded')throw new Error('Falhou: '+(d.error||d.status));
+  return Array.isArray(d.output)?d.output[0]:d.output;
 }
 
 async function gerarMusica(){
@@ -160,31 +199,20 @@ async function gerarMusica(){
   const st=document.getElementById('statusGer');
   document.getElementById('resultado').style.display='none';
   document.getElementById('btnGerar').disabled=true;
-  st.className='rodando'; st.textContent='⏳ Enviando pro motor...';
+  st.className='rodando';st.textContent='⏳ Enviando pro motor...';
   try{
-    const r=await fetch(MOTOR+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({modelo:"fishaudio/ace-step-1.5",input:{prompt:estilo,lyrics:letra,duration:dur}})});
-    let d=await r.json();
-    if(d.erro||d.detail) throw new Error(d.erro||d.detail);
-    st.textContent='🎵 Gerando... (1 a 3 min)';
-    while(d.status!=='succeeded'&&d.status!=='failed'&&d.status!=='canceled'){
-      await new Promise(x=>setTimeout(x,4000));
-      d=await (await fetch(MOTOR+"/status?id="+d.id)).json();
-    }
-    if(d.status!=='succeeded') throw new Error('Falhou: '+(d.error||d.status));
-    const audio=Array.isArray(d.output)?d.output[0]:d.output;
+    const audio=await rodarMotor("fishaudio/ace-step-1.5",{prompt:estilo,lyrics:letra,duration:dur},st,'🎵 Gerando... (1 a 3 min)');
     musicaAtual={nome,estilo,letra,url:audio,origem:'studio',data:new Date().toLocaleDateString('pt-BR')};
     document.getElementById('player').src=audio;
     document.getElementById('resultado').style.display='block';
-    st.className='pronto'; st.textContent='✅ Pronta! Ouça e decida.';
-  }catch(e){ st.className='falha'; st.textContent='❌ Erro: '+e.message; }
+    st.className='pronto';st.textContent='✅ Pronta! Ouça e decida.';
+  }catch(e){st.className='falha';st.textContent='❌ Erro: '+e.message;}
   document.getElementById('btnGerar').disabled=false;
 }
-
 function aprovar(){
-  if(!musicaAtual) return;
+  if(!musicaAtual)return;
   const c=JSON.parse(localStorage.getItem('cofre')||'[]');
-  c.push(musicaAtual); localStorage.setItem('cofre',JSON.stringify(c));
+  c.push(musicaAtual);localStorage.setItem('cofre',JSON.stringify(c));
   musicaAtual=null;
   document.getElementById('resultado').style.display='none';
   document.getElementById('statusGer').textContent='🔐 Guardada no Cofre!';
@@ -196,6 +224,52 @@ function descartar(){
   document.getElementById('statusGer').textContent='🗑️ Descartada.';
 }
 
+async function gerarCena(){
+  const musica=document.getElementById('vMusica').value.trim()||'Sem música';
+  const prompt=document.getElementById('vPrompt').value.trim();
+  const st=document.getElementById('statusVid');
+  document.getElementById('resultadoVid').style.display='none';
+  document.getElementById('btnVid').disabled=true;
+  st.className='rodando';st.textContent='⏳ Enviando pro motor de vídeo...';
+  try{
+    const video=await rodarMotor("lightricks/ltx-video",{prompt:prompt,aspect_ratio:"16:9"},st,'🎬 Gerando cena... (~1 min)');
+    cenaAtual={musica,prompt,url:video,data:new Date().toLocaleDateString('pt-BR')};
+    document.getElementById('playerVid').src=video;
+    document.getElementById('resultadoVid').style.display='block';
+    st.className='pronto';st.textContent='✅ Cena pronta! Assista e decida.';
+  }catch(e){st.className='falha';st.textContent='❌ Erro: '+e.message;}
+  document.getElementById('btnVid').disabled=false;
+}
+function aprovarCena(){
+  if(!cenaAtual)return;
+  const c=JSON.parse(localStorage.getItem('cenas')||'[]');
+  c.push(cenaAtual);localStorage.setItem('cenas',JSON.stringify(c));
+  cenaAtual=null;
+  document.getElementById('resultadoVid').style.display='none';
+  document.getElementById('statusVid').textContent='🎞️ Cena aprovada! Baixe o MP4 na lista abaixo.';
+  listarCenas();contadores();
+}
+function descartarCena(){
+  cenaAtual=null;
+  document.getElementById('resultadoVid').style.display='none';
+  document.getElementById('statusVid').textContent='🗑️ Descartada. Ajuste o prompt e gere de novo.';
+}
+function listarCenas(){
+  const c=JSON.parse(localStorage.getItem('cenas')||'[]');
+  const el=document.getElementById('listaCenas');
+  if(!c.length){el.innerHTML='<div class="aviso">Nenhuma cena aprovada ainda.</div>';return;}
+  el.innerHTML=c.map((s,i)=>'<div class="item"><h4>🎬 '+s.musica+' <span class="tag">'+s.data+'</span></h4>'+
+    '<div class="sub">'+s.prompt.substring(0,100)+'...</div>'+
+    '<video controls src="'+s.url+'"></video>'+
+    '<a class="botao azul" href="'+s.url+'" download>⬇️ Baixar MP4 (backup!)</a>'+
+    '<button class="botao verm" onclick="removerCena('+i+')">Remover</button></div>').join('');
+}
+function removerCena(i){
+  const c=JSON.parse(localStorage.getItem('cenas')||'[]');
+  c.splice(i,1);localStorage.setItem('cenas',JSON.stringify(c));
+  listarCenas();contadores();
+}
+
 async function importarMusica(){
   const nome=document.getElementById('iNome').value.trim();
   const estilo=document.getElementById('iEstilo').value.trim();
@@ -203,49 +277,48 @@ async function importarMusica(){
   const arq=document.getElementById('iArquivo').files[0];
   const link=document.getElementById('iLink').value.trim();
   const st=document.getElementById('statusImp');
-  if(!nome){ st.className='falha'; st.textContent='❌ Dê um nome pra música.'; return; }
-  if(!arq && !link){ st.className='falha'; st.textContent='❌ Escolha um arquivo OU cole um link.'; return; }
-  st.className='rodando'; st.textContent='⏳ Importando...';
+  if(!nome){st.className='falha';st.textContent='❌ Dê um nome.';return;}
+  if(!arq&&!link){st.className='falha';st.textContent='❌ Arquivo OU link.';return;}
+  st.className='rodando';st.textContent='⏳ Importando...';
   try{
     const c=JSON.parse(localStorage.getItem('cofre')||'[]');
     const m={nome,estilo,letra,origem:'suno',data:new Date().toLocaleDateString('pt-BR')};
-    if(arq){ m.fileKey='suno_'+Date.now(); await salvarAudio(m.fileKey,arq); }
-    else{ m.url=link; }
-    c.push(m); localStorage.setItem('cofre',JSON.stringify(c));
-    st.className='pronto'; st.textContent='✅ "'+nome+'" importada pro Cofre!';
-    document.getElementById('iNome').value=''; document.getElementById('iEstilo').value='';
-    document.getElementById('iLetra').value=''; document.getElementById('iArquivo').value=''; document.getElementById('iLink').value='';
+    if(arq){m.fileKey='suno_'+Date.now();await salvarAudio(m.fileKey,arq);}else{m.url=link;}
+    c.push(m);localStorage.setItem('cofre',JSON.stringify(c));
+    st.className='pronto';st.textContent='✅ "'+nome+'" no Cofre!';
+    ['iNome','iEstilo','iLetra','iLink'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('iArquivo').value='';
     contadores();
-  }catch(e){ st.className='falha'; st.textContent='❌ Erro: '+e.message; }
+  }catch(e){st.className='falha';st.textContent='❌ Erro: '+e.message;}
 }
 
 async function listarCofre(){
   const c=JSON.parse(localStorage.getItem('cofre')||'[]');
   const el=document.getElementById('listaCofre');
-  if(!c.length){ el.innerHTML='<div class="aviso">Cofre vazio.</div>'; return; }
+  if(!c.length){el.innerHTML='<div class="aviso">Cofre vazio.</div>';return;}
   let html='';
   for(let i=0;i<c.length;i++){
-    const m=c[i];
-    let src=m.url||'';
-    if(m.fileKey){ const b=await lerAudio(m.fileKey); if(b) src=URL.createObjectURL(b); }
+    const m=c[i];let src=m.url||'';
+    if(m.fileKey){const b=await lerAudio(m.fileKey);if(b)src=URL.createObjectURL(b);}
     html+='<div class="item"><h4>🎵 '+m.nome+' <span class="tag'+(m.origem==='suno'?' suno':'')+'">'+(m.origem==='suno'?'📦 Suno':'🎬 Studio')+'</span><span class="tag">'+m.data+'</span></h4>'+
       (m.estilo?'<div class="sub">'+m.estilo+'</div>':'')+
-      (src?'<audio controls src="'+src+'"></audio>':'<div class="sub">⚠️ áudio indisponível</div>')+
-      (src?'<a class="botao azul" href="'+src+'" download="'+m.nome+'.mp3">⬇️ Baixar MP3</a>':'')+
+      (src?'<audio controls src="'+src+'"></audio><a class="botao azul" href="'+src+'" download="'+m.nome+'.mp3">⬇️ Baixar MP3</a>':'<div class="sub">⚠️ áudio indisponível</div>')+
       '<button class="botao verm" onclick="removerCofre('+i+')">Remover</button></div>';
   }
   el.innerHTML=html;
 }
 async function removerCofre(i){
   const c=JSON.parse(localStorage.getItem('cofre')||'[]');
-  if(c[i]&&c[i].fileKey) await apagarAudio(c[i].fileKey);
-  c.splice(i,1); localStorage.setItem('cofre',JSON.stringify(c));
-  listarCofre(); contadores();
+  if(c[i]&&c[i].fileKey)await apagarAudio(c[i].fileKey);
+  c.splice(i,1);localStorage.setItem('cofre',JSON.stringify(c));
+  listarCofre();contadores();
 }
 function contadores(){
   const c=JSON.parse(localStorage.getItem('cofre')||'[]');
+  const s=JSON.parse(localStorage.getItem('cenas')||'[]');
   document.getElementById('contCofre').textContent=c.length;
   document.getElementById('contSuno').textContent=c.filter(m=>m.origem==='suno').length;
+  document.getElementById('contCenas').textContent=s.length;
 }
 contadores();
 </script>
