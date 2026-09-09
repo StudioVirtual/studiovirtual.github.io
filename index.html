@@ -15,10 +15,10 @@
   .menu a{display:block;padding:12px 24px;color:#c9d1d9;text-decoration:none;font-size:15px;border-left:3px solid transparent;cursor:pointer}
   .menu a:hover,.menu a.ativo{background:#1f2937;border-left:3px solid #58a6ff;color:#fff}
   .conteudo{flex:1;padding:30px;max-width:900px}
-  h2{margin-bottom:6px}.sub{color:#8b949e;margin-bottom:20px;font-size:14px}
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+  h2{margin-bottom:6px}h3{margin:18px 0 8px}.sub{color:#8b949e;margin-bottom:20px;font-size:14px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:24px}
   .card{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:20px}
-  .card h3{font-size:13px;color:#8b949e;margin-bottom:8px}
+  .card h3{font-size:13px;color:#8b949e;margin:0 0 8px}
   .card .num{font-size:30px;font-weight:bold;color:#58a6ff}
   .secao{display:none}.secao.ativa{display:block}
   .botao{display:inline-block;background:#238636;color:#fff;border:none;padding:12px 22px;border-radius:8px;font-size:15px;cursor:pointer;text-decoration:none;margin:6px 6px 6px 0}
@@ -30,14 +30,14 @@
   .botao:disabled{opacity:.5;cursor:not-allowed}
   .aviso{background:#1f2937;border:1px solid #30363d;border-radius:10px;padding:16px;margin-top:14px;font-size:14px;line-height:1.6}
   input,textarea,select{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:8px;color:#e6edf3;padding:11px;font-size:14px;margin:6px 0 14px}
-  textarea{min-height:120px;font-family:inherit}
+  textarea{min-height:110px;font-family:inherit}
   label{font-size:13px;color:#8b949e}
   .tag{display:inline-block;background:#1f6feb33;color:#58a6ff;padding:3px 10px;border-radius:20px;font-size:12px;margin:2px 6px 2px 0}
   .tag.suno{background:#e3b34133;color:#e3b341}
-  .item{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:18px;margin-bottom:14px}
+  .item{background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px;margin-bottom:12px}
   .item h4{margin-bottom:6px}
-  .sugestao{background:#161b22;border:1px solid #8957e5;border-radius:10px;padding:12px;margin:8px 0;cursor:pointer;font-size:14px}
-  .sugestao:hover{background:#1f2937}
+  .fila-item{display:flex;gap:8px;align-items:flex-start;background:#161b22;border:1px solid #30363d;border-radius:10px;padding:10px;margin:6px 0}
+  .fila-item textarea{min-height:56px;margin:0;flex:1}
   audio{width:100%;margin:10px 0}
   video{width:100%;border-radius:10px;margin:10px 0;background:#000}
   .st{font-size:15px;margin-top:10px}
@@ -52,7 +52,7 @@
 
 <div class="topo">
   <div class="logo">🎬 Studio <span>Virtual</span></div>
-  <div class="saldo">☁️ Acervo na nuvem R2 | Música $0,062 | Cena $0,043</div>
+  <div class="saldo">☁️ Nuvem R2 | Música $0,062 | Cena $0,043</div>
 </div>
 
 <div class="container">
@@ -73,54 +73,64 @@
 
     <div id="dashboard" class="secao ativa">
       <h2>📊 Dashboard</h2>
-      <p class="sub">☁️ Tudo salvo na nuvem — nada no seu PC, nada expira</p>
+      <p class="sub">☁️ Tudo na nuvem — nada no PC, nada expira</p>
       <div class="cards">
         <div class="card"><h3>🎵 Músicas</h3><div class="num" id="cMus">…</div></div>
-        <div class="card"><h3>🎞️ Cenas</h3><div class="num" id="cCen">…</div></div>
-        <div class="card"><h3>🏆 Clipes prontos</h3><div class="num" id="cCli">…</div></div>
+        <div class="card"><h3>🎞️ Cenas aprovadas</h3><div class="num" id="cCen">…</div></div>
+        <div class="card"><h3>🕐 Aguardando aprovação</h3><div class="num" id="cPen">…</div></div>
+        <div class="card"><h3>🏆 Clipes</h3><div class="num" id="cCli">…</div></div>
       </div>
-      <div class="aviso" id="avisoDash">☁️ Carregando acervo da nuvem...</div>
+      <div class="aviso" id="avisoDash">☁️ Carregando acervo...</div>
     </div>
 
     <div id="musica" class="secao">
       <h2>🎵 Fábrica de Música</h2>
-      <label>Nome da música</label><input id="mNome">
+      <label>Nome</label><input id="mNome">
       <label>Estilo (inglês)</label>
       <input id="mEstilo" value="Brazilian sertanejo universitario, upbeat, male vocal duo harmony, acoustic guitar, accordion, energetic, modern radio production">
-      <label>Letra (use [Verse], [Chorus]...)</label><textarea id="mLetra"></textarea>
+      <label>Letra ([Verse], [Chorus]...)</label><textarea id="mLetra"></textarea>
       <label>Duração (s, máx 600)</label><input id="mDur" type="number" value="150">
       <button class="botao" id="btnGerar" onclick="gerarMusica()">▶️ GERAR MÚSICA ($0,062)</button>
       <div class="st" id="stMus"></div>
       <div id="resMus" style="display:none">
         <audio id="playerMus" controls></audio>
-        <button class="botao" onclick="aprovarMusica()">✅ Aprovar → salvar na NUVEM</button>
+        <button class="botao" onclick="aprovarMusica()">✅ Aprovar → NUVEM</button>
         <button class="botao verm" onclick="descartarMusica()">🗑️ Descartar</button>
       </div>
     </div>
 
     <div id="clipes" class="secao">
-      <h2>🎬 Fábrica de Clipes</h2>
-      <label>🎵 Música do Cofre</label>
+      <h2>🎬 Fábrica de Clipes — Produção em Lote</h2>
+      <label>🎵 Música</label>
       <select id="selClipe" onchange="selMusicaClipe()"><option value="">— escolher —</option></select>
       <div id="infoClipe" class="progresso" style="display:none"></div>
-      <button class="botao roxo" onclick="sugerirCenas()">🤖 Roteirista IA: cenas pela LETRA</button>
-      <div class="st" id="stRot"></div><div id="sugestoes"></div>
-      <label style="margin-top:12px;display:block">✍️ Descrição da cena (inglês)</label>
-      <textarea id="vPrompt"></textarea>
-      <button class="botao" id="btnCena" onclick="gerarCena()">▶️ GERAR CENA ($0,043)</button>
-      <div class="st" id="stCena"></div>
-      <div id="resCena" style="display:none">
-        <video id="playerCena" controls></video>
-        <button class="botao" onclick="aprovarCena()">✅ Aprovar → salvar na NUVEM</button>
-        <button class="botao verm" onclick="descartarCena()">🗑️ Descartar</button>
-      </div>
-      <h2 style="margin-top:26px">🎞️ Cenas desta música</h2>
-      <div id="listaCenas"><div class="aviso">Escolha uma música acima.</div></div>
+
+      <h3>1️⃣ Roteiro</h3>
+      <button class="botao roxo" onclick="roteiroCompleto()">🤖 Roteirista: escrever ROTEIRO COMPLETO (cota inteira)</button>
+      <div class="st" id="stRot"></div>
+      <div id="fila"></div>
+      <label>➕ Ou escreva uma cena sua e adicione à fila:</label>
+      <textarea id="cenaManual" placeholder="Scene description in English..."></textarea>
+      <button class="botao azul" onclick="addManual()">➕ Adicionar à fila</button>
+
+      <h3>2️⃣ Produzir</h3>
+      <button class="botao" id="btnLote" onclick="produzirLote()">🏭 PRODUZIR FILA EM LOTE</button>
+      <div class="st" id="stLote"></div>
+
+      <h3>3️⃣ Sala de Aprovação</h3>
+      <div id="salaAprov"><div class="aviso">Nada aguardando.</div></div>
+
+      <h3>📥 Importar vídeo pronto (do PC / outra plataforma)</h3>
+      <input type="file" id="vidExt" accept="video/*">
+      <button class="botao azul" onclick="importarVideo()">📥 Subir vídeo pra esta música</button>
+      <div class="st" id="stExt"></div>
+
+      <h3>✅ Cenas aprovadas desta música</h3>
+      <div id="listaCenas"><div class="aviso">Escolha uma música.</div></div>
     </div>
 
     <div id="montadora" class="secao">
       <h2>🎞️ Montadora</h2>
-      <p class="sub">Sem repetição: só monta com a cota completa de cenas</p>
       <label>🎵 Música</label>
       <select id="selMont" onchange="prepMontagem()"><option value="">— escolher —</option></select>
       <div id="infoMont" class="progresso" style="display:none"></div>
@@ -128,18 +138,12 @@
       <button class="botao" id="btnMont" onclick="montar()" style="display:none">🎞️ MONTAR CLIPE COMPLETO</button>
       <div class="st" id="stMont"></div>
       <canvas id="palco" width="1280" height="720" style="display:none"></canvas>
-      <div id="resMont" style="display:none">
-        <video id="playerMont" controls></video>
-        <div class="st pronto">☁️ Clipe salvo automaticamente no Cofre de Clipes!</div>
-      </div>
-      <div class="aviso">⚠️ Durante a montagem NÃO minimize a janela. Tempo ≈ duração da música.</div>
+      <div id="resMont" style="display:none"><video id="playerMont" controls></video>
+      <div class="st pronto">☁️ Salvo no Cofre de Clipes!</div></div>
+      <div class="aviso">⚠️ Não minimize durante a montagem. Tempo ≈ duração da música.</div>
     </div>
 
-    <div id="cofreclipes" class="secao">
-      <h2>🏆 Cofre de Clipes</h2>
-      <p class="sub">Clipes completos, guardados pra sempre na nuvem</p>
-      <div id="listaClipes"></div>
-    </div>
+    <div id="cofreclipes" class="secao"><h2>🏆 Cofre de Clipes</h2><div id="listaClipes"></div></div>
 
     <div id="capas" class="secao">
       <h2>🖼️ Capas & Thumbnails</h2>
@@ -152,35 +156,27 @@
       <h2>📦 Importar do Suno → NUVEM</h2>
       <label>Nome *</label><input id="iNome">
       <label>Estilo</label><input id="iEstilo">
-      <label>Letra (importante pro Roteirista!)</label><textarea id="iLetra"></textarea>
-      <label>📁 Arquivo MP3</label><input type="file" id="iArq" accept="audio/*">
+      <label>Letra (importante!)</label><textarea id="iLetra"></textarea>
+      <label>📁 MP3</label><input type="file" id="iArq" accept="audio/*">
       <button class="botao" onclick="importar()">📦 Subir pra NUVEM</button>
       <div class="st" id="stImp"></div>
     </div>
 
-    <div id="cofre" class="secao">
-      <h2>🔐 Cofre de Músicas</h2>
-      <div id="listaMusicas"></div>
-    </div>
+    <div id="cofre" class="secao"><h2>🔐 Cofre de Músicas</h2><div id="listaMusicas"></div></div>
 
     <div id="creditos" class="secao">
       <h2>💰 Créditos & Cobrança</h2>
-      <p class="sub">Recargas e gestão de cartão — como você pediu</p>
-      <a class="botao" href="https://replicate.com/account/billing" target="_blank">🟢 REPLICATE — recarga e cartão</a><br>
-      <a class="botao azul" href="https://www.runpod.io/console/user/billing" target="_blank">🟣 RUNPOD — recarga e cartão ($24 reserva)</a><br>
-      <a class="botao roxo" href="https://dash.cloudflare.com/?to=/:account/billing" target="_blank">🟠 CLOUDFLARE — cartão do R2 (deve estar $0/mês)</a>
-      <div class="aviso">☁️ R2: grátis até 10GB. Confira o uso em: Cloudflare → Armazenamento de Objetos R2 → studio-acervo.</div>
+      <a class="botao" href="https://replicate.com/account/billing" target="_blank">🟢 REPLICATE</a><br>
+      <a class="botao azul" href="https://www.runpod.io/console/user/billing" target="_blank">🟣 RUNPOD</a><br>
+      <a class="botao roxo" href="https://dash.cloudflare.com/?to=/:account/billing" target="_blank">🟠 CLOUDFLARE (R2 — deve estar $0)</a>
     </div>
 
     <div id="manual" class="secao">
       <h2>📖 Manual</h2>
-      <div class="aviso">
-      <b>Arquitetura v2.0 (era da nuvem):</b><br>
-      • Site: GitHub Pages | Motor: Worker "studio-motor" v3 (REPLICATE_KEY + binding ACERVO→studio-acervo)<br>
-      • R2: pastas musicas/ cenas/ clipes/ meta/ — fichas do acervo em meta/dados.json<br>
-      • Música: ace-step-1.5 | Cenas: ltx-video 16:9 | Roteirista: llama-3-8b<br>
-      • Aprovou → worker baixa do Replicate e grava no R2 (nada no PC, nada expira)<br>
-      • Montadora: sem repetição, trava até cota (duração/5 cenas), clipe final salvo no R2</div>
+      <div class="aviso"><b>v2.1:</b> GitHub Pages + Worker studio-motor v3 (REPLICATE_KEY + ACERVO→studio-acervo).<br>
+      R2: musicas/ cenas/ clipes/ meta/ — fichas em meta/dados.json (inclui filas e pendentes).<br>
+      Lote: roteiro completo (llama-3-8b) → fila editável → produção automática (ltx-video) → cada cena salva na nuvem → Sala de Aprovação → aprovadas contam pra cota.<br>
+      Vídeos externos: upload direto pra cenas/ (contam pra cota). Montadora: sem repetição, trava até cota.</div>
     </div>
 
   </div>
@@ -188,9 +184,8 @@
 
 <script>
 const MOTOR="https://studio-motor.alexmedeirosbsb.workers.dev";
-let META={musicas:[],cenas:[],clipes:[]};
-let metaChave=null, musicaAtual=null, cenaAtual=null, musClipe=null, musMont=null;
-
+let META={musicas:[],cenas:[],clipes:[],pendentes:[],filas:{}};
+let metaChave=null,musicaAtual=null,musClipe=null,musMont=null,loteRodando=false;
 const arq=c=>MOTOR+"/arquivo?chave="+encodeURIComponent(c);
 
 async function carregarMeta(){
@@ -202,8 +197,9 @@ async function carregarMeta(){
       META=await(await fetch(arq(metaChave))).json();
     }
   }catch(e){}
+  META.pendentes=META.pendentes||[];META.filas=META.filas||{};
   contadores();
-  document.getElementById('avisoDash').innerHTML='☁️ Acervo carregado da nuvem. Músicas: '+META.musicas.length+' | Cenas: '+META.cenas.length+' | Clipes: '+META.clipes.length;
+  document.getElementById('avisoDash').innerHTML='☁️ Acervo: '+META.musicas.length+' músicas | '+META.cenas.length+' cenas aprovadas | '+META.pendentes.length+' aguardando aprovação | '+META.clipes.length+' clipes';
 }
 async function salvarMeta(){
   const antiga=metaChave;
@@ -215,6 +211,7 @@ async function salvarMeta(){
 function contadores(){
   document.getElementById('cMus').textContent=META.musicas.length;
   document.getElementById('cCen').textContent=META.cenas.length;
+  document.getElementById('cPen').textContent=META.pendentes.length;
   document.getElementById('cCli').textContent=META.clipes.length;
 }
 function ir(id,el){
@@ -239,122 +236,179 @@ async function rodarMotor(modelo,input,st,msg){
   if(d.status!=='succeeded')throw new Error('Falhou: '+(d.error||d.status));
   return d.output;
 }
-async function guardarNaNuvem(urlOrigem,pasta,nome){
-  const r=await fetch(MOTOR+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:urlOrigem,pasta,nome})});
+async function guardarNaNuvem(u,pasta,nome){
+  const r=await fetch(MOTOR+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:u,pasta,nome})});
   const d=await r.json();
-  if(!d.ok)throw new Error(d.erro||'Falha ao salvar na nuvem');
+  if(!d.ok)throw new Error(d.erro||'falha ao salvar');
   return d.chave;
 }
 
 /* MUSICA */
 async function gerarMusica(){
   const st=document.getElementById('stMus');
-  const nome=document.getElementById('mNome').value.trim()||'Sem nome';
   document.getElementById('resMus').style.display='none';
   document.getElementById('btnGerar').disabled=true;
-  st.className='st rodando';st.textContent='⏳ Enviando...';
+  st.className='st rodando';st.textContent='⏳...';
   try{
     const out=await rodarMotor("fishaudio/ace-step-1.5",{prompt:document.getElementById('mEstilo').value,lyrics:document.getElementById('mLetra').value,duration:parseInt(document.getElementById('mDur').value)||150},st,'🎵 Gerando...');
     const u=Array.isArray(out)?out[0]:out;
-    musicaAtual={nome,estilo:document.getElementById('mEstilo').value,letra:document.getElementById('mLetra').value,urlTemp:u,origem:'studio',data:new Date().toLocaleDateString('pt-BR')};
+    musicaAtual={nome:document.getElementById('mNome').value.trim()||'Sem nome',estilo:document.getElementById('mEstilo').value,letra:document.getElementById('mLetra').value,urlTemp:u,origem:'studio',data:new Date().toLocaleDateString('pt-BR')};
     document.getElementById('playerMus').src=u;
     document.getElementById('resMus').style.display='block';
-    st.className='st pronto';st.textContent='✅ Pronta! Ouça e decida.';
+    st.className='st pronto';st.textContent='✅ Ouça e decida.';
   }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
   document.getElementById('btnGerar').disabled=false;
 }
 async function aprovarMusica(){
   const st=document.getElementById('stMus');
-  st.className='st rodando';st.textContent='☁️ Salvando na nuvem...';
+  st.className='st rodando';st.textContent='☁️ Salvando...';
   try{
-    const chave=await guardarNaNuvem(musicaAtual.urlTemp,'musicas',musicaAtual.nome+'.mp3');
-    delete musicaAtual.urlTemp;musicaAtual.chave=chave;
+    musicaAtual.chave=await guardarNaNuvem(musicaAtual.urlTemp,'musicas',musicaAtual.nome+'.mp3');
+    delete musicaAtual.urlTemp;
     META.musicas.push(musicaAtual);await salvarMeta();
     musicaAtual=null;document.getElementById('resMus').style.display='none';
-    st.className='st pronto';st.textContent='☁️ Guardada NA NUVEM pra sempre!';
+    st.className='st pronto';st.textContent='☁️ Na nuvem!';
   }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
 }
 function descartarMusica(){musicaAtual=null;document.getElementById('resMus').style.display='none';document.getElementById('stMus').textContent='🗑️ Descartada.';}
 
-/* CLIPES */
+/* CLIPES + LOTE */
 function popular(id){
   const sel=document.getElementById(id);const v=sel.value;
   sel.innerHTML='<option value="">— escolher —</option>'+META.musicas.map((m,i)=>'<option value="'+i+'">'+m.nome+'</option>').join('');
   sel.value=v;
 }
-function cenasDe(nome){return META.cenas.filter(c=>c.musica===nome);}
+const cenasDe=n=>META.cenas.filter(c=>c.musica===n);
+const pendDe=n=>META.pendentes.filter(c=>c.musica===n);
+const filaDe=n=>META.filas[n]||[];
 async function selMusicaClipe(){
   const i=document.getElementById('selClipe').value;
   if(i===''){musClipe=null;return;}
   musClipe=META.musicas[i];
   const a=new Audio();a.src=arq(musClipe.chave);
-  a.onloadedmetadata=()=>{musClipe.duracao=a.duration;infoClipe();listarCenasMusica();};
+  a.onloadedmetadata=()=>{musClipe.duracao=a.duration;pintarClipe();};
 }
-function infoClipe(){
+function pintarClipe(){
   if(!musClipe||!musClipe.duracao)return;
-  const total=Math.ceil(musClipe.duracao/5),tem=cenasDe(musClipe.nome).length;
+  const total=Math.ceil(musClipe.duracao/5),tem=cenasDe(musClipe.nome).length,pen=pendDe(musClipe.nome).length,fl=filaDe(musClipe.nome).length;
   const pct=Math.min(100,Math.round(tem/total*100));
   const el=document.getElementById('infoClipe');
   el.style.display='block';
-  el.innerHTML='🎵 <b>'+musClipe.nome+'</b> — '+Math.floor(musClipe.duracao/60)+':'+String(Math.round(musClipe.duracao%60)).padStart(2,'0')+' → cota: <b>'+total+' cenas</b> | tem <b>'+tem+'</b> | '+(tem>=total?'✅ COTA COMPLETA!':'faltam <b>'+(total-tem)+'</b>')+'<div class="barra"><div style="width:'+pct+'%"></div></div>';
+  el.innerHTML='🎵 <b>'+musClipe.nome+'</b> — cota <b>'+total+'</b> | aprovadas <b>'+tem+'</b> | aguardando <b>'+pen+'</b> | na fila <b>'+fl+'</b><div class="barra"><div style="width:'+pct+'%"></div></div>';
+  pintarFila();pintarSala();listarCenasMusica();
+  document.getElementById('btnLote').textContent='🏭 PRODUZIR FILA EM LOTE ('+fl+' cenas ≈ $'+(fl*0.043).toFixed(2)+')';
 }
-async function sugerirCenas(){
+async function roteiroCompleto(){
   const st=document.getElementById('stRot');
   if(!musClipe){st.className='st falha';st.textContent='❌ Escolha a música.';return;}
-  if(!musClipe.letra){st.className='st falha';st.textContent='❌ Música sem letra salva.';return;}
-  st.className='st rodando';st.textContent='🤖 Lendo a letra...';
+  if(!musClipe.letra){st.className='st falha';st.textContent='❌ Sem letra salva.';return;}
+  const total=Math.ceil(musClipe.duracao/5),falta=Math.max(1,total-cenasDe(musClipe.nome).length-pendDe(musClipe.nome).length);
+  st.className='st rodando';st.textContent='🤖 Escrevendo '+falta+' cenas...';
   try{
-    const out=await rodarMotor("meta/meta-llama-3-8b-instruct",{prompt:"You are a music video director. Read these Brazilian song lyrics. Create 8 numbered cinematic scene descriptions in ENGLISH (16:9, live-action, no text on screen). One line each, visual and specific. Style: "+(musClipe.estilo||'sertanejo')+". Lyrics:\n"+musClipe.letra,max_tokens:700},st,'🤖 Escrevendo...');
+    const out=await rodarMotor("meta/meta-llama-3-8b-instruct",{prompt:"You are a music video director. Read these Brazilian song lyrics. Create EXACTLY "+falta+" numbered cinematic scene descriptions in ENGLISH for a music video (16:9, live-action, no text on screen). One line each, visual and specific, varied locations and camera angles. Style: "+(musClipe.estilo||'sertanejo')+". Lyrics:\n"+musClipe.letra,max_tokens:2500},st,'🤖 Escrevendo '+falta+' cenas...');
     const t=Array.isArray(out)?out.join(''):out;
-    const ls=t.split(/\n/).filter(l=>/^\s*\d/.test(l)).map(l=>l.replace(/^\s*\d+[\).\-:]?\s*/,''));
-    document.getElementById('sugestoes').innerHTML=ls.length?ls.map(l=>'<div class="sugestao" onclick="document.getElementById(\'vPrompt\').value=this.textContent.replace(\'🎬 \',\'\').trim()">🎬 '+l+'</div>').join(''):'<div class="aviso">'+t+'</div>';
-    st.className='st pronto';st.textContent='✅ Clique numa cena pra usar.';
+    const ls=t.split(/\n/).filter(l=>/^\s*\d/.test(l)).map(l=>l.replace(/^\s*\d+[\).\-:]?\s*/,'').trim()).filter(l=>l.length>10);
+    META.filas[musClipe.nome]=(META.filas[musClipe.nome]||[]).concat(ls);
+    await salvarMeta();
+    st.className='st pronto';st.textContent='✅ '+ls.length+' cenas na fila! Revise abaixo.';
+    pintarClipe();
   }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
 }
-async function gerarCena(){
-  const st=document.getElementById('stCena');
-  const p=document.getElementById('vPrompt').value.trim();
+function pintarFila(){
+  const el=document.getElementById('fila');
+  const f=filaDe(musClipe?musClipe.nome:'');
+  el.innerHTML=f.length?f.map((p,i)=>'<div class="fila-item"><b>'+(i+1)+'.</b><textarea onchange="editarFila('+i+',this.value)">'+p+'</textarea><button class="botao verm mini" onclick="removerFila('+i+')">✖</button></div>').join(''):'<div class="aviso">Fila vazia — use o Roteirista ou adicione manualmente.</div>';
+}
+function editarFila(i,v){META.filas[musClipe.nome][i]=v;salvarMeta();}
+function removerFila(i){META.filas[musClipe.nome].splice(i,1);salvarMeta();pintarClipe();}
+function addManual(){
+  if(!musClipe)return;
+  const v=document.getElementById('cenaManual').value.trim();
+  if(!v)return;
+  META.filas[musClipe.nome]=(META.filas[musClipe.nome]||[]);
+  META.filas[musClipe.nome].push(v);
+  document.getElementById('cenaManual').value='';
+  salvarMeta();pintarClipe();
+}
+async function produzirLote(){
+  const st=document.getElementById('stLote');
+  if(loteRodando){st.className='st falha';st.textContent='⚠️ Lote já em andamento.';return;}
   if(!musClipe){st.className='st falha';st.textContent='❌ Escolha a música.';return;}
-  if(!p){st.className='st falha';st.textContent='❌ Escreva a cena.';return;}
-  document.getElementById('resCena').style.display='none';
-  document.getElementById('btnCena').disabled=true;
-  st.className='st rodando';st.textContent='⏳...';
-  try{
-    const out=await rodarMotor("lightricks/ltx-video",{prompt:p,aspect_ratio:"16:9"},st,'🎬 Gerando cena...');
-    const u=Array.isArray(out)?out[0]:out;
-    cenaAtual={musica:musClipe.nome,prompt:p,urlTemp:u,data:new Date().toLocaleDateString('pt-BR')};
-    document.getElementById('playerCena').src=u;
-    document.getElementById('resCena').style.display='block';
-    st.className='st pronto';st.textContent='✅ Assista e decida.';
-  }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
-  document.getElementById('btnCena').disabled=false;
+  const fila=META.filas[musClipe.nome]||[];
+  if(!fila.length){st.className='st falha';st.textContent='❌ Fila vazia.';return;}
+  if(!confirm('Produzir '+fila.length+' cenas em lote (~$'+(fila.length*0.043).toFixed(2)+')?\nDeixe esta janela ABERTA até o fim.'))return;
+  loteRodando=true;
+  const totalLote=fila.length;let feitas=0,erros=0;
+  while(META.filas[musClipe.nome]&&META.filas[musClipe.nome].length){
+    const prompt=META.filas[musClipe.nome][0];
+    st.className='st rodando';st.textContent='🏭 Gerando cena '+(feitas+1)+' de '+totalLote+'... (deixe a janela aberta)';
+    try{
+      const out=await rodarMotor("lightricks/ltx-video",{prompt:prompt,aspect_ratio:"16:9"},null,'');
+      const u=Array.isArray(out)?out[0]:out;
+      const chave=await guardarNaNuvem(u,'cenas',musClipe.nome+'_cena.mp4');
+      META.pendentes.push({musica:musClipe.nome,prompt,chave,data:new Date().toLocaleDateString('pt-BR')});
+      META.filas[musClipe.nome].shift();
+      await salvarMeta();feitas++;pintarClipe();
+    }catch(e){
+      erros++;
+      if(erros>=3){st.className='st falha';st.textContent='❌ 3 erros seguidos ('+e.message+'). Lote pausado — o que ficou pronto está salvo. Clique de novo pra retomar.';loteRodando=false;return;}
+      await new Promise(x=>setTimeout(x,5000));
+    }
+  }
+  loteRodando=false;
+  st.className='st pronto';st.textContent='✅ LOTE CONCLUÍDO! '+feitas+' cenas na Sala de Aprovação. ☕ Agora assista e aprove!';
+  pintarClipe();
 }
-async function aprovarCena(){
-  const st=document.getElementById('stCena');
-  st.className='st rodando';st.textContent='☁️ Salvando na nuvem...';
+function pintarSala(){
+  const el=document.getElementById('salaAprov');
+  const ps=pendDe(musClipe?musClipe.nome:'');
+  el.innerHTML=ps.length?ps.map((p,i)=>'<div class="item"><div class="sub">'+p.prompt.substring(0,100)+'...</div><video controls preload="none" src="'+arq(p.chave)+'"></video><button class="botao" onclick="aprovarPend(\''+p.chave+'\')">✅ Aprovar</button><button class="botao verm" onclick="reprovarPend(\''+p.chave+'\')">🗑️ Reprovar (volta pra fila)</button></div>').join(''):'<div class="aviso">Nada aguardando.</div>';
+}
+async function aprovarPend(chave){
+  const i=META.pendentes.findIndex(p=>p.chave===chave);
+  if(i<0)return;
+  META.cenas.push(META.pendentes[i]);META.pendentes.splice(i,1);
+  await salvarMeta();pintarClipe();
+}
+async function reprovarPend(chave){
+  const i=META.pendentes.findIndex(p=>p.chave===chave);
+  if(i<0)return;
+  const p=META.pendentes[i];
+  META.filas[p.musica]=(META.filas[p.musica]||[]);META.filas[p.musica].push(p.prompt);
+  fetch(MOTOR+"/apagar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chave})});
+  META.pendentes.splice(i,1);
+  await salvarMeta();pintarClipe();
+}
+async function importarVideo(){
+  const st=document.getElementById('stExt');
+  const f=document.getElementById('vidExt').files[0];
+  if(!musClipe){st.className='st falha';st.textContent='❌ Escolha a música primeiro.';return;}
+  if(!f){st.className='st falha';st.textContent='❌ Escolha um arquivo de vídeo.';return;}
+  st.className='st rodando';st.textContent='☁️ Subindo vídeo...';
   try{
-    const chave=await guardarNaNuvem(cenaAtual.urlTemp,'cenas',cenaAtual.musica+'_cena.mp4');
-    delete cenaAtual.urlTemp;cenaAtual.chave=chave;
-    META.cenas.push(cenaAtual);await salvarMeta();
-    cenaAtual=null;document.getElementById('resCena').style.display='none';
-    st.className='st pronto';st.textContent='☁️ Cena na nuvem!';
-    infoClipe();listarCenasMusica();
+    const r=await fetch(MOTOR+"/upload?pasta=cenas&nome="+encodeURIComponent(musClipe.nome+'_ext.mp4'),{method:"PUT",headers:{"Content-Type":f.type||'video/mp4'},body:f});
+    const d=await r.json();
+    if(!d.ok)throw new Error(d.erro||'falha');
+    META.cenas.push({musica:musClipe.nome,prompt:'[vídeo importado: '+f.name+']',chave:d.chave,data:new Date().toLocaleDateString('pt-BR')});
+    await salvarMeta();
+    st.className='st pronto';st.textContent='☁️ Vídeo na nuvem — já conta pra cota!';
+    document.getElementById('vidExt').value='';
+    pintarClipe();
   }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
 }
-function descartarCena(){cenaAtual=null;document.getElementById('resCena').style.display='none';document.getElementById('stCena').textContent='🗑️ Descartada.';}
 function listarCenasMusica(){
   const el=document.getElementById('listaCenas');
   if(!musClipe){el.innerHTML='<div class="aviso">Escolha uma música.</div>';return;}
   const cs=cenasDe(musClipe.nome);
-  el.innerHTML=cs.length?cs.map((c,i)=>'<div class="item"><div class="sub">'+c.prompt.substring(0,90)+'...</div><video controls preload="none" src="'+arq(c.chave)+'"></video><button class="botao verm mini" onclick="removerCena(\''+c.chave+'\')">Remover</button></div>').join(''):'<div class="aviso">Nenhuma cena ainda.</div>';
+  el.innerHTML=cs.length?cs.map(c=>'<div class="item"><div class="sub">'+c.prompt.substring(0,90)+'...</div><video controls preload="none" src="'+arq(c.chave)+'"></video><button class="botao verm mini" onclick="removerCena(\''+c.chave+'\')">Remover</button></div>').join(''):'<div class="aviso">Nenhuma aprovada ainda.</div>';
 }
 async function removerCena(chave){
   await fetch(MOTOR+"/apagar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chave})});
-  META.cenas=META.cenas.filter(c=>c.chave!==chave);await salvarMeta();
-  infoClipe();listarCenasMusica();
+  META.cenas=META.cenas.filter(c=>c.chave!==chave);
+  await salvarMeta();pintarClipe();
 }
 
-/* MONTADORA — SEM repetição */
+/* MONTADORA */
 async function prepMontagem(){
   const i=document.getElementById('selMont').value;
   const info=document.getElementById('infoMont'),btn=document.getElementById('btnMont');
@@ -366,7 +420,7 @@ async function prepMontagem(){
     musMont.duracao=a.duration;
     const total=Math.ceil(a.duration/5),cs=cenasDe(musMont.nome);
     info.style.display='block';
-    info.innerHTML='🎵 <b>'+musMont.nome+'</b> — cota: <b>'+total+'</b> cenas | tem <b>'+cs.length+'</b>'+(cs.length>=total?' — ✅ <b>LIBERADO!</b>':' — 🔒 faltam <b>'+(total-cs.length)+'</b> (gere na Fábrica de Clipes)');
+    info.innerHTML='🎵 <b>'+musMont.nome+'</b> — cota <b>'+total+'</b> | aprovadas <b>'+cs.length+'</b> '+(cs.length>=total?'— ✅ <b>LIBERADO!</b>':'— 🔒 faltam '+(total-cs.length));
     btn.style.display='inline-block';btn.disabled=cs.length<total;
     document.getElementById('ordem').innerHTML=cs.map((s,x)=>'<div class="item" style="padding:10px"><b>'+(x+1)+'.</b> '+s.prompt.substring(0,60)+'... <button class="botao mini azul" onclick="mover(\''+musMont.nome.replace(/'/g,"\\'")+'\','+x+',-1)">↑</button><button class="botao mini azul" onclick="mover(\''+musMont.nome.replace(/'/g,"\\'")+'\','+x+',1)">↓</button></div>').join('');
   };
@@ -395,61 +449,60 @@ async function montar(){
     const fim=new Promise(r=>{rec.onstop=r;});
     const vid=document.createElement('video');vid.crossOrigin="anonymous";vid.muted=true;vid.playsInline=true;
     let rodando=true;
-    (function desenhar(){if(!rodando)return;
+    (function des(){if(!rodando)return;
       if(vid.readyState>=2){const r=Math.min(canvas.width/vid.videoWidth,canvas.height/vid.videoHeight);const w=vid.videoWidth*r,h=vid.videoHeight*r;ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(vid,(canvas.width-w)/2,(canvas.height-h)/2,w,h);}
-      requestAnimationFrame(desenhar);})();
+      requestAnimationFrame(des);})();
     rec.start(1000);audioEl.play();
     let i=0;
     while(!audioEl.ended&&audioEl.currentTime<musMont.duracao&&i<cs.length){
       await new Promise((res,rej)=>{vid.src=arq(cs[i].chave);vid.onended=res;vid.onerror=()=>rej(new Error('cena inacessível'));vid.play().catch(rej);});
       i++;
-      st.textContent='🎞️ Montando... '+Math.round(audioEl.currentTime)+'s / '+Math.round(musMont.duracao)+'s — NÃO minimize!';
+      st.textContent='🎞️ Montando... '+Math.round(audioEl.currentTime)+'s/'+Math.round(musMont.duracao)+'s — NÃO minimize!';
     }
     rodando=false;rec.stop();audioEl.pause();await fim;
     const blob=new Blob(pedacos,{type:'video/webm'});
-    st.textContent='☁️ Subindo o clipe pra nuvem...';
+    st.textContent='☁️ Subindo clipe...';
     const up=await fetch(MOTOR+"/upload?pasta=clipes&nome="+encodeURIComponent(musMont.nome+'_clipe.webm'),{method:"PUT",headers:{"Content-Type":"video/webm"},body:blob});
     const d=await up.json();
-    if(!d.ok)throw new Error('falha ao subir clipe');
+    if(!d.ok)throw new Error('falha no upload');
     META.clipes.push({musica:musMont.nome,chave:d.chave,data:new Date().toLocaleDateString('pt-BR')});
     await salvarMeta();
     document.getElementById('playerMont').src=URL.createObjectURL(blob);
     document.getElementById('resMont').style.display='block';
     canvas.style.display='none';
-    st.className='st pronto';st.textContent='✅ CLIPE PRONTO e guardado na nuvem!';
+    st.className='st pronto';st.textContent='✅ CLIPE PRONTO e na nuvem!';
   }catch(e){st.className='st falha';st.textContent='❌ '+e.message;document.getElementById('palco').style.display='none';}
   btn.disabled=false;
 }
 function listarClipes(){
   const el=document.getElementById('listaClipes');
-  el.innerHTML=META.clipes.length?META.clipes.map(c=>'<div class="item"><h4>🏆 '+c.musica+' <span class="tag">'+c.data+'</span></h4><video controls preload="none" src="'+arq(c.chave)+'"></video><a class="botao azul" href="'+arq(c.chave)+'" download="'+c.musica+'_clipe.webm">⬇️ Baixar</a></div>').join(''):'<div class="aviso">Nenhum clipe montado ainda.</div>';
+  el.innerHTML=META.clipes.length?META.clipes.map(c=>'<div class="item"><h4>🏆 '+c.musica+' <span class="tag">'+c.data+'</span></h4><video controls preload="none" src="'+arq(c.chave)+'"></video><a class="botao azul" href="'+arq(c.chave)+'" download="'+c.musica+'_clipe.webm">⬇️ Baixar</a></div>').join(''):'<div class="aviso">Nenhum clipe ainda.</div>';
 }
 
-/* IMPORTAR / COFRE */
+/* IMPORTAR SUNO / COFRE */
 async function importar(){
   const st=document.getElementById('stImp');
   const nome=document.getElementById('iNome').value.trim();
   const f=document.getElementById('iArq').files[0];
-  if(!nome||!f){st.className='st falha';st.textContent='❌ Nome + arquivo MP3.';return;}
-  st.className='st rodando';st.textContent='☁️ Subindo pra nuvem...';
+  if(!nome||!f){st.className='st falha';st.textContent='❌ Nome + MP3.';return;}
+  st.className='st rodando';st.textContent='☁️ Subindo...';
   try{
     const r=await fetch(MOTOR+"/upload?pasta=musicas&nome="+encodeURIComponent(nome+'.mp3'),{method:"PUT",headers:{"Content-Type":f.type||'audio/mpeg'},body:f});
     const d=await r.json();
-    if(!d.ok)throw new Error(d.erro||'falha no upload');
+    if(!d.ok)throw new Error(d.erro||'falha');
     META.musicas.push({nome,estilo:document.getElementById('iEstilo').value,letra:document.getElementById('iLetra').value,chave:d.chave,origem:'suno',data:new Date().toLocaleDateString('pt-BR')});
     await salvarMeta();
-    st.className='st pronto';st.textContent='☁️ "'+nome+'" na nuvem pra sempre!';
+    st.className='st pronto';st.textContent='☁️ Na nuvem!';
     ['iNome','iEstilo','iLetra'].forEach(x=>document.getElementById(x).value='');
     document.getElementById('iArq').value='';
   }catch(e){st.className='st falha';st.textContent='❌ '+e.message;}
 }
 function listarMusicas(){
   const el=document.getElementById('listaMusicas');
-  el.innerHTML=META.musicas.length?META.musicas.map((m,i)=>'<div class="item"><h4>🎵 '+m.nome+' <span class="tag'+(m.origem==='suno'?' suno':'')+'">'+(m.origem==='suno'?'📦 Suno':'🎬 Studio')+'</span><span class="tag">'+m.data+'</span></h4>'+(m.letra?'<span class="tag">📝 letra</span>':'<span class="tag" style="background:#da363333;color:#f85149">sem letra</span>')+'<audio controls preload="none" src="'+arq(m.chave)+'"></audio><a class="botao azul mini" href="'+arq(m.chave)+'" download="'+m.nome+'.mp3">⬇️</a><button class="botao verm mini" onclick="removerMusica('+i+')">Remover</button></div>').join(''):'<div class="aviso">Cofre vazio.</div>';
+  el.innerHTML=META.musicas.length?META.musicas.map((m,i)=>'<div class="item"><h4>🎵 '+m.nome+' <span class="tag'+(m.origem==='suno'?' suno':'')+'">'+(m.origem==='suno'?'📦 Suno':'🎬 Studio')+'</span></h4>'+(m.letra?'<span class="tag">📝 letra</span>':'<span class="tag" style="background:#da363333;color:#f85149">sem letra</span>')+'<audio controls preload="none" src="'+arq(m.chave)+'"></audio><a class="botao azul mini" href="'+arq(m.chave)+'" download="'+m.nome+'.mp3">⬇️</a><button class="botao verm mini" onclick="removerMusica('+i+')">Remover</button></div>').join(''):'<div class="aviso">Cofre vazio.</div>';
 }
 async function removerMusica(i){
-  const m=META.musicas[i];
-  await fetch(MOTOR+"/apagar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chave:m.chave})});
+  await fetch(MOTOR+"/apagar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chave:META.musicas[i].chave})});
   META.musicas.splice(i,1);await salvarMeta();listarMusicas();
 }
 carregarMeta();
