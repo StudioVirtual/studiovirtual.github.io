@@ -1235,5 +1235,24 @@ setInterval(limpa,2000);limpa();
 })();
 </script>
 <!-- ===== MODO SIMPLES FIM ===== -->
+<!-- ===== FIX NOME ESTILO INICIO ===== -->
+<script>
+(function(){
+function fix(){
+var sel=document.getElementById("sv22-canal");
+if(!sel)return;
+if(document.getElementById("sv22-lab-estilo"))return;
+var lab=document.createElement("span");
+lab.id="sv22-lab-estilo";
+lab.textContent="🎵 Opções de Estilo:";
+lab.style.fontWeight="bold";
+lab.style.color="#00e676";
+lab.style.marginRight="4px";
+sel.parentNode.insertBefore(lab,sel);
+}
+setInterval(fix,2000);fix();
+})();
+</script>
+<!-- ===== FIX NOME ESTILO FIM ===== -->
 </body>
 </html>
