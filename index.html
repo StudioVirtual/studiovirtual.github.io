@@ -623,5 +623,179 @@ if(b){document.body.insertBefore(b,document.body.firstChild);}
 })();
 </script>
 <!-- ===== FIX FIM ===== -->
+<!-- ===== STUDIO VIRTUAL v2.2 - BLOCO 2 INICIO ===== -->
+<style>
+.sv22-mbox{position:fixed;top:85px;left:50%;transform:translateX(-50%);width:min(720px,94%);background:#1c1c1c;color:#fff;padding:15px;border:2px solid #ff9800;border-radius:12px;z-index:100000;font-family:Arial,sans-serif;display:none;max-height:85vh;overflow:auto}
+.sv22-mbox textarea{width:100%;box-sizing:border-box;background:#111;color:#fff;border:1px solid #555;border-radius:6px;padding:8px;font-size:13px;margin:4px 0 8px 0}
+.sv22-mbox button{padding:6px 10px;margin:3px 3px 0 0;border-radius:6px;border:none;cursor:pointer;font-weight:bold}
+.sv22-mbox label{font-size:13px;color:#ffd180}
+.sv22-mbox small{color:#aaa;display:block;margin-bottom:8px}
+#sv22-eng-gerar,#sv22-cine-gerar,#sv22-letr-gerar{background:#00e676;color:#000}
+.sv22-fechar2{background:#555!important;color:#fff!important}
+.sv22-st{font-size:13px;color:#8f8;margin:6px 0;min-height:18px}
+</style>
+<div id="sv22-pmus" class="sv22-mbox">
+<h3 style="margin:0 0 5px 0">🎼 Engenheiro de Música — MiniMax 1.5 único</h3>
+<small>Custo por clique: ~$0.003 (centavos). Cobra mesmo se reprovar. Texto via Llama-3-8b (o que já funciona no teu Worker). Sem Suno.</small>
+<label>Teu desejo em PORTUGUÊS:</label>
+<textarea id="sv22-eng-desejo" rows="3" placeholder="Ex: sertanejo universitario animado, sanfona 120 baixos, violão aco, bateria forte, 132 BPM, romantico"></textarea>
+<label>Toque pessoal (PT, opcional):</label>
+<textarea id="sv22-eng-toque" rows="2" placeholder="Ex: clima de festa junina, final emocionante"></textarea>
+<button id="sv22-eng-gerar">✨ Gerar Prompt Premium EN</button>
+<button id="sv22-eng-cop">📋 Copiar</button>
+<button id="sv22-eng-salv">💾 Salvar na nuvem</button>
+<button class="sv22-fechar2" data-p="sv22-pmus">Fechar</button>
+<div id="sv22-eng-st" class="sv22-st"></div>
+<label>Resultado EN (usar na Fábrica):</label>
+<textarea id="sv22-eng-out" rows="6"></textarea>
+</div>
+<div id="sv22-pcine" class="sv22-mbox">
+<h3 style="margin:0 0 5px 0">🎬 Cinegrafista — Roteiro Cinema 16:9</h3>
+<small>Custo por clique: ~$0.003. Lê LETRA + Bíblia do canal e escreve os prompts em EN. Modo Teste = 3 cenas. Produção = cota cheia.</small>
+<label>LETRA da música (PT):</label>
+<textarea id="sv22-cine-letra" rows="4" placeholder="Cola a letra aqui"></textarea>
+<label>Toque pessoal das cenas (PT, opcional):</label>
+<textarea id="sv22-cine-toque" rows="2" placeholder="Ex: mais drone, mais close na dupla"></textarea>
+<button id="sv22-cine-gerar">🎬 Gerar Roteiro Cinema</button>
+<button id="sv22-cine-cop">📋 Copiar</button>
+<button id="sv22-cine-salv">💾 Salvar na nuvem</button>
+<button class="sv22-fechar2" data-p="sv22-pcine">Fechar</button>
+<div id="sv22-cine-st" class="sv22-st"></div>
+<label>Roteiro EN (um prompt por cena):</label>
+<textarea id="sv22-cine-out" rows="8"></textarea>
+</div>
+<div id="sv22-pletr" class="sv22-mbox">
+<h3 style="margin:0 0 5px 0">✍️ Letrista Anti-Repetição (3 versões)</h3>
+<small>Custo por clique: ~$0.003. Regras v2.0: 900-1300 chars, máx 6 marcadores, sem clichê.</small>
+<label>Tema da música (PT):</label>
+<textarea id="sv22-letr-tema" rows="2" placeholder="Ex: saudade do interior, amor que voltou"></textarea>
+<button id="sv22-letr-gerar">✍️ Gerar 3 Versões</button>
+<button id="sv22-letr-cop">📋 Copiar</button>
+<button id="sv22-letr-salv">💾 Salvar na nuvem</button>
+<button class="sv22-fechar2" data-p="sv22-pletr">Fechar</button>
+<div id="sv22-letr-st" class="sv22-st"></div>
+<label>3 letras:</label>
+<textarea id="sv22-letr-out" rows="10"></textarea>
+</div>
+<script>
+(function(){
+const WORKER=(window.SV&&window.SV.worker)||"https://studio-motor.alexmedeirosbsb.workers.dev";
+const MODEL="meta/meta-llama-3-8b-instruct";
+function canal(){try{return window.SV.canal()}catch(e){return "sertanejo"}}
+function canalNome(){try{return window.SV.canalNome()}catch(e){return "Sertanejo"}}
+function duracao(){try{return window.SV.duracao()}catch(e){return 60}}
+function cota(){try{return window.SV.cota()}catch(e){return 12}}
+function modoTeste(){try{return window.SV.modoTeste()}catch(e){return true}}
+const bar=document.getElementById("sv22-bar");
+function addBtn(id,txt,panel){
+if(!bar||document.getElementById(id))return;
+const b=document.createElement("button");b.id=id;b.textContent=txt;
+b.onclick=function(){toggle(panel)};bar.appendChild(b);
+}
+addBtn("sv22-b-eng","🎼 Eng Música","sv22-pmus");
+addBtn("sv22-b-cine","🎬 Cinegrafista","sv22-pcine");
+addBtn("sv22-b-letr","✍️ Letrista","sv22-pletr");
+function toggle(id){
+["sv22-pmus","sv22-pcine","sv22-pletr"].forEach(function(x){
+const el=document.getElementById(x);
+if(x===id){el.style.display=(el.style.display==="block"?"none":"block");}
+else{el.style.display="none";}
+});
+const p=document.getElementById("sv22-painel");if(p)p.style.display="none";
+}
+document.querySelectorAll(".sv22-fechar2").forEach(function(b){b.onclick=function(){document.getElementById(b.getAttribute("data-p")).style.display="none";}});
+async function chamarLLM(prompt,elSt){
+if(elSt)elSt.textContent="⏳ Gerando... 30-60s, centavos, cobra mesmo se reprovar.";
+const body=JSON.stringify({model:MODEL,input:{prompt:prompt,max_tokens:2500,temperature:0.7}});
+let r;
+try{r=await fetch(WORKER+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},body:body});}
+catch(e){throw new Error("Rede /gerar falhou: "+e.message)}
+const txt=await r.text();
+let j;try{j=JSON.parse(txt)}catch(e){throw new Error("Worker não-JSON: "+txt.slice(0,300))}
+let id=j.id||j.prediction_id||(j.prediction&&j.prediction.id);
+let out=j.output||(j.prediction&&j.prediction.output);
+if(out)return Array.isArray(out)?out.join("\n"):(""+out);
+if(!id)throw new Error("Sem ID. Disse: "+txt.slice(0,400));
+for(let i=0;i<45;i++){
+await new Promise(r2=>setTimeout(r2,3000));
+if(elSt)elSt.textContent="⏳ IA trabalhando... "+(i*3)+"s id "+(""+id).slice(0,8);
+try{
+const rs=await fetch(WORKER+"/status?id="+encodeURIComponent(id));
+const t2=await rs.text();
+let js;try{js=JSON.parse(t2)}catch(e){continue}
+const st=js.status||(js.prediction&&js.prediction.status)||"";
+const op=js.output||(js.prediction&&js.prediction.output);
+if(op)return Array.isArray(op)?op.join("\n"):(""+op);
+if(st==="failed"||st==="canceled")throw new Error("IA falhou: "+t2.slice(0,400));
+}catch(e){if((""+e.message).indexOf("IA falhou")===0)throw e;}
+}
+throw new Error("Tempo esgotado 135s. Tenta de novo.");
+}
+function copiar(id){const el=document.getElementById(id);el.focus();el.select();try{document.execCommand("copy")}catch(e){}try{navigator.clipboard.writeText(el.value)}catch(e){}}
+async function salvarTxt(pasta,nome,conteudo,elSt){
+if(!conteudo){elSt.textContent="⚠️ Nada pra salvar. Gera primeiro.";return}
+elSt.textContent="Salvando na nuvem...";
+try{
+const r=await fetch(WORKER+"/upload?pasta="+encodeURIComponent(pasta)+"&nome="+encodeURIComponent(nome),{method:"PUT",body:conteudo});
+await r.text();
+elSt.textContent="✅ Salvo na nuvem: "+pasta+"/"+nome;
+}catch(e){elSt.textContent="❌ Erro salvar: "+e.message}
+}
+document.getElementById("sv22-eng-cop").onclick=function(){copiar("sv22-eng-out")};
+document.getElementById("sv22-cine-cop").onclick=function(){copiar("sv22-cine-out")};
+document.getElementById("sv22-letr-cop").onclick=function(){copiar("sv22-letr-out")};
+document.getElementById("sv22-eng-salv").onclick=function(){
+const c=document.getElementById("sv22-eng-out").value;
+salvarTxt("meta/prompts","musica-"+canal()+"-"+Date.now()+".txt",c,document.getElementById("sv22-eng-st"));
+};
+document.getElementById("sv22-cine-salv").onclick=function(){
+const c=document.getElementById("sv22-cine-out").value;
+try{localStorage.setItem("sv22_roteiro",c)}catch(e){}
+salvarTxt("meta/prompts","roteiro-"+canal()+"-"+Date.now()+".txt",c,document.getElementById("sv22-cine-st"));
+};
+document.getElementById("sv22-letr-salv").onclick=function(){
+const c=document.getElementById("sv22-letr-out").value;
+salvarTxt("meta/letras","letras-"+canal()+"-"+Date.now()+".txt",c,document.getElementById("sv22-letr-st"));
+};
+document.getElementById("sv22-eng-gerar").onclick=async function(){
+const d=document.getElementById("sv22-eng-desejo").value.trim();
+const t=document.getElementById("sv22-eng-toque").value.trim();
+const out=document.getElementById("sv22-eng-out");
+const st=document.getElementById("sv22-eng-st");
+if(!d){st.textContent="⚠️ Escreve teu desejo em PT primeiro.";return}
+const prompt="You are a world-class music prompt engineer for MiniMax Music-1.5. Channel: "+canalNome()+". Duration: "+duracao()+" seconds. User desire in Portuguese: "+d+". Personal touch PT: "+t+". Task: write ONE technical music prompt in ENGLISH under 800 characters. Include genre recipe, BPM, instrumentation, vocal style, dynamics, structure, mood. Vocals language: Portuguese. Never mention real artist names, describe recipe only (example: male duo harmony in thirds). Output ONLY the English prompt, no explanation.";
+try{const res=await chamarLLM(prompt,st);out.value=res;st.textContent="✅ Pronto! ~$0.003 gastos. Revisa e usa."}
+catch(e){st.textContent="❌ "+e.message+" (manda print)"}
+};
+document.getElementById("sv22-cine-gerar").onclick=async function(){
+const letra=document.getElementById("sv22-cine-letra").value.trim();
+const toque=document.getElementById("sv22-cine-toque").value.trim();
+const out=document.getElementById("sv22-cine-out");
+const st=document.getElementById("sv22-cine-st");
+if(!letra){st.textContent="⚠️ Cola a letra primeiro.";return}
+const n=modoTeste()?3:cota();
+let biblia="";
+try{
+const rb=await fetch(WORKER+"/arquivo?chave=meta/casting/"+canal()+".json");
+if(rb.ok){const jb=await rb.json();biblia="CASTING: "+(jb.ficha||"")+" | BIBLE: "+(jb.biblia||"");}
+}catch(e){}
+if(!biblia)biblia="No bible yet, keep generic consistent characters.";
+st.textContent="📖 Bíblia lida. Gerando "+n+" cenas...";
+const prompt="You are a Hollywood cinematography director for Kling 2.x 16:9. Channel: "+canalNome()+". Lyrics PT: "+letra.slice(0,2000)+". Visual bible: "+biblia.slice(0,1500)+". Personal touch PT: "+toque+". Task: write "+n+" numbered cinematic prompts in ENGLISH, one per 5-second scene, chained story beginning-middle-end. Each prompt: camera, lens anamorphic 35mm, movement dolly, volumetric light, Hollywood color grade, 16:9, character consistency from bible. Output ONLY numbered prompts.";
+try{const res=await chamarLLM(prompt,st);out.value=res;try{localStorage.setItem("sv22_roteiro",res)}catch(e){}st.textContent="✅ Roteiro pronto! "+n+" cenas. ~$0.003 gastos."}
+catch(e){st.textContent="❌ "+e.message+" (manda print)"}
+};
+document.getElementById("sv22-letr-gerar").onclick=async function(){
+const tema=document.getElementById("sv22-letr-tema").value.trim();
+const out=document.getElementById("sv22-letr-out");
+const st=document.getElementById("sv22-letr-st");
+if(!tema){st.textContent="⚠️ Escreve o tema primeiro.";return}
+const prompt="You are a Brazilian hit songwriter. Channel: "+canalNome()+". Theme PT: "+tema+". Rules v2.0: write 3 DIFFERENT versions in Portuguese, each 900-1300 characters, max 6 markers from [Intro] [Verse] [Pre-Chorus] [Chorus] [Bridge] [Outro], rotate chorus styles, no cliches, no repetition between versions. Label VERSION 1, VERSION 2, VERSION 3. Output ONLY lyrics.";
+try{const res=await chamarLLM(prompt,st);out.value=res;st.textContent="✅ 3 versões prontas! ~$0.003 gastos."}
+catch(e){st.textContent="❌ "+e.message+" (manda print)"}
+};
+})();
+</script>
+<!-- ===== BLOCO 2 FIM ===== -->
 </body>
 </html>
