@@ -1254,5 +1254,98 @@ setInterval(fix,2000);fix();
 })();
 </script>
 <!-- ===== FIX NOME ESTILO FIM ===== -->
+<!-- ===== BLOCO TRAVA VELHO + TESTE NOVO INICIO ===== -->
+<script>
+(function(){
+const WORKER=(window.SV&&window.SV.worker)||"https://studio-motor.alexmedeirosbsb.workers.dev";
+function getM(){try{var s=localStorage.getItem("sv22_mot");if(s){var j=JSON.parse(s);return{musica:j.musica||"minimax/music-1.5",video:j.video||"kwaivgi/kling-v2.1",foto:j.foto||"black-forest-labs/flux-schnell",texto:j.texto||"meta/meta-llama-3-8b-instruct"}}}catch(e){}return{musica:"minimax/music-1.5",video:"kwaivgi/kling-v2.1",foto:"black-forest-labs/flux-schnell",texto:"meta/meta-llama-3-8b-instruct"}}
+function saveM(m){try{localStorage.setItem("sv22_mot",JSON.stringify(m))}catch(e){}}
+async function gerar(model,input,st,sec){
+var body=JSON.stringify({model:model,input:input});
+var r=await fetch(WORKER+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},body:body});
+var txt=await r.text();var j;try{j=JSON.parse(txt)}catch(e){throw new Error("Worker: "+txt.slice(0,250))}
+var id=j.id||j.prediction_id||(j.prediction&&j.prediction.id);
+var out=j.output||(j.prediction&&j.prediction.output);
+if(out)return out;
+if(!id)throw new Error("Sem ID. Disse: "+txt.slice(0,300));
+var tent=sec||50;
+for(var i=0;i<tent;i++){await new Promise(function(r2){setTimeout(r2,3000)});if(st)st.textContent="AGUARDE "+(i*3)+"s...";try{var rs=await fetch(WORKER+"/status?id="+encodeURIComponent(id));var t2=await rs.text();var js;try{js=JSON.parse(t2)}catch(e){continue}var op=js.output||(js.prediction&&js.prediction.output);if(op)return op;var sst=js.status||(js.prediction&&js.prediction.status)||"";if(sst==="failed"||sst==="canceled")throw new Error("Falhou: "+t2.slice(0,300))}catch(e){if((""+e.message).indexOf("Falhou")===0)throw e}}
+throw new Error("Tempo esgotado");
+}
+function comoURL(o){if(typeof o==="string"&&o.indexOf("http")===0)return o;if(Array.isArray(o)){for(var i=0;i<o.length;i++){if(typeof o[i]==="string"&&o[i].indexOf("http")===0)return o[i];if(o[i]&&typeof o[i]==="object"){for(var k in o[i]){if(typeof o[i][k]==="string"&&o[i][k].indexOf("http")===0)return o[i][k]}}}}if(o&&typeof o==="object"){for(var k2 in o){if(typeof o[k2]==="string"&&o[k2].indexOf("http")===0)return o[k2]}}return null}
+function comoTexto(o){if(!o)return "";if(typeof o==="string")return o;if(Array.isArray(o))return o.join("\n");try{return JSON.stringify(o)}catch(e){return""+o}}
+function acharSecao(t){var els=document.querySelectorAll("h1,h2,h3,h4,div,b,span,section");for(var i=0;i<els.length;i++){var tx=(els[i].textContent||"").trim();if(tx===t){var p=els[i].parentElement;for(var k=0;k<6&&p;k++){if(p.querySelector("textarea,input,button"))return p;p=p.parentElement}return els[i].parentElement}}return null}
+function travaVelho(){
+try{
+var btns=document.querySelectorAll("button, input[type=button], input[type=submit]");
+for(var i=0;i<btns.length;i++){
+var b=btns[i];
+if(b.id&&b.id.indexOf("sv22-")===0)continue;
+try{if(b.closest&&(b.closest("#sv22-auto-mus")||b.closest("#sv22-auto-cine")||b.closest("#sv22-bar")||b.closest("#sv22-teste1")))continue;}catch(e){}
+if(b.dataset&&b.dataset.sv22travado)continue;
+var txt="";if(b.tagName==="INPUT")txt=(b.value||"").toLowerCase();else txt=(b.textContent||"").toLowerCase();
+if(txt.indexOf("gerar")<0&&txt.indexOf("produzir")<0&&txt.indexOf("criar")<0&&txt.indexOf("generate")<0)continue;
+var p=b,isFab=false;
+for(var k=0;k<7&&p;k++){p=p.parentElement;if(!p)break;var tt=(p.textContent||"");if(tt.indexOf("Fábrica de Música")>=0||tt.indexOf("Fabrica de Musica")>=0||tt.indexOf("Fábrica de Clipes")>=0||tt.indexOf("Fabrica de Clipes")>=0){isFab=true;break;}}
+if(!isFab)continue;
+try{b.disabled=true;b.style.opacity="0.35";b.title="DESLIGADO motor velho ACE/LTX. Use caixa TESTE 1 MIN MiniMax novo.";
+if(b.tagName==="INPUT"){if((""+b.value).indexOf("DESLIGADO")<0)b.value="DESLIGADO (velho) "+b.value;}
+else{if((""+b.textContent).indexOf("DESLIGADO")<0)b.textContent="DESLIGADO (motor velho) "+b.textContent;}
+b.dataset.sv22travado="1";}catch(e){}
+}
+var avisos=[["Fábrica de Música","sv22-aviso-mus","Motor antigo ACE DESLIGADO. Use so a caixa verde TESTE 1 MIN acima (MiniMax 1.5 novo)."],["Fábrica de Clipes","sv22-aviso-cine","Motor antigo LTX DESLIGADO. Use so a caixa laranja acima (Flux previa + Kling final)."]];
+avisos.forEach(function(pair){try{if(document.getElementById(pair[1]))return;var sec=acharSecao(pair[0]);if(!sec)return;var d=document.createElement("div");d.id=pair[1];d.textContent=pair[2];d.style.cssText="background:#330000;border:2px solid red;color:#fff;padding:8px;border-radius:8px;margin:8px 0;font-family:Arial;font-size:13px";sec.insertBefore(d,sec.firstChild);}catch(e){}});
+}catch(e){}
+}
+function montaTeste(parent,modoAppend){
+if(document.getElementById("sv22-teste1"))return;
+var m=getM();
+var div=document.createElement("div");div.id="sv22-teste1";
+div.style.cssText="background:#001a12;border:2px solid #00e676;border-radius:10px;padding:10px;margin-top:8px;font-family:Arial;color:#fff";
+div.innerHTML='<b>TESTE 1 MIN - MOTOR NOVO MiniMax (ACE desligado)</b><br><small style="color:#aaa">Travado 60s. 1 musica + 3 fotos + 1 cena. So Replicate. IDs editaveis auto-salvam.</small>'
++'<div style="font-size:12px;margin-top:6px">Musica (novo):<br><input id="sv22-t-mus" style="width:100%;background:#111;color:#fff;border:1px solid #555;border-radius:4px" value="'+m.musica+'"></div>'
++'<div style="font-size:12px">Foto (novo):<br><input id="sv22-t-foto" style="width:100%;background:#111;color:#fff;border:1px solid #555;border-radius:4px" value="'+m.foto+'"></div>'
++'<div style="font-size:12px">Video (novo):<br><input id="sv22-t-vid" style="width:100%;background:#111;color:#fff;border:1px solid #555;border-radius:4px" value="'+m.video+'"></div>'
++'<div style="font-size:13px;margin-top:6px">Desejo PT (ja pronto):</div><textarea id="sv22-t-des" rows="2" style="width:100%;background:#111;color:#fff;border:1px solid #555;border-radius:4px">sertanejo universitario animado, dupla masculina, sanfona 120 baixos, violao de aco, bateria forte, 130 BPM, romantico</textarea>'
++'<div style="font-size:13px">Letra teste 60s (ja pronta):</div><textarea id="sv22-t-let" rows="4" style="width:100%;background:#111;color:#fff;border:1px solid #555;border-radius:4px">[Verse] Saudade aperta quando a noite cai Teu sorriso me chama pra voltar [Chorus] Volta pra mim meu amor Sem voce nao tem cantor</textarea>'
++'<button id="sv22-t-go" style="background:#00e676;color:#000;font-weight:bold;padding:8px 12px;border:none;border-radius:6px;margin-top:6px;cursor:pointer">TRADUZIR + GERAR 1 MIN NOVO (~$0.40)</button>'
++'<div id="sv22-t-st" style="font-size:12px;color:#8f8;min-height:16px;margin-top:6px">Pronto. Valida os IDs acima no Replicate antes de clicar (gratis). Motor velho desligado.</div>'
++'<audio id="sv22-t-aud" controls style="width:100%;display:none;margin-top:6px"></audio>';
+if(modoAppend)parent.appendChild(div);else parent.insertBefore(div,parent.firstChild);
+function upd(){var nm={musica:document.getElementById("sv22-t-mus").value.trim(),video:document.getElementById("sv22-t-vid").value.trim(),foto:document.getElementById("sv22-t-foto").value.trim(),voz:"seedvc/seed-vc",texto:m.texto};saveM(nm)}
+document.getElementById("sv22-t-mus").addEventListener("change",upd);
+document.getElementById("sv22-t-foto").addEventListener("change",upd);
+document.getElementById("sv22-t-vid").addEventListener("change",upd);
+document.getElementById("sv22-t-go").onclick=async function(){
+var st=document.getElementById("sv22-t-st");var mm=getM();
+var des=document.getElementById("sv22-t-des").value.trim();
+var letT=document.getElementById("sv22-t-let").value.trim();
+if(!des||!letT){st.textContent="Falta desejo ou letra.";return}
+if(!confirm("TESTE 1 MIN MOTOR NOVO\n\nVai gastar ~$0.40 do Replicate (musica 60s MiniMax + traducao).\nMotor velho ACE desligado. RunPod NAO mexe.\n\nConfirma?")){st.textContent="Cancelado. Nada gasto.";return}
+try{
+st.textContent="1/2 Traduzindo PT-EN (centavos)...";
+var prT="You are music prompt engineer for MiniMax Music-1.5. Desire PT: "+des+". Write ONE technical prompt EN under 600 chars, genre recipe BPM instruments vocals PT dynamics. No real artist names. ONLY prompt.";
+var oT=await gerar(mm.texto,{prompt:prT,max_tokens:800,temperature:0.5},null,30);
+var en=comoTexto(oT).trim();if(!en)throw new Error("Traducao vazia");
+st.textContent="2/2 Gerando musica 60s MiniMax novo... EN: "+en.slice(0,60)+"...";
+var oM=await gerar(mm.musica,{prompt:en,lyrics:letT},st,60);
+var u=comoURL(oM);
+if(u){var aud=document.getElementById("sv22-t-aud");aud.src=u;aud.style.display="block";st.textContent="Musica pronta! Salvando na nuvem...";try{await fetch(WORKER+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:u,pasta:"musicas",nome:"teste-60s-"+Date.now()+".mp3"})});st.textContent="Pronta e salva em musicas/! Ouve acima. Gasto ~$0.40."}catch(e){st.textContent="Pronta! Ouve acima. Falha salvar nuvem: "+e.message}}
+else{st.textContent="Retornou texto, nao audio: "+comoTexto(oM).slice(0,400)+" | Confere ID musica."}
+}catch(e){st.textContent="Erro: "+e.message+" (manda print)"}
+};
+}
+function garante(){
+if(document.getElementById("sv22-teste1"))return;
+var autoBox=document.getElementById("sv22-auto-mus");
+if(autoBox){montaTeste(autoBox,true);return}
+var sec=acharSecao("Fábrica de Música");
+if(sec){montaTeste(sec,false);return}
+}
+setInterval(garante,2000);garante();
+setInterval(travaVelho,2000);travaVelho();
+})();
+</script>
+<!-- ===== BLOCO TRAVA VELHO + TESTE NOVO FIM ===== -->
 </body>
 </html>
