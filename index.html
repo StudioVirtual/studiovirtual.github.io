@@ -2,8 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Studio Virtual</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Studio Virtual</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
   body{background:#0d1117;color:#e6edf3;min-height:100vh}
@@ -797,5 +796,126 @@ catch(e){st.textContent="❌ "+e.message+" (manda print)"}
 })();
 </script>
 <!-- ===== BLOCO 2 FIM ===== -->
+<!-- ===== FIX AUTO EMBUTIDO INICIO ===== -->
+<style>
+#sv22-auto-mus{background:#222;border:2px solid #00e676;border-radius:10px;padding:10px;margin:10px 0;font-family:Arial,sans-serif;color:#fff}
+#sv22-auto-mus textarea{width:100%;box-sizing:border-box;background:#111;color:#fff;border:1px solid #555;border-radius:6px;padding:6px;font-size:13px;margin:4px 0 6px 0}
+#sv22-auto-st{font-size:12px;color:#8f8;min-height:16px}
+</style>
+<script>
+(function(){
+const WORKER=(window.SV&&window.SV.worker)||"https://studio-motor.alexmedeirosbsb.workers.dev";
+function canalNome(){try{return window.SV.canalNome()}catch(e){return "Sertanejo"}}
+function duracao(){try{return window.SV.duracao()}catch(e){return 60}}
+["sv22-b-eng","sv22-b-cine","sv22-b-letr"].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display="none";});
+["sv22-pmus","sv22-pcine","sv22-pletr"].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display="none";});
+function acharSecao(titulo){
+var els=document.querySelectorAll("h1,h2,h3,h4,div,b,span,section");
+for(var i=0;i<els.length;i++){
+var t=(els[i].textContent||"").trim();
+if(t===titulo){
+var p=els[i].parentElement;
+for(var k=0;k<6&&p;k++){if(p.querySelector("textarea,input,button"))return p;p=p.parentElement;}
+return els[i].parentElement;
+}
+}
+for(var j=0;j<els.length;j++){
+var t2=(els[j].textContent||"");
+if(t2.indexOf(titulo)>=0&&t2.length<120){
+var p2=els[j].parentElement;
+if(p2&&p2.querySelector("textarea"))return p2;
+}
+}
+return null;
+}
+function acharPorLabel(secao,palavra){
+if(!secao)return null;
+var labs=secao.querySelectorAll("label,div,span,small,b");
+for(var i=0;i<labs.length;i++){
+var t=(labs[i].textContent||"");
+if(t.toLowerCase().indexOf(palavra.toLowerCase())>=0&&t.length<60){
+var nx=labs[i].nextElementSibling;
+if(nx&&(nx.tagName==="TEXTAREA"||nx.tagName==="INPUT"))return nx;
+var box=labs[i].parentElement?labs[i].parentElement.querySelector("textarea,input"):null;
+if(box)return box;
+}
+}
+return null;
+}
+async function chamarLLM(prompt,elSt){
+elSt.textContent="⏳ Traduzindo automatico... ~$0.003";
+var body=JSON.stringify({model:"meta/meta-llama-3-8b-instruct",input:{prompt:prompt,max_tokens:1200,temperature:0.5}});
+var r=await fetch(WORKER+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},body:body});
+var txt=await r.text();
+var j;try{j=JSON.parse(txt)}catch(e){throw new Error("Worker: "+txt.slice(0,200))}
+var id=j.id||j.prediction_id||(j.prediction&&j.prediction.id);
+var out=j.output||(j.prediction&&j.prediction.output);
+if(out)return Array.isArray(out)?out.join("\n"):(""+out);
+if(!id)throw new Error("Sem ID: "+txt.slice(0,200));
+for(var k=0;k<40;k++){
+await new Promise(function(r2){setTimeout(r2,3000)});
+try{
+var rs=await fetch(WORKER+"/status?id="+encodeURIComponent(id));
+var t2=await rs.text();
+var js;try{js=JSON.parse(t2)}catch(e){continue}
+var op=js.output||(js.prediction&&js.prediction.output);
+if(op)return Array.isArray(op)?op.join("\n"):(""+op);
+var st=js.status||(js.prediction&&js.prediction.status)||"";
+if(st==="failed"||st==="canceled")throw new Error("IA falhou");
+}catch(e){if((""+e.message).indexOf("IA falhou")===0)throw e;}
+}
+throw new Error("Tempo esgotado");
+}
+var injetado=false;
+function tenta(){
+if(injetado)return;
+var secao=acharSecao("Fábrica de Música")||acharSecao("Fabrica de Musica");
+if(!secao)return;
+var estilo=acharPorLabel(secao,"Estilo");
+if(!estilo){
+var tas=secao.querySelectorAll("textarea,input[type=text]");
+if(tas.length>=2)estilo=tas[1];else estilo=tas[0];
+}
+if(!estilo)return;
+var dur=acharPorLabel(secao,"Dura");
+injetado=true;
+var box=document.createElement("div");
+box.id="sv22-auto-mus";
+box.innerHTML="<b>⚙️ Motor v2.2 Automático — MiniMax 1.5 único</b><br><small style='color:#aaa'>Digita em PT aqui. O campo Estilo (inglês) preenche SOZINHO. Custo ~$0.003 por tradução. Sem Suno.</small><div style='font-size:13px;margin-top:6px'>Teu desejo em PORTUGUÊS:</div><textarea id='sv22-auto-desejo' rows='2' placeholder='Ex: sertanejo universitario animado, sanfona, violão aco, bateria forte, 132 BPM'></textarea><div style='font-size:13px'>Toque pessoal (PT, opcional):</div><textarea id='sv22-auto-toque' rows='1' placeholder='Ex: clima de festa, final emocionante'></textarea><div id='sv22-auto-st'></div>";
+secao.insertBefore(box,secao.firstChild);
+var desejoEl=document.getElementById("sv22-auto-desejo");
+var toqueEl=document.getElementById("sv22-auto-toque");
+var stEl=document.getElementById("sv22-auto-st");
+var timer=null,traduzindo=false,ultimo="";
+function agenda(){clearTimeout(timer);timer=setTimeout(auto,1500);}
+async function auto(){
+if(traduzindo)return;
+var d=desejoEl.value.trim();
+if(!d||d===ultimo)return;
+traduzindo=true;
+try{
+var tq=toqueEl.value.trim();
+var prompt="You are a music prompt engineer for MiniMax Music-1.5. Channel: "+canalNome()+". Duration: "+duracao()+"s. Desire PT: "+d+". Touch PT: "+tq+". Write ONE technical music prompt in ENGLISH under 700 chars. Include genre recipe, BPM, instruments, vocals PT, dynamics. Never real artist names. Output ONLY prompt.";
+var res=await chamarLLM(prompt,stEl);
+estilo.value=res;
+try{estilo.dispatchEvent(new Event('input',{bubbles:true}));estilo.dispatchEvent(new Event('change',{bubbles:true}));}catch(e){}
+ultimo=d;
+stEl.textContent="✅ Estilo preenchido sozinho! ~$0.003 gastos. Pode clicar Gerar normal.";
+}catch(e){stEl.textContent="❌ "+e.message;}
+traduzindo=false;
+}
+desejoEl.addEventListener("input",agenda);
+toqueEl.addEventListener("input",agenda);
+function syncDur(){try{if(dur){dur.value=duracao();try{dur.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){}}}catch(e){}}
+syncDur();
+var selD=document.getElementById("sv22-duracao");
+if(selD)selD.addEventListener("change",syncDur);
+stEl.textContent="Pronto. Digita o desejo que eu preencho sozinho.";
+}
+setInterval(tenta,2000);
+tenta();
+})();
+</script>
+<!-- ===== FIX AUTO EMBUTIDO FIM ===== -->
 </body>
 </html>
