@@ -1065,5 +1065,153 @@ setInterval(tenta,2000);tenta();
 })();
 </script>
 <!-- ===== BLOCO FINAL FIM ===== -->
+<!-- ===== BLOCO FINAL INICIO ===== -->
+<style>
+.sv22-fbox{position:fixed;top:85px;left:50%;transform:translateX(-50%);width:min(720px,94%);background:#1c1c1c;color:#fff;padding:15px;border:2px solid #00e676;border-radius:12px;z-index:100000;font-family:Arial,sans-serif;display:none;max-height:85vh;overflow:auto}
+.sv22-fbox input[type=text]{width:100%;box-sizing:border-box;background:#111;color:#fff;border:1px solid #555;border-radius:6px;padding:6px;font-size:13px;margin:2px 0 8px 0}
+.sv22-fbox button{padding:6px 10px;margin:3px 3px 0 0;border-radius:6px;border:none;cursor:pointer;font-weight:bold}
+.sv22-fbox small{color:#aaa}
+#sv22-auto-cine{background:#2a1f00;border:2px solid #ff9800;border-radius:10px;padding:10px;margin:10px 0;font-family:Arial,sans-serif;color:#fff}
+#sv22-auto-cine textarea{width:100%;box-sizing:border-box;background:#111;color:#fff;border:1px solid #555;border-radius:6px;padding:6px;font-size:13px;margin:4px 0 6px 0}
+#sv22-ac-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.sv22-card{width:150px;background:#111;border:1px solid #555;border-radius:8px;overflow:hidden;font-size:11px}
+.sv22-card img{width:100%;display:block}
+.sv22-card div{padding:4px}
+</style>
+<div id="sv22-pmot" class="sv22-fbox">
+<h3 style="margin:0 0 5px 0">⚙️ Motores Travados v2.2</h3>
+<small>Só Replicate gasta. RunPod não mexe. Suno apagado. Edita o ID se o lab mandar trocar. Salvo em meta/motores.json</small><br><br>
+Música (único):<input type=text id=sv22-m-musica>
+Vídeo final 100% Kling:<input type=text id=sv22-m-video>
+Foto prévia Flux $0,03:<input type=text id=sv22-m-foto>
+Voz fixa RVC:<input type=text id=sv22-m-voz>
+Texto (funcionando):<input type=text id=sv22-m-texto>
+<button id=sv22-m-salv style="background:#00e676">💾 Salvar</button>
+<button id=sv22-m-load style="background:#2196F3;color:#fff">☁️ Carregar</button>
+<button class=sv22-fclose data-p=sv22-pmot style="background:#555;color:#fff">Fechar</button>
+<div id=sv22-m-st style="font-size:13px;color:#8f8;margin-top:6px"></div>
+</div>
+<div id="sv22-pmos" class="sv22-fbox">
+<h3 style="margin:0 0 5px 0">📖 MUSIC OS — Índice</h3>
+<small>
+<b>Método:</b> Texto (centavos) → Foto Flux $0,03 → Kling só no aprovado. Sem clipe ensaio.<br>
+<b>Prateleira 7:</b> Sertanejo, Gospel, Salmos da Bíblia, Eletrônica, Rock, Reggae, Dance. Cada um com sua Bíblia em meta/casting/.<br>
+<b>250 agentes Thumbnail:</b> 25 famílias x10 completas. Originais no Drive. Mapa: Sertanejo=Brazilian Roots, Gospel=Gospel&Worship, Salmos=Gospel&Worship+Cinematic, Eletrônica=Electronic+Tropical+Groove, Rock=Rock&Alternative+Metal, Reggae=Reggae&Ska, Dance=Pop&Dance.<br>
+<b>48 canais benchmark:</b> lista salva no dossiê. Piso: tropicallatin.<br>
+<b>Regras:</b> Letras 900-1300 chars máx 6 marcadores, Títulos 40-70 chars, Tags máx 500 chars, Descrição SEO nas 2 linhas.<br>
+<b>Contas:</b> Replicate ~$20 gasta / RunPod $24,27 congelado capas+thumbs / R2 free.
+</small><br><br>
+<button class=sv22-fclose data-p=sv22-pmos style="background:#555;color:#fff">Fechar</button>
+</div>
+<div id="sv22-prun" class="sv22-fbox">
+<h3 style="margin:0 0 5px 0">🖼️ Capas & Thumbs — PRÓXIMA REFORMA (travada)</h3>
+<small>Saldo RunPod: <b>$24,27 congelado</b>. Destino: 1) Capas dos vídeos 2) Thumbs em massa com os 250 agentes. Não gasta hoje. Botão desligado de propósito.</small><br><br>
+<button disabled style="background:#555;color:#aaa">🔒 Desligado — próxima reforma</button>
+<button class=sv22-fclose data-p=sv22-prun style="background:#555;color:#fff">Fechar</button>
+</div>
+<script>
+(function(){
+const WORKER=(window.SV&&window.SV.worker)||"https://studio-motor.alexmedeirosbsb.workers.dev";
+function canal(){try{return window.SV.canal()}catch(e){return "sertanejo"}}
+function canalNome(){try{return window.SV.canalNome()}catch(e){return "Sertanejo"}}
+function cota(){try{return window.SV.cota()}catch(e){return 12}}
+function modoTeste(){try{return window.SV.modoTeste()}catch(e){return true}}
+var cb=document.getElementById("sv22-castbtn");if(cb)cb.textContent="⚙️ Config do Canal";
+var bar=document.getElementById("sv22-bar");
+function addBtn(id,txt,p){if(!bar||document.getElementById(id))return;var b=document.createElement("button");b.id=id;b.textContent=txt;b.onclick=function(){tog(p)};bar.appendChild(b)}
+function tog(id){["sv22-pmot","sv22-pmos","sv22-prun"].forEach(function(x){var e=document.getElementById(x);if(!e)return;if(x===id)e.style.display=(e.style.display==="block"?"none":"block");else e.style.display="none"});var p=document.getElementById("sv22-painel");if(p)p.style.display="none"}
+addBtn("sv22-b-mot","⚙️ Motores","sv22-pmot");addBtn("sv22-b-mos","📖 MUSIC OS","sv22-pmos");addBtn("sv22-b-run","🖼️ Capas","sv22-prun");
+document.querySelectorAll(".sv22-fclose").forEach(function(b){b.onclick=function(){document.getElementById(b.getAttribute("data-p")).style.display="none"}});
+const DEF={musica:"minimax/music-1.5",video:"kwaivgi/kling-v2.1",foto:"black-forest-labs/flux-schnell",voz:"seedvc/seed-vc",texto:"meta/meta-llama-3-8b-instruct"};
+function getM(){try{var s=localStorage.getItem("sv22_mot");if(s)return Object.assign({},DEF,JSON.parse(s))}catch(e){}return Object.assign({},DEF)}
+function setInputs(m){document.getElementById("sv22-m-musica").value=m.musica;document.getElementById("sv22-m-video").value=m.video;document.getElementById("sv22-m-foto").value=m.foto;document.getElementById("sv22-m-voz").value=m.voz;document.getElementById("sv22-m-texto").value=m.texto}
+setInputs(getM());
+document.getElementById("sv22-m-salv").onclick=async function(){var m={musica:document.getElementById("sv22-m-musica").value.trim(),video:document.getElementById("sv22-m-video").value.trim(),foto:document.getElementById("sv22-m-foto").value.trim(),voz:document.getElementById("sv22-m-voz").value.trim(),texto:document.getElementById("sv22-m-texto").value.trim()};try{localStorage.setItem("sv22_mot",JSON.stringify(m))}catch(e){}var st=document.getElementById("sv22-m-st");st.textContent="Salvando...";try{await fetch(WORKER+"/upload?pasta=meta&nome=motores.json",{method:"PUT",body:JSON.stringify(m)});st.textContent="✅ Salvo na nuvem."}catch(e){st.textContent="✅ Salvo local. Nuvem: "+e.message}};
+document.getElementById("sv22-m-load").onclick=async function(){var st=document.getElementById("sv22-m-st");st.textContent="Carregando...";try{var r=await fetch(WORKER+"/arquivo?chave=meta/motores.json");if(r.ok){var j=await r.json();setInputs(Object.assign({},DEF,j));try{localStorage.setItem("sv22_mot",JSON.stringify(j))}catch(e){}st.textContent="✅ Da nuvem.";return}}catch(e){}setInputs(getM());st.textContent="✅ Local."};
+async function gerar(model,input,st,sec){
+if(st)st.textContent="⏳ Gerando... cobra mesmo se reprovar.";
+var body=JSON.stringify({model:model,input:input});
+var r=await fetch(WORKER+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},body:body});
+var txt=await r.text();var j;try{j=JSON.parse(txt)}catch(e){throw new Error("Worker: "+txt.slice(0,200))}
+var id=j.id||j.prediction_id||(j.prediction&&j.prediction.id);
+var out=j.output||(j.prediction&&j.prediction.output);
+if(out)return out;
+if(!id)throw new Error("Sem ID: "+txt.slice(0,250));
+var tent=sec||40;
+for(var i=0;i<tent;i++){await new Promise(function(r2){setTimeout(r2,3000)});try{var rs=await fetch(WORKER+"/status?id="+encodeURIComponent(id));var t2=await rs.text();var js;try{js=JSON.parse(t2)}catch(e){continue}var op=js.output||(js.prediction&&js.prediction.output);if(op)return op;var sst=js.status||(js.prediction&&js.prediction.status)||"";if(sst==="failed"||sst==="canceled")throw new Error("IA falhou: "+t2.slice(0,250));if(st)st.textContent="⏳ Trabalhando "+(i*3)+"s..."}catch(e){if((""+e.message).indexOf("IA falhou")===0)throw e}}
+throw new Error("Tempo esgotado");
+}
+function comoTexto(o){if(!o)return "";if(typeof o==="string")return o;if(Array.isArray(o))return o.join("\n");return JSON.stringify(o)}
+function comoURL(o){if(typeof o==="string"&&o.indexOf("http")===0)return o;if(Array.isArray(o)){for(var i=0;i<o.length;i++)if(typeof o[i]==="string"&&o[i].indexOf("http")===0)return o[i]}return null}
+function acharSecao(t){var els=document.querySelectorAll("h1,h2,h3,h4,div,b,span,section");for(var i=0;i<els.length;i++){var tx=(els[i].textContent||"").trim();if(tx===t){var p=els[i].parentElement;for(var k=0;k<6&&p;k++){if(p.querySelector("textarea,input,button"))return p;p=p.parentElement}return els[i].parentElement}}return null}
+var inj=false;
+function tenta(){
+if(inj)return;
+var sec=acharSecao("Fábrica de Clipes");if(!sec)return;if(document.getElementById("sv22-auto-cine")){inj=true;return}
+inj=true;
+var box=document.createElement("div");box.id="sv22-auto-cine";
+box.innerHTML="<b>🎬 Motor v2.2 Auto — Cine + Prévia $0,03 + Kling Final</b><br><small style='color:#ffd180'>Cola a LETRA que o roteiro sai sozinho (lê a Bíblia do canal). Foto Flux ~$0,03 cada. Kling só no aprovado. Só Replicate.</small><div style='font-size:13px;margin-top:6px'>LETRA (PT):</div><textarea id='sv22-ac-letra' rows='3' placeholder='Cola a letra, espera 2s'></textarea><div style='font-size:13px'>Toque (PT opcional):</div><textarea id='sv22-ac-toque' rows='1' placeholder='Ex: mais drone'></textarea><div id='sv22-ac-st' style='font-size:12px;color:#8f8;min-height:16px'></div><div style='font-size:13px'>Roteiro EN auto:</div><textarea id='sv22-ac-out' rows='6'></textarea><br><button id='sv22-ac-foto' style='background:#00e676'>📸 Gerar Fotos Prévia</button> <button id='sv22-ac-kling' style='background:#2196F3;color:#fff'>🎬 Animar 1 Cena Kling</button> <button id='sv22-ac-salv' style='background:#555;color:#fff'>💾 Salvar roteiro</button><div id='sv22-ac-grid'></div>";
+sec.insertBefore(box,sec.firstChild);
+var letraEl=document.getElementById("sv22-ac-letra"),toqueEl=document.getElementById("sv22-ac-toque"),out=document.getElementById("sv22-ac-out"),st=document.getElementById("sv22-ac-st");
+var timer=null,run=false,last="";
+function ag(){clearTimeout(timer);timer=setTimeout(auto,2000)}
+async function auto(){
+if(run)return;var L=letraEl.value.trim();if(!L||L===last)return;run=true;
+try{
+var n=modoTeste()?3:cota();
+var bib="No bible yet.";try{var rb=await fetch(WORKER+"/arquivo?chave=meta/casting/"+canal()+".json");if(rb.ok){var jb=await rb.json();bib="CASTING:"+(jb.ficha||"")+" BIBLE:"+(jb.biblia||"")}}catch(e){}
+var m=getM();
+var pr="You are Hollywood director for Kling 2.x 16:9. Channel "+canalNome()+". Lyrics PT: "+L.slice(0,2000)+". Bible: "+bib.slice(0,1500)+". Touch PT: "+toqueEl.value.trim()+". Write "+n+" numbered cinema prompts EN, 5s each, chained story, camera lens anamorphic 35mm dolly volumetric Hollywood grade 16:9 consistent characters. ONLY prompts.";
+var o=await gerar(m.texto,{prompt:pr,max_tokens:2500,temperature:0.7},st,45);
+out.value=comoTexto(o);try{localStorage.setItem("sv22_roteiro",out.value)}catch(e){}
+last=L;st.textContent="✅ Roteiro "+n+" cenas pronto! centavos gastos.";
+}catch(e){st.textContent="❌ "+e.message}
+run=false;
+}
+letraEl.addEventListener("input",ag);toqueEl.addEventListener("input",ag);
+document.getElementById("sv22-ac-salv").onclick=async function(){if(!out.value){st.textContent="⚠️ Nada pra salvar.";return}st.textContent="Salvando...";try{await fetch(WORKER+"/upload?pasta=meta/prompts&nome=roteiro-"+canal()+"-"+Date.now()+".txt",{method:"PUT",body:out.value});st.textContent="✅ Roteiro na nuvem."}catch(e){st.textContent="❌ "+e.message}};
+document.getElementById("sv22-ac-foto").onclick=async function(){
+var linhas=out.value.split("\n").filter(function(x){return x.trim().length>10});
+if(!linhas.length){st.textContent="⚠️ Gera o roteiro primeiro (cola letra).";return}
+var m=getM();var qtd=modoTeste()?3:Math.min(linhas.length,cota());
+var grid=document.getElementById("sv22-ac-grid");grid.innerHTML="";
+st.textContent="📸 Gerando "+qtd+" fotos ~$"+(qtd*0.03).toFixed(2)+"...";
+for(var i=0;i<qtd;i++){
+try{
+st.textContent="📸 Foto "+(i+1)+"/"+qtd+"...";
+var o=await gerar(m.foto,{prompt:linhas[i].slice(0,1000)},st,40);
+var u=comURL(o);
+var card=document.createElement("div");card.className="sv22-card";
+if(u){card.innerHTML="<img src='"+u+"'><div><b>Cena "+(i+1)+"</b> ~$0,03<br>"+linhas[i].slice(0,60)+"...</div>"}
+else{card.innerHTML="<div><b>Cena "+(i+1)+"</b> texto: "+comoTexto(o).slice(0,100)+"</div>"}
+grid.appendChild(card);
+try{if(u)await fetch(WORKER+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:u,pasta:"cenas",nome:"previa-"+canal()+"-"+Date.now()+"-"+i+".jpg"})})}catch(e){}
+}catch(e){st.textContent="❌ Foto "+(i+1)+": "+e.message;break}
+}
+st.textContent="✅ Prévias prontas! Aprovou? Anima no Kling.";
+};
+document.getElementById("sv22-ac-kling").onclick=async function(){
+var img=document.querySelector("#sv22-ac-grid img");
+var linhas=out.value.split("\n").filter(function(x){return x.trim().length>10});
+if(!img||!linhas.length){st.textContent="⚠️ Gera as fotos primeiro.";return}
+var m=getM();
+st.textContent="🎬 Animando 1 cena Kling... preço confirma antes do lab, cobra mesmo se reprovar.";
+try{
+var o=await gerar(m.video,{prompt:linhas[0].slice(0,1000),image:img.src,duration:5},st,60);
+var u=comURL(o);
+var v=document.createElement("video");v.controls=true;v.style.width="200px";
+if(u){v.src=u;try{await fetch(WORKER+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:u,pasta:"cenas",nome:"kling-teste-"+Date.now()+".mp4"})})}catch(e){}}
+var card=document.createElement("div");card.className="sv22-card";card.appendChild(v);
+var d=document.createElement("div");d.textContent="Kling teste 1 cena";card.appendChild(d);
+document.getElementById("sv22-ac-grid").appendChild(card);
+st.textContent=u?"✅ Cena Kling pronta e salva!":"⚠️ Kling retornou texto, confere ID do motor.";
+}catch(e){st.textContent="❌ Kling: "+e.message+" (confere ID em Motores)"}
+};
+st.textContent="Pronto. Cola a letra que eu gero sozinho.";
+}
+setInterval(tenta,2000);tenta();
+})();
+</script>
+<!-- ===== BLOCO FINAL FIM ===== -->
 </body>
 </html>
