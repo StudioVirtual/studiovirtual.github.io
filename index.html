@@ -507,5 +507,108 @@ async function removerMusica(i){
 }
 carregarMeta();
 </script>
+<!-- ===== STUDIO VIRTUAL v2.2 - BLOCO 1 INICIO (colar antes de </body>) ===== -->
+<style>
+#sv22-bar{position:sticky;top:0;z-index:99999;background:#111;color:#fff;padding:8px 10px;border-bottom:3px solid #00e676;font-family:Arial,sans-serif;font-size:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#sv22-bar select,#sv22-bar button{padding:4px 8px;font-size:14px;border-radius:6px;border:1px solid #00e676;background:#222;color:#fff}
+#sv22-bar button{cursor:pointer;background:#00e676;color:#000;font-weight:bold}
+#sv22-bar label{background:#222;padding:4px 8px;border-radius:6px;border:1px solid #555}
+#sv22-status{font-size:12px;color:#8f8}
+#sv22-painel{position:fixed;top:60px;left:50%;transform:translateX(-50%);width:min(700px,94%);background:#1c1c1c;color:#fff;padding:15px;border:2px solid #00e676;border-radius:12px;z-index:100000;font-family:Arial,sans-serif;display:none;max-height:85vh;overflow:auto}
+#sv22-painel textarea{width:100%;box-sizing:border-box;background:#111;color:#fff;border:1px solid #555;border-radius:6px;padding:8px;font-size:13px}
+#sv22-painel button{padding:6px 12px;margin:5px 5px 0 0;border-radius:6px;border:none;cursor:pointer;font-weight:bold}
+.sv22-salvar{background:#00e676;color:#000}.sv22-fechar{background:#555;color:#fff}.sv22-load{background:#2196F3;color:#fff}
+</style>
+<div id="sv22-bar">
+<b>📚 PRATELEIRA v2.2</b>
+<select id="sv22-canal">
+<option value="sertanejo">Sertanejo</option>
+<option value="gospel">Gospel</option>
+<option value="salmos">Salmos da Bíblia</option>
+<option value="eletronica">Música Eletrônica</option>
+<option value="rock">Rock</option>
+<option value="reggae">Reggae</option>
+<option value="dance">Dance</option>
+</select>
+<span>⏱ <select id="sv22-duracao">
+<option value="30">30s teste</option>
+<option value="60" selected>60s teste</option>
+<option value="150">2:30</option>
+<option value="180">3:00</option>
+<option value="210">3:30</option>
+<option value="240">4:00 (máx)</option>
+</select></span>
+<label><input type="checkbox" id="sv22-teste" checked> 🧪 MODO TESTE</label>
+<button id="sv22-castbtn">📋 Ficha / Bíblia</button>
+<span id="sv22-status"></span>
+</div>
+<div id="sv22-painel">
+<h3 id="sv22-titulo" style="margin:0 0 10px 0">📋 Sertanejo</h3>
+<label><b>1) FICHA DO CASTING (quem canta / aparece)</b></label>
+<textarea id="sv22-ficha" rows="5" placeholder="Ex: Dupla: Cantor 1 - 30 anos, barba, chapéu preto... Cantor 2 - 28 anos, sem barba... Estilo: ..."></textarea>
+<br><br>
+<label><b>2) BÍBLIA DO CLIPE (DNA visual fixo deste canal)</b></label>
+<textarea id="sv22-biblia" rows="5" placeholder="Ex: Cenário: rancho ao pôr-do-sol... Figurino: ... Paleta: ... Luz: ... Câmera: ..."></textarea>
+<br>
+<button class="sv22-salvar" id="sv22-salvar">💾 Salvar na nuvem</button>
+<button class="sv22-load" id="sv22-carregar">☁️ Carregar da nuvem</button>
+<button class="sv22-fechar" id="sv22-fechar">Fechar</button>
+<div id="sv22-msg" style="margin-top:8px;font-size:13px;color:#8f8"></div>
+<small style="color:#aaa">Salvo em: meta/casting/[canal].json no R2. Uma ficha por canal. Preencheremos 1 por 1 depois.</small>
+</div>
+<script>
+(function(){
+const WORKER="https://studio-motor.alexmedeirosbsb.workers.dev";
+const NOMES={sertanejo:"Sertanejo",gospel:"Gospel",salmos:"Salmos da Bíblia",eletronica:"Música Eletrônica",rock:"Rock",reggae:"Reggae",dance:"Dance"};
+const selC=document.getElementById("sv22-canal"),selD=document.getElementById("sv22-duracao"),chkT=document.getElementById("sv22-teste");
+const painel=document.getElementById("sv22-painel"),tit=document.getElementById("sv22-titulo");
+const ficha=document.getElementById("sv22-ficha"),biblia=document.getElementById("sv22-biblia");
+const msg=document.getElementById("sv22-msg"),status=document.getElementById("sv22-status");
+try{
+if(localStorage.getItem("sv22_canal"))selC.value=localStorage.getItem("sv22_canal");
+if(localStorage.getItem("sv22_dur"))selD.value=localStorage.getItem("sv22_dur");
+if(localStorage.getItem("sv22_teste")!==null)chkT.checked=localStorage.getItem("sv22_teste")==="1";
+}catch(e){}
+function atual(){try{localStorage.setItem("sv22_canal",selC.value);localStorage.setItem("sv22_dur",selD.value);localStorage.setItem("sv22_teste",chkT.checked?"1":"0");}catch(e){}
+const cota=Math.ceil(parseInt(selD.value,10)/5);
+status.textContent="| "+NOMES[selC.value]+" | "+selD.value+"s = cota "+cota+" cenas"+(chkT.checked?" | 🧪 teste: 3 fotos + 1 cena":"");
+tit.textContent="📋 "+NOMES[selC.value];}
+window.SV=window.SV||{};
+window.SV.worker=WORKER;
+window.SV.canal=function(){return selC.value};
+window.SV.canalNome=function(){return NOMES[selC.value]};
+window.SV.duracao=function(){return parseInt(selD.value,10)};
+window.SV.modoTeste=function(){return chkT.checked};
+window.SV.cota=function(){return Math.ceil(window.SV.duracao()/5)};
+selC.onchange=function(){atual();carregar(true)};
+selD.onchange=atual;chkT.onchange=atual;atual();
+document.getElementById("sv22-castbtn").onclick=function(){painel.style.display="block";carregar(true)};
+document.getElementById("sv22-fechar").onclick=function(){painel.style.display="none"};
+async function salvar(){
+const canal=selC.value;
+msg.textContent="Salvando...";
+try{
+const body=JSON.stringify({canal:canal,nome:NOMES[canal],ficha:ficha.value,biblia:biblia.value,atualizado:new Date().toISOString()});
+const r=await fetch(WORKER+"/upload?pasta=meta/casting&nome="+canal+".json",{method:"PUT",body:body});
+const t=await r.text();
+msg.textContent="✅ Salvo na nuvem! ("+canal+".json)";
+}catch(e){msg.textContent="❌ Erro ao salvar: "+e.message+" (manda print pro sócio)"}
+}
+async function carregar(sil){
+const canal=selC.value;
+if(!sil)msg.textContent="Carregando...";
+try{
+const r=await fetch(WORKER+"/arquivo?chave=meta/casting/"+canal+".json");
+if(!r.ok){if(!sil)msg.textContent="⚠️ Ainda vazio (vamos preencher depois, um por um).";return}
+const j=await r.json();
+ficha.value=j.ficha||"";biblia.value=j.biblia||"";
+msg.textContent="✅ Carregado da nuvem.";
+}catch(e){if(!sil)msg.textContent="⚠️ Ainda vazio / sem conexão. Tudo bem, é pra preencher depois."}
+}
+document.getElementById("sv22-salvar").onclick=salvar;
+document.getElementById("sv22-carregar").onclick=function(){carregar(false)};
+})();
+</script>
+<!-- ===== BLOCO 1 FIM ===== -->
 </body>
 </html>
