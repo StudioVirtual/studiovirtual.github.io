@@ -1213,5 +1213,27 @@ setInterval(tenta,2000);tenta();
 })();
 </script>
 <!-- ===== BLOCO FINAL FIM ===== -->
+<!-- ===== MODO SIMPLES INICIO ===== -->
+<style>
+#sv22-canal{font-size:16px!important;font-weight:bold!important;padding:6px 10px!important;background:#00331a!important}
+#sv22-b-mot,#sv22-b-mos,#sv22-b-run,#sv22-pmot,#sv22-pmos,#sv22-prun{display:none!important}
+</style>
+<script>
+(function(){
+function limpa(){
+["sv22-b-mot","sv22-b-mos","sv22-b-run","sv22-pmot","sv22-pmos","sv22-prun"].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display="none";});
+var cb=document.getElementById("sv22-castbtn");
+if(cb){cb.textContent="⚙️ Config (1x só)";cb.style.opacity="0.6";cb.title="Só abre 1 vez por canal bem depois. Teste funciona vazio.";}
+try{
+if(!localStorage.getItem("sv22_mot")){
+var DEF={musica:"minimax/music-1.5",video:"kwaivgi/kling-v2.1",foto:"black-forest-labs/flux-schnell",voz:"seedvc/seed-vc",texto:"meta/meta-llama-3-8b-instruct"};
+localStorage.setItem("sv22_mot",JSON.stringify(DEF));
+}
+}catch(e){}
+}
+setInterval(limpa,2000);limpa();
+})();
+</script>
+<!-- ===== MODO SIMPLES FIM ===== -->
 </body>
 </html>
