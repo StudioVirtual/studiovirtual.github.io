@@ -1607,5 +1607,283 @@ window.comoTexto=extraiTXT;
 })();
 </script>
 <!-- ===== FIX TYPO COMURL FIM ===== -->
+<!-- ===== FABRICA CERTA V1 INICIO ===== -->
+<script>
+(function(){
+var WORKER=(window.SV&&window.SV.worker)||"https://studio-motor.alexmedeirosbsb.workers.dev";
+try{if(window.SV){window.SV.modoTeste=function(){return false}}}catch(e){}
+try{
+if(!window.__svFetchV2){
+window.__svFetchV2=true;
+var nativeFetch=null;
+try{if(window.Window&&Window.prototype&&Window.prototype.fetch){nativeFetch=Window.prototype.fetch.bind(window);}else{nativeFetch=window.fetch.bind(window);}}catch(e){nativeFetch=window.fetch.bind(window);}
+window.fetch=function(url,opts){
+try{
+var u=(typeof url==="string")?url:((url&&url.url)?url.url:"");
+if(u.indexOf("/gerar")>=0&&opts&&typeof opts.body==="string"){
+try{
+var b=JSON.parse(opts.body);
+var mudou=false;
+if(b.model&&!b.modelo){b.modelo=b.model;mudou=true;}
+if(b.modelo&&!b.model){b.model=b.modelo;mudou=true;}
+if(b.input&&!b.entrada){b.entrada=b.input;mudou=true;}
+if(b.entrada&&!b.input){b.input=b.entrada;mudou=true;}
+var md=b.modelo||b.model||"";
+if(typeof md==="string"&&md.indexOf("music-1.5")>=0){
+if(b.input){if("duration" in b.input){delete b.input.duration;mudou=true;}if("duration_seconds" in b.input){delete b.input.duration_seconds;mudou=true;}}
+if(b.entrada){if("duration" in b.entrada){delete b.entrada.duration;mudou=true;}if("duration_seconds" in b.entrada){delete b.entrada.duration_seconds;mudou=true;}}
+}
+if(mudou){opts=Object.assign({},opts,{body:JSON.stringify(b)});}
+}catch(e){}
+}
+}catch(e){}
+return nativeFetch(url,opts);
+};
+}
+}catch(e){}
+function getM(){try{var s=localStorage.getItem("sv22_mot");if(s){var j=JSON.parse(s);return{musica:j.musica||"minimax/music-1.5",video:j.video||"kwaivgi/kling-v2.1",foto:j.foto||"black-forest-labs/flux-schnell",texto:j.texto||"meta/meta-llama-3-8b-instruct"};}}catch(e){}return{musica:"minimax/music-1.5",video:"kwaivgi/kling-v2.1",foto:"black-forest-labs/flux-schnell",texto:"meta/meta-llama-3-8b-instruct"};}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)});}
+function extraiURL(o){if(typeof o==="string"&&o.indexOf("http")===0)return o;if(o&&typeof o==="object"&&!Array.isArray(o)){for(var k in o){try{if(typeof o[k]==="string"&&o[k].indexOf("http")===0)return o[k];}catch(e){}}}if(Array.isArray(o)){for(var i=0;i<o.length;i++){var v=o[i];if(typeof v==="string"&&v.indexOf("http")===0)return v;if(v&&typeof v==="object"){for(var k2 in v){try{if(typeof v[k2]==="string"&&v[k2].indexOf("http")===0)return v[k2];}catch(e){}}}}}return null;}
+function extraiTXT(o){if(!o)return "";if(typeof o==="string")return o;if(Array.isArray(o))return o.join("\n");try{return JSON.stringify(o);}catch(e){return ""+o;}}
+window.comoURL=extraiURL;window.comURL=extraiURL;window.comoTexto=extraiTXT;window.comTexto=extraiTXT;
+function canal(){try{return window.SV.canal();}catch(e){return "sertanejo";}}
+function canalNome(){try{return window.SV.canalNome();}catch(e){return "Sertanejo";}}
+function receitaDoCanal(){var c="sertanejo";try{c=window.SV.canal();}catch(e){}var m={sertanejo:"sertanejo universitario animado, dupla masculina, sanfona 120 baixos, violao de aco, bateria forte, 130 BPM, romantico",gospel:"gospel contemporaneo emocionante, piano, orgao, bateria suave, coral, vozes potentes em portugues, 90 BPM, adoracao",salmos:"salmos biblicos orquestral emocionante, piano, cordas, coral suave, voz masculina solene em portugues, 80 BPM, espiritual",eletronica:"musica eletronica dance energetica, sintetizadores, baixo pulsante, bateria eletronica forte, 128 BPM, festa",rock:"rock nacional energetico, guitarra eletrica, baixo, bateria forte, vocal masculino em portugues, 140 BPM, rebelde",reggae:"reggae brasileiro relaxante, guitarra dedilhada, baixo groovado, bateria leve, teclado, vocal suave em portugues, 90 BPM, praia",dance:"dance pop animado, beat eletronico, sintetizadores brilhantes, vocal feminino em portugues, 125 BPM, pista"};return m[c]||m.sertanejo;}
+async function gerarUnico(model,input,st){
+for(var tent=1;tent<=4;tent++){
+try{
+var body=JSON.stringify({modelo:model,model:model,entrada:input,input:input});
+var r=await window.fetch(WORKER+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},body:body});
+var txt=await r.text();
+if(txt.indexOf("throttled")>=0||txt.indexOf("429")>=0){
+var espera=12;
+try{var jj=JSON.parse(txt);if(jj.retry_after)espera=parseInt(jj.retry_after,10)+3;}catch(e){}
+if(espera<10)espera=12;if(espera>40)espera=40;
+if(st)st.textContent="Replicate pediu espera "+espera+"s. Tentativa "+tent+"/4... $0 ate passar.";
+await sleep(espera*1000);
+continue;
+}
+var j;try{j=JSON.parse(txt);}catch(e){throw new Error("Worker: "+txt.slice(0,250));}
+var id=j.id||j.prediction_id||(j.prediction&&j.prediction.id);
+var out=j.output||(j.prediction&&j.prediction.output);
+if(out)return out;
+if(!id){
+if(txt.indexOf("throttled")>=0){await sleep(12000);continue;}
+throw new Error("Sem ID: "+txt.slice(0,300));
+}
+for(var i=0;i<50;i++){
+await sleep(3000);
+if(st)st.textContent="Gerando... "+(i*3)+"s (tent "+tent+"/4)";
+try{
+var rs=await window.fetch(WORKER+"/status?id="+encodeURIComponent(id));
+var t2=await rs.text();
+if(t2.indexOf("throttled")>=0){if(st)st.textContent="Status pediu espera 10s...";await sleep(10000);continue;}
+var js;try{js=JSON.parse(t2);}catch(e){continue;}
+var op=js.output||(js.prediction&&js.prediction.output);
+if(op)return op;
+var sst=js.status||(js.prediction&&js.prediction.status)||"";
+if(sst==="failed"||sst==="canceled")throw new Error("Falhou: "+t2.slice(0,300));
+}catch(e){if((""+e.message).indexOf("Falhou")===0)throw e;}
+}
+throw new Error("Tempo esgotado");
+}catch(e){
+var msg=""+e.message;
+if(msg.indexOf("throttled")>=0||msg.indexOf("429")>=0){
+if(st)st.textContent="429, esperando 12s... tent "+tent+"/4";
+await sleep(12000);
+continue;
+}
+throw e;
+}
+}
+throw new Error("429 persistiu apos 4 tentativas. $0 gasto. Manda print.");
+}
+async function gerarLetra3(dst,letEl,desEl){
+if(!letEl)return;
+var tema="amor e saudade";
+try{if(desEl&&desEl.value.trim())tema=desEl.value.trim();}catch(e){}
+if(dst)dst.textContent="Gerando 3 letras... centavos...";
+try{
+var mm=getM();
+var pr="You are Brazilian hit songwriter. Channel "+canalNome()+". Theme PT: "+tema+". Write 3 DIFFERENT versions PT, each short for 30-90s songs, max 4 markers [Verse][Chorus][Bridge][Outro], no cliches. Label VERSION 1 2 3. ONLY lyrics.";
+var o=await gerarUnico(mm.texto,{prompt:pr,max_tokens:2000,temperature:0.7},dst);
+var res=extraiTXT(o);
+if(!res)throw new Error("Letra vazia");
+letEl.value=res;
+if(dst)dst.textContent="3 versoes prontas! Escolhe 1, apaga o resto, clica GERAR MUSICA.";
+}catch(e){if(dst)dst.textContent="Erro: "+e.message;}
+}
+async function aprovarMusica(){
+var st=document.getElementById("sv22-t-st");
+var tmp=null;try{tmp=window.__svTempMusica;}catch(e){}
+if(!tmp||!tmp.url){if(st)st.textContent="Nada pra aprovar. Gera primeiro.";return;}
+if(!confirm("APROVAR e SALVAR no Cofre de Musicas?\n\nSo agora vai pra nuvem definitiva."))return;
+var bSim=document.getElementById("sv22-aprova-sim");
+var bNao=document.getElementById("sv22-aprova-nao");
+try{
+if(bSim)bSim.disabled=true;if(bNao)bNao.disabled=true;
+if(st)st.textContent="Salvando no Cofre...";
+var c=canal();
+var nome="musica-"+c+"-"+Date.now()+".mp3";
+var rSave=await window.fetch(WORKER+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:tmp.url,pasta:"musicas",nome:nome})});
+var tSave=await rSave.text();
+var chave="musicas/"+nome;
+try{var jS=JSON.parse(tSave);if(jS.chave)chave=jS.chave;else if(jS.key)chave=jS.key;else if(jS.path)chave=jS.path;}catch(e){}
+var durSol=60;try{durSol=window.SV.duracao();}catch(e){}
+var durReal=0;try{var au=document.getElementById("sv22-t-aud");if(au&&au.duration&&isFinite(au.duration))durReal=Math.round(au.duration);}catch(e){}
+var item={id:Date.now(),nome:"Musica "+new Date().toLocaleString(),canal:c,canalNome:canalNome(),arquivo:chave,letra:tmp.letra,estilo:tmp.en,desejo:tmp.desejo,duracao_pedida:durSol,duracao_real:durReal,data:new Date().toISOString()};
+var meta={musicas:[]};
+try{var rM=await window.fetch(WORKER+"/arquivo?chave=meta/dados.json");if(rM.ok){var jm=await rM.json();if(jm&&typeof jm==="object")meta=jm;if(!meta.musicas)meta.musicas=[];}}catch(e){}
+try{meta.musicas.push(item);}catch(e){meta={musicas:[item]};}
+try{await window.fetch(WORKER+"/upload?pasta=meta&nome=dados.json",{method:"PUT",body:JSON.stringify(meta)});}catch(e){}
+try{if(window.META&&window.META.musicas){window.META.musicas.push(item);if(typeof window.salvarMeta==="function")await window.salvarMeta();if(typeof window.listarMusicas==="function")window.listarMusicas();}}catch(e){}
+try{if(typeof listarMusicas==="function")listarMusicas();}catch(e){}
+window.__svMusicaAprovada=true;
+window.__svMusicaAprovadaChave=chave;
+if(st)st.textContent="Aprovada e salva no Cofre! ("+chave+") Agora pode ir pra Fabrica de Clipes.";
+var ab=document.getElementById("sv22-aprova");if(ab)ab.style.display="none";
+if(bSim)bSim.disabled=false;if(bNao)bNao.disabled=false;
+}catch(e){
+if(st)st.textContent="Erro salvar: "+e.message;
+if(bSim)bSim.disabled=false;if(bNao)bNao.disabled=false;
+}
+}
+function reprovarMusica(){
+var st=document.getElementById("sv22-t-st");
+var au=document.getElementById("sv22-t-aud");
+try{if(au){au.pause();au.removeAttribute("src");au.load();au.style.display="none";}}catch(e){}
+window.__svTempMusica=null;
+window.__svMusicaAprovada=false;
+var ab=document.getElementById("sv22-aprova");if(ab)ab.style.display="none";
+var rd=document.getElementById("sv22-real-dur");if(rd)rd.textContent="";
+if(st)st.textContent="Reprovada, descartada. Nada salvo. Pode gerar outra ou ajustar desejo/letra.";
+}
+function limpa(){
+try{var chk=document.getElementById("sv22-teste");if(chk){var lab=chk.parentElement;if(lab&&lab.tagName==="LABEL")lab.style.display="none";else chk.style.display="none";}}catch(e){}
+try{var auto=document.getElementById("sv22-auto-mus");if(auto)auto.style.display="none";}catch(e){}
+try{
+var teste=document.getElementById("sv22-teste1");if(!teste)return;
+var b=teste.querySelector("b");if(b)b.textContent="CRIAR MUSICA - MiniMax 1.5 unico";
+var smalls=teste.querySelectorAll("small");
+for(var i=0;i<smalls.length;i++){var tx=smalls[i].textContent||"";if(tx.length>0&&tx.indexOf("Escolhe Tempo")<0){smalls[i].textContent="Escolhe Tempo em cima. Usa receita MUSIC OS ou escreve. Gera. Ouve. So salva se APROVAR.";break;}}
+var ids=["sv22-t-mus","sv22-t-foto","sv22-t-vid"];
+for(var k=0;k<ids.length;k++){var inp=document.getElementById(ids[k]);if(inp&&inp.parentElement)inp.parentElement.style.display="none";}
+var blue=document.getElementById("sv22-foto-teste");if(blue)blue.style.display="none";
+var fx=document.getElementById("sv22-fix-msg");if(fx)fx.style.display="none";
+var imgs=teste.querySelectorAll("img");for(var m=0;m<imgs.length;m++){try{imgs[m].style.display="none";}catch(e){}}
+var go=document.getElementById("sv22-t-go");if(go&&go.textContent.indexOf("GERAR MUSICA")<0){go.textContent="GERAR MUSICA";}
+if(!document.getElementById("sv22-motor-fixo2")){
+var d=document.createElement("div");d.id="sv22-motor-fixo2";d.style.cssText="font-size:12px;color:#8f8;margin:4px 0";d.textContent="Motor fixo embutido: MiniMax 1.5 (sem escolha, sem ID) + prompts MUSIC OS";
+var ref=document.getElementById("sv22-t-des");if(ref&&ref.parentNode)ref.parentNode.insertBefore(d,ref);
+}
+}catch(e){}
+try{
+var ap=window.__svMusicaAprovada===true;
+var bf=document.getElementById("sv22-ac-foto");
+if(bf&&!ap){bf.disabled=true;bf.style.opacity="0.4";bf.title="Travado: APROVA a musica primeiro. Ordem: Letra -> Musica -> Previa -> Kling.";}
+}catch(e){}
+}
+function garanteBotoes(){
+try{
+var teste=document.getElementById("sv22-teste1");if(!teste)return;
+var des=document.getElementById("sv22-t-des");
+if(des&&!document.getElementById("sv22-musicos-btn2")){
+var btn=document.createElement("button");btn.id="sv22-musicos-btn2";btn.textContent="Usar receita MUSIC OS do canal";
+btn.style.cssText="background:#9c27b0;color:#fff;font-weight:bold;padding:6px 10px;border:none;border-radius:6px;margin:6px 6px 6px 0;cursor:pointer";
+des.parentNode.insertBefore(btn,des.nextSibling);
+btn.onclick=function(){des.value=receitaDoCanal();try{des.dispatchEvent(new Event("input",{bubbles:true}));}catch(e){}var s2=document.getElementById("sv22-t-st");if(s2)s2.textContent="Receita MUSIC OS carregada: "+canalNome()+". Pode clicar GERAR MUSICA.";};
+}
+var letEl=document.getElementById("sv22-t-let");
+if(letEl&&!document.getElementById("sv22-nova-letra")&&!document.getElementById("sv22-nova-letra2")){
+var bL=document.createElement("button");bL.id="sv22-nova-letra2";bL.textContent="NAO TENHO LETRA - GERAR 3 (centavos)";
+bL.style.cssText="background:#ff9800;color:#000;font-weight:bold;padding:6px 10px;border:none;border-radius:6px;margin:6px 0;cursor:pointer";
+letEl.parentNode.insertBefore(bL,letEl.nextSibling);
+var div=document.createElement("div");div.id="sv22-letra-st2";div.style.cssText="font-size:12px;color:#ffd180;min-height:14px";
+bL.parentNode.insertBefore(div,bL.nextSibling);
+bL.onclick=function(){gerarLetra3(div,letEl,des);};
+}
+var aud=document.getElementById("sv22-t-aud");
+if(aud&&!document.getElementById("sv22-aprova")){
+var box=document.createElement("div");box.id="sv22-aprova";box.style.cssText="display:none;background:#001a12;border:2px solid #00e676;border-radius:8px;padding:8px;margin-top:8px";
+box.innerHTML='<div id="sv22-real-dur" style="font-size:12px;color:#8f8;margin-bottom:6px"></div><button id="sv22-aprova-sim" style="background:#00e676;color:#000;font-weight:bold;padding:8px 12px;border:none;border-radius:6px;margin-right:6px;cursor:pointer">APROVAR E SALVAR NO COFRE</button><button id="sv22-aprova-nao" style="background:#c62828;color:#fff;font-weight:bold;padding:8px 12px;border:none;border-radius:6px;cursor:pointer">REPROVAR (descarta)</button><div style="font-size:11px;color:#aaa;margin-top:4px">So APROVADA vai pro Cofre. Reprovada nao salva nada.</div>';
+aud.parentNode.insertBefore(box,aud.nextSibling);
+document.getElementById("sv22-aprova-sim").onclick=aprovarMusica;
+document.getElementById("sv22-aprova-nao").onclick=reprovarMusica;
+}
+}catch(e){}
+}
+function patchGerar(){
+try{
+var btn=document.getElementById("sv22-t-go");if(!btn)return;
+if(btn.dataset&&btn.dataset.svFabrica==="1")return;
+if(btn.dataset)btn.dataset.svFabrica="1";
+btn.textContent="GERAR MUSICA";
+btn.onclick=function(){
+var st=document.getElementById("sv22-t-st");
+var desEl=document.getElementById("sv22-t-des");
+var letEl=document.getElementById("sv22-t-let");
+var aud=document.getElementById("sv22-t-aud");
+var des=desEl?desEl.value.trim():"";
+var letT=letEl?letEl.value.trim():"";
+if(!des||!letT){if(st)st.textContent="Falta desejo ou letra.";return;}
+if(btn.disabled)return;
+var durSol=60;try{durSol=window.SV.duracao();}catch(e){}
+var durTxt=durSol+"s";try{var mm2=Math.floor(durSol/60),ss2=durSol%60;durTxt=mm2+":"+(ss2<10?"0":"")+ss2;}catch(e){}
+if(!confirm("CRIAR MUSICA "+durTxt+"\n\n~$0.40 se passar, $0 se falhar.\nNAO salva sozinho. So vai pro Cofre se tu APROVAR.\nRunPod nao mexe.\n\nConfirma?")){if(st)st.textContent="Cancelado. $0.";return;}
+(async function(){
+try{
+btn.disabled=true;btn.style.opacity="0.5";
+window.__svMusicaAprovada=false;
+window.__svTempMusica=null;
+var ab=document.getElementById("sv22-aprova");if(ab)ab.style.display="none";
+var rd0=document.getElementById("sv22-real-dur");if(rd0)rd0.textContent="";
+if(aud){try{aud.pause();aud.removeAttribute("src");aud.load();aud.style.display="none";}catch(e){}}
+var m=getM();
+if(st)st.textContent="1/2 Traduzindo PT->EN premium (centavos)...";
+var prT="You are music prompt engineer for MiniMax Music-1.5. Channel "+canalNome()+". Desire PT: "+des+". Write ONE technical prompt EN under 600 chars, genre recipe BPM instruments vocals PT dynamics studio quality. No real artist names. ONLY prompt.";
+var oT=await gerarUnico(m.texto,{prompt:prT,max_tokens:800,temperature:0.5},null);
+var en=extraiTXT(oT).trim();
+if(!en)throw new Error("Traducao vazia, tenta de novo");
+if(en.length>600)en=en.slice(0,600);
+if(st)st.textContent="Traducao pronta. Esperando 12s pro limite...";
+await sleep(12000);
+if(st)st.textContent="2/2 Gerando musica (modelo decide duracao, sem travar)...";
+var oM=await gerarUnico(m.musica,{prompt:en,lyrics:letT},st);
+var u=extraiURL(oM);
+if(u){
+window.__svTempMusica={url:u,en:en,letra:letT,desejo:des};
+if(aud){aud.src=u;aud.style.display="block";}
+if(st)st.textContent="Musica pronta! OUVE. Se gostar APROVA, se nao REPROVA. Nada salvo ainda.";
+var ab2=document.getElementById("sv22-aprova");if(ab2)ab2.style.display="block";
+try{
+aud.onloadedmetadata=function(){
+try{
+var rdd=Math.round(aud.duration);
+var rbox=document.getElementById("sv22-real-dur");
+if(rbox&&rdd&&isFinite(rdd)){
+var rc=Math.ceil(rdd/5);
+var rmm=Math.floor(rdd/60),rss=rdd%60;
+rbox.textContent="Veio com "+rmm+":"+(rss<10?"0":"")+rss+" ("+rdd+"s) = cota real "+rc+" cenas. Pedido era "+durTxt+". Se aprovar, usa cota real.";
+}
+}catch(e){}
+};
+}catch(e){}
+}else{
+if(st)st.textContent="Retornou texto, nao audio: "+extraiTXT(oM).slice(0,400);
+}
+}catch(e){
+if(st)st.textContent="Erro: "+e.message+" (manda print)";
+}finally{
+btn.disabled=false;btn.style.opacity="1";
+}
+})();
+};
+}catch(e){}
+}
+function loop(){try{limpa();}catch(e){}try{garanteBotoes();}catch(e){}try{patchGerar();}catch(e){}}
+setInterval(loop,1500);loop();
+})();
+</script>
+<!-- ===== FABRICA CERTA V1 FIM ===== -->
 </body>
 </html>
