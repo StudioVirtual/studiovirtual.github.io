@@ -1595,5 +1595,17 @@ setInterval(fix,1500);fix();
 })();
 </script>
 <!-- ===== FIX 429 1-CALL FIM ===== -->
+<!-- ===== FIX TYPO COMURL INICIO ===== -->
+<script>
+(function(){
+function extraiURL(o){if(typeof o==="string"&&o.indexOf("http")===0)return o;if(Array.isArray(o)){for(var i=0;i<o.length;i++){if(typeof o[i]==="string"&&o[i].indexOf("http")===0)return o[i];if(o[i]&&typeof o[i]==="object"){for(var k in o[i]){if(typeof o[i][k]==="string"&&o[i][k].indexOf("http")===0)return o[i][k]}}}}if(o&&typeof o==="object"){for(var k2 in o){if(typeof o[k2]==="string"&&o[k2].indexOf("http")===0)return o[k2]}}return null}
+function extraiTXT(o){if(!o)return "";if(typeof o==="string")return o;if(Array.isArray(o))return o.join("\n");try{return JSON.stringify(o)}catch(e){return""+o}}
+window.comURL=extraiURL;
+window.comoURL=extraiURL;
+window.comTexto=extraiTXT;
+window.comoTexto=extraiTXT;
+})();
+</script>
+<!-- ===== FIX TYPO COMURL FIM ===== -->
 </body>
 </html>
