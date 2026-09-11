@@ -1469,5 +1469,131 @@ setInterval(fixTempo,1500);fixTempo();
 })();
 </script>
 <!-- ===== FIX TEMPO LIVRE FIM ===== -->
+<!-- ===== FIX 429 1-CALL INICIO ===== -->
+<script>
+(function(){
+var WORKER=(window.SV&&window.SV.worker)||"https://studio-motor.alexmedeirosbsb.workers.dev";
+function getM(){try{var s=localStorage.getItem("sv22_mot");if(s){var j=JSON.parse(s);return{musica:j.musica||"minimax/music-1.5",video:j.video||"kwaivgi/kling-v2.1",foto:j.foto||"black-forest-labs/flux-schnell",texto:j.texto||"meta/meta-llama-3-8b-instruct"}}}catch(e){}return{musica:"minimax/music-1.5",video:"kwaivgi/kling-v2.1",foto:"black-forest-labs/flux-schnell",texto:"meta/meta-llama-3-8b-instruct"}}
+function comoURL(o){if(typeof o==="string"&&o.indexOf("http")===0)return o;if(Array.isArray(o)){for(var i=0;i<o.length;i++){if(typeof o[i]==="string"&&o[i].indexOf("http")===0)return o[i];if(o[i]&&typeof o[i]==="object"){for(var k in o[i]){if(typeof o[i][k]==="string"&&o[i][k].indexOf("http")===0)return o[i][k]}}}}if(o&&typeof o==="object"){for(var k2 in o){if(typeof o[k2]==="string"&&o[k2].indexOf("http")===0)return o[k2]}}return null}
+function comoTexto(o){if(!o)return "";if(typeof o==="string")return o;if(Array.isArray(o))return o.join("\n");try{return JSON.stringify(o)}catch(e){return""+o}}
+async function gerarUnico(model,input,st){
+for(var tent=1;tent<=4;tent++){
+try{
+var body=JSON.stringify({modelo:model,model:model,entrada:input,input:input});
+var r=await fetch(WORKER+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},body:body});
+var txt=await r.text();
+if(txt.indexOf("throttled")>=0||txt.indexOf("429")>=0){
+var espera=12;
+try{var jj=JSON.parse(txt);if(jj.retry_after)espera=parseInt(jj.retry_after,10)+3}catch(e){}
+if(espera<10)espera=12;if(espera>40)espera=40;
+if(st)st.textContent="Replicate pediu espera "+espera+"s. Tentativa "+tent+"/4... $0 ate passar.";
+await new Promise(function(r2){setTimeout(r2,espera*1000)});
+continue;
+}
+var j;try{j=JSON.parse(txt)}catch(e){throw new Error("Worker: "+txt.slice(0,250))}
+var id=j.id||j.prediction_id||(j.prediction&&j.prediction.id);
+var out=j.output||(j.prediction&&j.prediction.output);
+if(out)return out;
+if(!id){
+if(txt.indexOf("throttled")>=0){await new Promise(function(r2){setTimeout(r2,12000)});continue}
+throw new Error("Sem ID: "+txt.slice(0,300));
+}
+for(var i=0;i<50;i++){
+await new Promise(function(r2){setTimeout(r2,3000)});
+if(st)st.textContent="Gerando... "+(i*3)+"s (tent "+tent+"/4)";
+try{
+var rs=await fetch(WORKER+"/status?id="+encodeURIComponent(id));
+var t2=await rs.text();
+if(t2.indexOf("throttled")>=0){if(st)st.textContent="Status pediu espera 10s...";await new Promise(function(r2){setTimeout(r2,10000)});continue}
+var js;try{js=JSON.parse(t2)}catch(e){continue}
+var op=js.output||(js.prediction&&js.prediction.output);
+if(op)return op;
+var sst=js.status||(js.prediction&&js.prediction.status)||"";
+if(sst==="failed"||sst==="canceled")throw new Error("Falhou: "+t2.slice(0,300));
+}catch(e){if((""+e.message).indexOf("Falhou")===0)throw e}
+}
+throw new Error("Tempo esgotado");
+}catch(e){
+var msg=""+e.message;
+if(msg.indexOf("throttled")>=0||msg.indexOf("429")>=0){
+if(st)st.textContent="429, esperando 12s... tent "+tent+"/4";
+await new Promise(function(r2){setTimeout(r2,12000)});
+continue;
+}
+throw e;
+}
+}
+throw new Error("429 persistiu apos 4 tentativas. $0 gasto. Manda print.");
+}
+function fix(){
+var btn=document.getElementById("sv22-t-go");
+if(btn&&!btn.dataset.sv429){
+btn.dataset.sv429="1";
+btn.textContent="GERAR MUSICA 1-CALL (1 pedido)";
+btn.onclick=function(){
+var st=document.getElementById("sv22-t-st");
+var mm=getM();
+var desEl=document.getElementById("sv22-t-des");
+var letEl=document.getElementById("sv22-t-let");
+var des=desEl?desEl.value.trim():"";
+var letT=letEl?letEl.value.trim():"";
+if(!des||!letT){if(st)st.textContent="Falta desejo ou letra.";return}
+if(!confirm("1 MUSICA 60s - 1 PEDIDO SO\nSem traducao extra pra caber no limite.\n~$0.40 se passar, $0 se falhar.\nRunPod nao mexe.\nConfirma?")){if(st)st.textContent="Cancelado. $0.";return}
+(async function(){
+try{
+if(st)st.textContent="Gerando em 1 pedido...";
+var dur=60;try{dur=window.SV.duracao()}catch(e){}
+var en=des+" , male vocal duo harmony, vocals in Portuguese, studio quality";
+if(en.length>600)en=en.slice(0,600);
+var oM=await gerarUnico(mm.musica,{prompt:en,lyrics:letT,duration:dur,duration_seconds:dur},st);
+var u=comURL(oM);
+if(u){
+var aud=document.getElementById("sv22-t-aud");
+if(aud){aud.src=u;aud.style.display="block"}
+if(st)st.textContent="Musica pronta! Salvando na nuvem...";
+try{await fetch(WORKER+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:u,pasta:"musicas",nome:"musica-60s-"+Date.now()+".mp3"})});if(st)st.textContent="Pronta e salva em musicas/! Ouve acima."}catch(e){if(st)st.textContent="Pronta! Ouve acima. Falha salvar: "+e.message}
+}else{
+if(st)st.textContent="Retornou texto, nao audio: "+comoTexto(oM).slice(0,400);
+}
+}catch(e){if(st)st.textContent="Erro: "+e.message+" (manda print)"}
+})();
+};
+}
+var teste=document.getElementById("sv22-teste1");
+if(teste&&!document.getElementById("sv22-foto-teste")){
+try{
+var b2=document.createElement("button");
+b2.id="sv22-foto-teste";
+b2.textContent="TESTAR CONTA 1 FOTO $0.003";
+b2.style.cssText="background:#2196F3;color:#fff;font-weight:bold;padding:6px 10px;border:none;border-radius:6px;margin:6px 0 0 6px;cursor:pointer";
+var ref=document.getElementById("sv22-t-go");
+if(ref&&ref.parentNode)ref.parentNode.insertBefore(b2,ref.nextSibling);else teste.appendChild(b2);
+b2.onclick=function(){
+var st=document.getElementById("sv22-t-st");
+var mm=getM();
+if(!confirm("TESTE CONTA - 1 FOTO FLUX\n$0.003 se passar, $0 se falhar.\nProva se a chave nova entrou no ar.\nConfirma?")){if(st)st.textContent="Cancelado. $0.";return}
+(async function(){
+try{
+if(st)st.textContent="Testando conta com 1 foto...";
+var o=await gerarUnico(mm.foto,{prompt:"sunset over ocean, cinematic photo, 16:9"},st);
+var u=comURL(o);
+if(u){
+if(st)st.textContent="CONTA OK! Foto passou. Chave nova funcionando. Agora pode gerar musica.";
+var img=document.createElement("img");img.src=u;img.style.cssText="width:200px;display:block;margin-top:6px;border-radius:6px";
+teste.appendChild(img);
+try{await fetch(WORKER+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:u,pasta:"cenas",nome:"teste-conta-"+Date.now()+".jpg"})})}catch(e){}
+}else{
+if(st)st.textContent="Foto retornou texto: "+comoTexto(o).slice(0,300);
+}
+}catch(e){if(st)st.textContent="Erro foto: "+e.message+" (manda print)"}
+})();
+};
+}catch(e){}
+}
+}
+setInterval(fix,1500);fix();
+})();
+</script>
+<!-- ===== FIX 429 1-CALL FIM ===== -->
 </body>
 </html>
