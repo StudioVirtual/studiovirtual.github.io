@@ -1347,5 +1347,55 @@ setInterval(travaVelho,2000);travaVelho();
 })();
 </script>
 <!-- ===== BLOCO TRAVA VELHO + TESTE NOVO FIM ===== -->
+<!-- ===== FIX CONEXAO INICIO ===== -->
+<script>
+(function(){
+var origFetch=window.fetch;
+window.fetch=function(url,opts){
+try{
+var u=(typeof url==="string")?url:((url&&url.url)?url.url:"");
+if(u.indexOf("/gerar")>=0&&opts&&typeof opts.body==="string"){
+try{
+var b=JSON.parse(opts.body);
+var mudou=false;
+if(b.model&&!b.modelo){b.modelo=b.model;mudou=true}
+if(b.modelo&&!b.model){b.model=b.modelo;mudou=true}
+if(b.input&&!b.entrada){b.entrada=b.input;mudou=true}
+if(b.entrada&&!b.input){b.input=b.entrada;mudou=true}
+if(mudou){opts=Object.assign({},opts,{body:JSON.stringify(b)})}
+}catch(e){}
+}
+}catch(e){}
+return origFetch.call(this,url,opts);
+};
+function organiza(){
+var auto=document.getElementById("sv22-auto-mus");
+var teste=document.getElementById("sv22-teste1");
+var chk=document.getElementById("sv22-teste");
+if(!auto||!teste)return;
+try{
+if(auto.contains(teste)){auto.parentNode.insertBefore(teste,auto.nextSibling)}
+var isT=chk?chk.checked:true;
+if(isT){auto.style.display="none";teste.style.display="block"}
+else{auto.style.display="block";teste.style.display="none"}
+}catch(e){}
+}
+function avisa(){
+var st=document.getElementById("sv22-t-st");
+if(st&&!document.getElementById("sv22-fix-msg")){
+try{
+var d=document.createElement("div");
+d.id="sv22-fix-msg";
+d.style.cssText="background:#003300;border:1px solid #00e676;color:#8f8;padding:4px;border-radius:4px;margin-top:4px;font-size:12px";
+d.textContent="FIX conexao aplicado. Letra ja pronta, nao digita nada. Pode clicar GERAR.";
+st.parentNode.insertBefore(d,st);
+}catch(e){}
+}
+}
+setInterval(organiza,1500);organiza();
+setInterval(avisa,1500);avisa();
+})();
+</script>
+<!-- ===== FIX CONEXAO FIM ===== -->
 </body>
 </html>
