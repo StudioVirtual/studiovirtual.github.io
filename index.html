@@ -2493,5 +2493,47 @@ updateCounter();
 })();
 </script>
 <!-- ===== STUDIO NOVO EDITORA FIM ===== -->
+<!-- ===== FIX SOBE TOPO INICIO ===== -->
+<style>
+body{padding-top:0!important}
+#svnovo{display:block!important;margin:0!important}
+#sv22-bar,#sv22-teste1,#sv22-auto-mus,#sv22-auto-cine,#sv22-painel{display:none!important}
+</style>
+<script>
+(function(){
+function sobe(){
+var novo=document.getElementById("svnovo");
+if(!novo)return;
+try{if(document.body.firstChild!==novo)document.body.insertBefore(novo,document.body.firstChild);}catch(e){}
+try{novo.style.display="block";}catch(e){}
+try{
+Array.from(document.body.children).forEach(function(el){
+if(!el||el===novo)return;
+var tg=(el.tagName||"").toUpperCase();
+if(tg==="SCRIPT"||tg==="STYLE"||tg==="LINK")return;
+if(el.id==="svnovo")return;
+try{if(el.contains&&el.contains(novo))return;}catch(e){}
+var txt="";try{txt=el.textContent||"";}catch(e){}
+if(txt.indexOf("Fábrica de Música")>=0||txt.indexOf("Fábrica de Clipes")>=0||txt.indexOf("Cofre de")>=0||txt.indexOf("Dashboard")>=0){
+el.style.display="none";return;
+}
+if(tg==="DIV"||tg==="HEADER"||tg==="NAV"||tg==="ASIDE"||tg==="MAIN"||tg==="SECTION"){
+try{
+if(el.querySelector&&el.querySelector("button,a,li")&&el.children.length>0){
+el.style.display="none";
+}
+}catch(e){}
+}
+});
+}catch(e){}
+try{
+["sv22-bar","sv22-teste1","sv22-auto-mus","sv22-auto-cine","sv22-painel"].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display="none";});
+}catch(e){}
+}
+setInterval(sobe,1500);sobe();
+try{window.scrollTo(0,0);}catch(e){}
+})();
+</script>
+<!-- ===== FIX SOBE TOPO FIM ===== -->
 </body>
 </html>
