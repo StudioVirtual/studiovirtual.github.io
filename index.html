@@ -2535,5 +2535,590 @@ try{window.scrollTo(0,0);}catch(e){}
 })();
 </script>
 <!-- ===== FIX SOBE TOPO FIM ===== -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studio Virtual — Editora</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0e14;color:#fff;font-family:Arial,Helvetica,sans-serif}
+.top{background:#0f141f;padding:14px 16px;border-bottom:4px solid #00e676;position:sticky;top:0;z-index:10}
+.top h1{margin:0;font-size:22px}
+.top p{margin:4px 0 0;color:#9aa4b2;font-size:13px}
+#svn-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+#svn-tabs button{padding:9px 12px;border-radius:9px;border:1px solid #00e676;background:#1a2230;color:#fff;cursor:pointer;font-weight:bold;font-size:13px}
+#svn-tabs button.ativo{background:#00e676;color:#000}
+.wrap{padding:14px;max-width:1100px;margin:0 auto}
+.svn-tab{display:none;background:#121826;border:1px solid #263043;border-radius:12px;padding:14px}
+.svn-tab.ativo{display:block}
+.svn-tab button{padding:7px 11px;border-radius:7px;border:none;cursor:pointer;font-weight:bold;margin:3px 3px 0 0;font-size:13px}
+.svn-b{background:#00e676;color:#000}.svn-g{background:#3a4456;color:#fff}.svn-b2{background:#2196F3;color:#fff}.svn-r{background:#c62828;color:#fff}.svn-y{background:#ff9800;color:#000}.svn-p{background:#9c27b0;color:#fff}
+.svn-tab input[type=text],.svn-tab input[type=number],.svn-tab select{padding:7px;border-radius:7px;border:1px solid #3a4456;background:#0b0e14;color:#fff;font-size:13px;margin:2px 0}
+.svn-list{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.svn-card{width:230px;background:#0b0e14;border:1px solid #33405a;border-radius:10px;overflow:hidden;font-size:12px}
+.svn-card video,.svn-card img{width:100%;display:block;max-height:135px;background:#000}
+.svn-card audio{width:100%}
+.svn-card div{padding:6px}
+#svn-ruler{width:100%;margin-top:6px}
+#svn-selwrap{position:relative;height:10px;background:#333;border-radius:5px;margin:4px 0}
+#svn-sel{position:absolute;top:0;bottom:0;background:#00e676;border-radius:5px;left:0;width:0}
+#svn-cont{font-size:15px;margin-top:8px;font-weight:bold}
+#svn-barra{height:10px;background:#333;border-radius:5px;margin-top:4px;overflow:hidden}
+#svn-barra-fill{height:100%;width:0%;background:#ffeb3b}
+.svn-fila-item{background:#0b0e14;border:1px solid #33405a;border-radius:8px;padding:7px;margin:5px 0;font-size:12px}
+video{background:#000;border-radius:8px}
+small.c{color:#9aa4b2}
+hr{border:1px solid #263043;margin:12px 0}
+</style>
+</head>
+<body>
+<div class="top">
+<h1>🎬 STUDIO VIRTUAL — Editora</h1>
+<p>Sobe pronto de fora (Suno + Veo3). Aqui só corta, junta e salva. $0 editar. Capa/Thumb $0,003. Tudo nuvem.</p>
+<div id="svn-tabs">
+<button data-t="mus" class="ativo">📥 Músicas Baixadas</button>
+<button data-t="vid">📥 Vídeos Baixados</button>
+<button data-t="edit">🎬 Montadora Editora</button>
+<button data-t="cmus">🎵 Cofre Músicas</button>
+<button data-t="ccli">🎞️ Cofre Clipes</button>
+<button data-t="capa">🖼️ Capa</button>
+<button data-t="thumb">🎯 Thumbnail</button>
+</div>
+</div>
+<div class="wrap">
+<div id="svn-tab-mus" class="svn-tab ativo">
+<b>1. Sobe MP3 do Suno</b><br>
+<small class="c">Depois ouve aqui e usa na Editora.</small><br>
+<input type="file" id="svn-mus-file" accept="audio/*"> <button class="svn-b" id="svn-mus-up">Enviar</button>
+<div id="svn-mus-st" style="font-size:12px;color:#8f8"></div>
+<div id="svn-mus-list" class="svn-list"></div>
+</div>
+<div id="svn-tab-vid" class="svn-tab">
+<b>2. Sobe MP4 do Veo3 (até 2min cada)</b><br>
+<small class="c">Se passar de 110MB pode falhar, tenta menor.</small><br>
+<input type="file" id="svn-vid-file" accept="video/*"> <button class="svn-b" id="svn-vid-up">Enviar</button>
+<div id="svn-vid-st" style="font-size:12px;color:#8f8"></div>
+<div id="svn-vid-list" class="svn-list"></div>
+</div>
+<div id="svn-tab-edit" class="svn-tab">
+<b>1. Escolhe a música</b><br>
+<select id="svn-mus-sel" style="min-width:280px"></select> <button class="svn-g" id="svn-mus-ref">Atualizar</button>
+<div id="svn-mus-info" style="font-size:13px;color:#8f8"></div>
+<audio id="svn-mus-prev" controls style="width:100%;margin-top:4px"></audio>
+<hr>
+<b>2. Corta o vídeo com régua (vê o frame exato)</b><br>
+<select id="svn-vid-sel" style="min-width:280px"></select>
+<video id="svn-vid" controls playsinline style="width:100%;max-height:320px;margin-top:6px"></video>
+<input type="range" id="svn-ruler" min="0" max="1000" value="0">
+<div id="svn-selwrap"><div id="svn-sel"></div></div>
+<div id="svn-time" style="font-size:13px;color:#ffd180">00:00.000 / 00:00.000</div>
+<div id="svn-inout" style="font-size:13px;color:#8f8">IN -- OUT --</div>
+<div>
+<button class="svn-g" id="svn-f1">◀ 1 frame</button>
+<button class="svn-g" id="svn-f2">1 frame ▶</button>
+<button class="svn-g" id="svn-m1">-1s</button>
+<button class="svn-g" id="svn-p1">+1s</button>
+<button class="svn-y" id="svn-lento">0.25x LENTO</button>
+<button class="svn-b" id="svn-mark-in">I MARCAR INÍCIO</button>
+<button class="svn-r" id="svn-mark-out">O MARCAR FIM</button>
+</div>
+<div>
+<button class="svn-b2" id="svn-loop">LOOP CORTE: OFF</button>
+<button class="svn-b2" id="svn-prev-cut">PREVER CORTE</button>
+<button class="svn-p" id="svn-todo">USAR TODO SEM CORTE</button>
+<button class="svn-b" id="svn-tofila">MANDAR PRA FILA</button>
+</div>
+<small class="c">Teclado: Espaço play/pausa, ←/→ 1 frame, I/O marca.</small>
+<hr>
+<b>3. Fila de Edição (tua ordem)</b>
+<div id="svn-fila"></div>
+<div id="svn-cont">Fila 0:00 / Música 0:00</div>
+<div id="svn-barra"><div id="svn-barra-fill"></div></div>
+<div>
+<button class="svn-b2" id="svn-prev-fila">PREVER FILA COM MÚSICA</button>
+<button class="svn-b" id="svn-montar">OK MONTAR CLIPE DA FILA</button>
+<button class="svn-g" id="svn-fila-limpa">Limpar fila</button>
+</div>
+<div id="svn-exp-st" style="font-size:13px;color:#8f8;margin-top:6px"></div>
+<video id="svn-prev-fila-v" controls muted playsinline style="width:100%;max-height:240px;display:none"></video>
+<video id="svn-final" controls playsinline style="width:100%;max-height:320px;display:none"></video>
+<div id="svn-aprova" style="display:none;margin-top:6px">
+<button class="svn-b" id="svn-aprova-sim">APROVAR E SALVAR NO COFRE</button>
+<button class="svn-r" id="svn-aprova-nao">REPROVAR (descarta)</button>
+</div>
+</div>
+<div id="svn-tab-cmus" class="svn-tab"><b>Cofre de Músicas (ouve direto)</b> <button class="svn-g" id="svn-cmus-ref">Atualizar</button><div id="svn-cmus-list" class="svn-list"></div></div>
+<div id="svn-tab-ccli" class="svn-tab"><b>Cofre de Clipes (assiste direto, só aprovado cai aqui)</b> <button class="svn-g" id="svn-ccli-ref">Atualizar</button><div id="svn-ccli-list" class="svn-list"></div></div>
+<div id="svn-tab-capa" class="svn-tab">
+<b>Capa 1:1 (depois do clipe, $0,003)</b><br>
+<small class="c">Nome:</small> <input type="text" id="svn-capa-nome" placeholder="Nome da música" style="width:210px">
+<small class="c">Estilo:</small> <input type="text" id="svn-capa-est" placeholder="Ex: sertanejo pôr-do-sol rancho" style="width:210px">
+<button class="svn-b" id="svn-capa-go">GERAR CAPA</button>
+<div id="svn-capa-st" style="font-size:12px;color:#8f8"></div>
+<img id="svn-capa-prev" style="max-width:280px;display:none;border-radius:8px;margin-top:6px">
+<div id="svn-capa-ap" style="display:none"><button class="svn-b" id="svn-capa-sim">APROVAR E SALVAR</button> <button class="svn-r" id="svn-capa-nao">REPROVAR</button></div>
+<div id="svn-capa-list" class="svn-list"></div>
+</div>
+<div id="svn-tab-thumb" class="svn-tab">
+<b>Thumbnail 16:9 YouTube ($0,003, 250 agentes)</b><br>
+<small class="c">Família:</small> <select id="svn-th-fam"></select>
+<small class="c">Texto:</small> <input type="text" id="svn-th-txt" placeholder="Ex: Sofrência Ao Vivo" style="width:170px">
+<small class="c">Extra:</small> <input type="text" id="svn-th-ex" placeholder="Ex: dupla chapéu palco" style="width:190px">
+<button class="svn-b" id="svn-th-go">GERAR THUMB</button>
+<div id="svn-th-st" style="font-size:12px;color:#8f8"></div>
+<img id="svn-th-prev" style="max-width:340px;display:none;border-radius:8px;margin-top:6px">
+<div id="svn-th-ap" style="display:none"><button class="svn-b" id="svn-th-sim">APROVAR E SALVAR</button> <button class="svn-r" id="svn-th-nao">REPROVAR</button></div>
+<div id="svn-th-list" class="svn-list"></div>
+</div>
+</div>
+<script>
+(function(){
+var WORKER="https://studio-motor.alexmedeirosbsb.workers.dev";
+function $(id){return document.getElementById(id);}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)});}
+function fmt(s){if(!isFinite(s)||s<0)s=0;var m=Math.floor(s/60),ss=Math.floor(s%60),mm=Math.floor((s%1)*1000);return (m<10?"0":"")+m+":"+(ss<10?"0":"")+ss+"."+(mm<100?(mm<10?"00":"0"):"")+mm;}
+function fmtS(s){if(!isFinite(s)||s<0)s=0;s=Math.round(s);var m=Math.floor(s/60),ss=s%60;return m+":"+(ss<10?"0":"")+ss;}
+function urlChave(ch){return WORKER+"/arquivo?chave="+encodeURIComponent(ch);}
+function sanitize(n){return (n||"arq").replace(/[^\w\d\-\.\_\(\) ]+/g,"").replace(/\s+/g,"-").slice(0,80);}
+document.querySelectorAll("#svn-tabs button").forEach(function(bt){
+bt.onclick=function(){
+document.querySelectorAll("#svn-tabs button").forEach(function(x){x.classList.remove("ativo");});
+bt.classList.add("ativo");
+["mus","vid","edit","cmus","ccli","capa","thumb"].forEach(function(k){$("svn-tab-"+k).classList.remove("ativo");});
+$("svn-tab-"+bt.getAttribute("data-t")).classList.add("ativo");
+};
+});
+var bib={musicas:[],videos:[],clipes:[],capas:[],thumbs:[]};
+async function loadBib(){try{var r=await fetch(urlChave("meta/biblioteca.json"));if(r.ok){var j=await r.json();if(j&&typeof j==="object"){["musicas","videos","clipes","capas","thumbs"].forEach(function(k){if(Array.isArray(j[k]))bib[k]=j[k];});}}}catch(e){}}
+async function saveBib(){try{await fetch(WORKER+"/upload?pasta=meta&nome=biblioteca.json",{method:"PUT",body:JSON.stringify(bib)});}catch(e){}}
+async function listarPasta(pasta){
+try{
+var r=await fetch(WORKER+"/listar?pasta="+encodeURIComponent(pasta));
+var txt=await r.text();var j;try{j=JSON.parse(txt);}catch(e){return [];}
+var arr=[];
+if(Array.isArray(j))arr=j;else if(j&&Array.isArray(j.files))arr=j.files;else if(j&&Array.isArray(j.keys))arr=j.keys;else if(j&&Array.isArray(j.items))arr=j.items;else if(j&&Array.isArray(j.arquivos))arr=j.arquivos;else if(j&&Array.isArray(j.objetos))arr=j.objetos;
+return arr.map(function(it){
+if(typeof it==="string"){if(it.indexOf("/")>=0)return it;return pasta+"/"+it;}
+if(it&&typeof it==="object"){return it.chave||it.key||it.nome||it.name||it.path||"";}
+return "";
+}).filter(function(x){return x;});
+}catch(e){return [];}
+}
+async function syncBib(){
+var m=await listarPasta("musicas");
+m.forEach(function(ch){if(!bib.musicas.find(function(x){return x.chave===ch;})){bib.musicas.push({chave:ch,nome:ch.split("/").pop(),data:new Date().toISOString()});}});
+var v=await listarPasta("cenas");
+v.forEach(function(ch){if(!bib.videos.find(function(x){return x.chave===ch;})){bib.videos.push({chave:ch,nome:ch.split("/").pop(),data:new Date().toISOString()});}});
+var c=await listarPasta("clipes");
+c.forEach(function(ch){if(!bib.clipes.find(function(x){return x.chave===ch;})){bib.clipes.push({chave:ch,nome:ch.split("/").pop(),data:new Date().toISOString()});}});
+var cp=await listarPasta("capas");
+cp.forEach(function(ch){if(!bib.capas.find(function(x){return x.chave===ch;})){bib.capas.push({chave:ch,nome:ch.split("/").pop(),data:new Date().toISOString()});}});
+var th=await listarPasta("thumbs");
+th.forEach(function(ch){if(!bib.thumbs.find(function(x){return x.chave===ch;})){bib.thumbs.push({chave:ch,nome:ch.split("/").pop(),data:new Date().toISOString()});}});
+await saveBib();
+}
+async function uploadFile(file,pasta){
+var nome=sanitize(Date.now()+"-"+file.name);
+var r=await fetch(WORKER+"/upload?pasta="+encodeURIComponent(pasta)+"&nome="+encodeURIComponent(nome),{method:"PUT",body:file});
+var txt=await r.text();
+if(!r.ok)throw new Error("Upload falhou: "+txt.slice(0,200));
+return pasta+"/"+nome;
+}
+async function apagarChave(chave){
+var nome=chave.split("/").pop();
+if(!confirm('Quer mesmo apagar "'+nome+'"? Não tem volta.'))return false;
+try{await fetch(WORKER+"/apagar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chave:chave})});}catch(e){}
+try{await fetch(WORKER+"/apagar?chave="+encodeURIComponent(chave),{method:"POST"});}catch(e){}
+try{await fetch(WORKER+"/apagar?chave="+encodeURIComponent(chave),{method:"DELETE"});}catch(e){}
+["musicas","videos","clipes","capas","thumbs"].forEach(function(k){bib[k]=bib[k].filter(function(x){return x.chave!==chave;});});
+await saveBib();refreshAll();
+return true;
+}
+function cardMusica(it,comUsar){
+var d=document.createElement("div");d.className="svn-card";
+var u=urlChave(it.chave);
+d.innerHTML="<div><b>"+it.nome+"</b></div>";
+var a=document.createElement("audio");a.controls=true;a.src=u;a.preload="metadata";d.appendChild(a);
+var b=document.createElement("div");
+if(comUsar){var bu=document.createElement("button");bu.className="svn-b";bu.textContent="Usar na Editora";bu.onclick=function(){document.querySelector('[data-t="edit"]').click();setTimeout(function(){var s=$("svn-mus-sel");if(s){s.value=it.chave;onMusSel();}},300);};b.appendChild(bu);}
+var bd=document.createElement("button");bd.className="svn-r";bd.textContent="🗑️ Apagar";bd.onclick=function(){apagarChave(it.chave);};b.appendChild(bd);
+d.appendChild(b);return d;
+}
+function cardVideo(it,comUsar){
+var d=document.createElement("div");d.className="svn-card";
+var u=urlChave(it.chave);
+var v=document.createElement("video");v.controls=true;v.preload="metadata";v.src=u;d.appendChild(v);
+var t=document.createElement("div");t.innerHTML="<b>"+it.nome+"</b>";d.appendChild(t);
+var b=document.createElement("div");
+if(comUsar){var bu=document.createElement("button");bu.className="svn-b";bu.textContent="Cortar na Editora";bu.onclick=function(){document.querySelector('[data-t="edit"]').click();setTimeout(function(){var s=$("svn-vid-sel");if(s){s.value=it.chave;onVidSel();}},300);};b.appendChild(bu);}
+var bd=document.createElement("button");bd.className="svn-r";bd.textContent="🗑️ Apagar";bd.onclick=function(){apagarChave(it.chave);};b.appendChild(bd);
+d.appendChild(b);return d;
+}
+function cardImg(it){
+var d=document.createElement("div");d.className="svn-card";
+var u=urlChave(it.chave);
+var im=document.createElement("img");im.src=u;d.appendChild(im);
+var t=document.createElement("div");t.innerHTML="<b>"+it.nome+"</b>";d.appendChild(t);
+var b=document.createElement("div");
+var bd=document.createElement("button");bd.className="svn-r";bd.textContent="🗑️ Apagar";bd.onclick=function(){apagarChave(it.chave);};b.appendChild(bd);
+d.appendChild(b);return d;
+}
+function refreshAll(){
+$("svn-mus-list").innerHTML="";bib.musicas.forEach(function(it){$("svn-mus-list").appendChild(cardMusica(it,true));});
+$("svn-vid-list").innerHTML="";bib.videos.forEach(function(it){$("svn-vid-list").appendChild(cardVideo(it,true));});
+$("svn-cmus-list").innerHTML="";bib.musicas.forEach(function(it){$("svn-cmus-list").appendChild(cardMusica(it,false));});
+$("svn-ccli-list").innerHTML="";bib.clipes.forEach(function(it){$("svn-ccli-list").appendChild(cardVideo(it,false));});
+$("svn-capa-list").innerHTML="";bib.capas.forEach(function(it){$("svn-capa-list").appendChild(cardImg(it));});
+$("svn-th-list").innerHTML="";bib.thumbs.forEach(function(it){$("svn-th-list").appendChild(cardImg(it));});
+refreshEditorSelects();
+}
+function refreshEditorSelects(){
+var ms=$("svn-mus-sel"),curM=ms.value;
+ms.innerHTML="";bib.musicas.forEach(function(it){var o=document.createElement("option");o.value=it.chave;o.textContent=it.nome;ms.appendChild(o);});
+if(curM)ms.value=curM;
+var vs=$("svn-vid-sel"),curV=vs.value;
+vs.innerHTML="";bib.videos.forEach(function(it){var o=document.createElement("option");o.value=it.chave;o.textContent=it.nome;vs.appendChild(o);});
+if(curV)vs.value=curV;
+}
+$("svn-mus-up").onclick=async function(){
+var f=$("svn-mus-file").files[0],st=$("svn-mus-st");
+if(!f){st.textContent="Escolhe o MP3 primeiro.";return;}
+st.textContent="Enviando "+f.name+" ...";
+try{var ch=await uploadFile(f,"musicas");bib.musicas.push({chave:ch,nome:ch.split("/").pop(),data:new Date().toISOString()});await saveBib();refreshAll();st.textContent="✅ Enviado!";$("svn-mus-file").value="";}catch(e){st.textContent="❌ "+e.message;}
+};
+$("svn-vid-up").onclick=async function(){
+var f=$("svn-vid-file").files[0],st=$("svn-vid-st");
+if(!f){st.textContent="Escolhe o MP4 primeiro.";return;}
+st.textContent="Enviando "+f.name+" ... (pode demorar)";
+try{var ch=await uploadFile(f,"cenas");bib.videos.push({chave:ch,nome:ch.split("/").pop(),data:new Date().toISOString()});await saveBib();refreshAll();st.textContent="✅ Enviado!";$("svn-vid-file").value="";}catch(e){st.textContent="❌ "+e.message;}
+};
+$("svn-mus-ref").onclick=async function(){await syncBib();refreshAll();};
+$("svn-cmus-ref").onclick=async function(){await syncBib();refreshAll();};
+$("svn-ccli-ref").onclick=async function(){await syncBib();refreshAll();};
+var musDur=0,musUrl="",musChave="";
+var vidDur=0,inT=0,outT=0,loopOn=false,lentoOn=false;
+var fila=[];
+function onMusSel(){
+var ch=$("svn-mus-sel").value;if(!ch)return;
+musChave=ch;musUrl=urlChave(ch);
+var a=$("svn-mus-prev");a.src=musUrl;
+a.onloadedmetadata=function(){musDur=a.duration||0;$("svn-mus-info").textContent="Música: "+ch.split("/").pop()+" | "+fmtS(musDur)+" ("+Math.round(musDur)+"s)";updateCounter();};
+}
+function onVidSel(){
+var ch=$("svn-vid-sel").value;if(!ch)return;
+var v=$("svn-vid");v.src=urlChave(ch);v.load();
+v.onloadedmetadata=function(){vidDur=v.duration||0;inT=0;outT=vidDur;updateSel();};
+}
+$("svn-mus-sel").onchange=onMusSel;
+$("svn-vid-sel").onchange=onVidSel;
+var vEl=$("svn-vid"),ruler=$("svn-ruler");
+vEl.addEventListener("timeupdate",function(){
+if(vidDur>0)ruler.value=Math.round(vEl.currentTime/vidDur*1000);
+updateTimeUI();
+if(loopOn&&inT<outT){if(vEl.currentTime<inT||vEl.currentTime>outT+0.05)vEl.currentTime=inT;}
+});
+ruler.addEventListener("input",function(){if(vidDur>0)vEl.currentTime=(ruler.value/1000)*vidDur;});
+function updateTimeUI(){
+$("svn-time").textContent=fmt(vEl.currentTime||0)+" / "+fmt(vidDur||0);
+var cd=(outT>inT)?(outT-inT):0;
+$("svn-inout").textContent="IN "+fmt(inT)+" OUT "+fmt(outT)+" corte "+cd.toFixed(3)+"s";
+}
+function updateSel(){
+var w=$("svn-sel");
+if(vidDur>0&&outT>inT){w.style.left=(inT/vidDur*100)+"%";w.style.width=((outT-inT)/vidDur*100)+"%";}else{w.style.left="0%";w.style.width="0%";}
+updateTimeUI();
+}
+$("svn-f1").onclick=function(){vEl.pause();vEl.currentTime=Math.max(0,(vEl.currentTime||0)-1/30);};
+$("svn-f2").onclick=function(){vEl.pause();vEl.currentTime=Math.min(vidDur||0,(vEl.currentTime||0)+1/30);};
+$("svn-m1").onclick=function(){vEl.currentTime=Math.max(0,(vEl.currentTime||0)-1);};
+$("svn-p1").onclick=function(){vEl.currentTime=Math.min(vidDur||0,(vEl.currentTime||0)+1);};
+$("svn-lento").onclick=function(){lentoOn=!lentoOn;vEl.playbackRate=lentoOn?0.25:1;$("svn-lento").textContent=lentoOn?"1x NORMAL":"0.25x LENTO";};
+$("svn-mark-in").onclick=function(){inT=vEl.currentTime||0;if(outT<=inT)outT=vidDur;updateSel();};
+$("svn-mark-out").onclick=function(){outT=vEl.currentTime||0;updateSel();};
+$("svn-loop").onclick=function(){loopOn=!loopOn;$("svn-loop").textContent="LOOP CORTE: "+(loopOn?"ON":"OFF");if(loopOn&&inT<outT)vEl.currentTime=inT;};
+$("svn-prev-cut").onclick=function(){if(outT<=inT){alert("Marca IN e OUT primeiro.");return;}vEl.currentTime=inT;vEl.play();var iv=setInterval(function(){if(vEl.currentTime>=outT){vEl.pause();clearInterval(iv);}},100);};
+$("svn-todo").onclick=function(){inT=0;outT=vidDur;updateSel();};
+$("svn-tofila").onclick=function(){
+var ch=$("svn-vid-sel").value;if(!ch){alert("Escolhe o vídeo.");return;}
+if(!(outT>inT)){alert("Marca IN e OUT.");return;}
+fila.push({chave:ch,nome:ch.split("/").pop(),url:urlChave(ch),in:inT,out:outT,dur:outT-inT});
+renderFila();updateCounter();
+};
+document.addEventListener("keydown",function(e){
+if(!$("svn-tab-edit").classList.contains("ativo"))return;
+if(e.target&&(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA"||e.target.tagName==="SELECT"))return;
+if(e.code==="Space"){e.preventDefault();if(vEl.paused)vEl.play();else vEl.pause();}
+if(e.key==="ArrowLeft"){vEl.pause();vEl.currentTime=Math.max(0,(vEl.currentTime||0)-1/30);}
+if(e.key==="ArrowRight"){vEl.pause();vEl.currentTime=Math.min(vidDur||0,(vEl.currentTime||0)+1/30);}
+if(e.key==="i"||e.key==="I")$("svn-mark-in").click();
+if(e.key==="o"||e.key==="O")$("svn-mark-out").click();
+});
+function filaTotal(){var s=0;fila.forEach(function(f){s+=f.dur;});return s;}
+function updateCounter(){
+var ft=filaTotal();
+var falta=musDur-ft;
+var txt="Fila "+fmtS(ft)+" / Música "+fmtS(musDur)+" / ";
+if(!musDur)txt+="escolhe música";
+else if(Math.abs(falta)<1)txt+="✅ BATEU";
+else if(falta>0)txt+="Faltam "+fmtS(falta);
+else txt+="Passou "+fmtS(-falta);
+$("svn-cont").textContent=txt;
+var fill=$("svn-barra-fill");
+fill.style.width=(musDur>0?Math.min(100,ft/musDur*100):0)+"%";
+fill.style.background=!musDur?"#ffeb3b":(Math.abs(falta)<1?"#00e676":(falta>0?"#ffeb3b":"#f44336"));
+}
+function renderFila(){
+var box=$("svn-fila");box.innerHTML="";
+fila.forEach(function(f,i){
+var d=document.createElement("div");d.className="svn-fila-item";
+d.textContent=(i+1)+". "+f.nome+" "+fmt(f.in)+"-"+fmt(f.out)+" ("+f.dur.toFixed(2)+"s) ";
+var b1=document.createElement("button");b1.className="svn-g";b1.textContent="VER IN";b1.onclick=function(){var s=$("svn-vid-sel");s.value=f.chave;onVidSel();setTimeout(function(){$("svn-vid").currentTime=f.in;},800);};
+var b2=document.createElement("button");b2.className="svn-g";b2.textContent="VER OUT";b2.onclick=function(){var s=$("svn-vid-sel");s.value=f.chave;onVidSel();setTimeout(function(){$("svn-vid").currentTime=f.out;},800);};
+var bu=document.createElement("button");bu.className="svn-b2";bu.textContent="↑";bu.onclick=function(){if(i>0){var t=fila[i-1];fila[i-1]=fila[i];fila[i]=t;renderFila();}};
+var bd=document.createElement("button");bd.className="svn-b2";bd.textContent="↓";bd.onclick=function(){if(i<fila.length-1){var t=fila[i+1];fila[i+1]=fila[i];fila[i]=t;renderFila();}};
+var bx=document.createElement("button");bx.className="svn-r";bx.textContent="X";bx.onclick=function(){fila.splice(i,1);renderFila();updateCounter();};
+d.appendChild(b1);d.appendChild(b2);d.appendChild(bu);d.appendChild(bd);d.appendChild(bx);
+box.appendChild(d);
+});
+}
+$("svn-fila-limpa").onclick=function(){if(confirm("Limpar fila toda?")){fila=[];renderFila();updateCounter();}};
+var prevStop=false;
+$("svn-prev-fila").onclick=async function(){
+if(!fila.length){alert("Fila vazia.");return;}
+if(!musUrl){alert("Escolhe música.");return;}
+var st=$("svn-exp-st");st.textContent="Prevendo fila com música...";
+var pv=$("svn-prev-fila-v");pv.style.display="block";pv.muted=true;
+var ma=document.createElement("audio");ma.src=musUrl;
+prevStop=false;
+try{await ma.play();}catch(e){}
+for(var i=0;i<fila.length;i++){
+if(prevStop)break;
+var f=fila[i];
+st.textContent="Prevendo "+(i+1)+"/"+fila.length+" ...";
+pv.src=f.url;
+await new Promise(function(res){pv.onloadeddata=res;setTimeout(res,4000);});
+try{pv.currentTime=f.in;await sleep(300);await pv.play();}catch(e){}
+await new Promise(function(res){
+var iv=setInterval(function(){if(prevStop||pv.currentTime>=f.out){clearInterval(iv);try{pv.pause();}catch(e){}res();}},120);
+setTimeout(function(){try{clearInterval(iv);}catch(e){}res();},(f.dur+3)*1000);
+});
+}
+try{ma.pause();}catch(e){}
+st.textContent="Preview terminou. Ajusta se precisa, ou OK MONTAR.";
+};
+function waitEv(el,ev,ms){return new Promise(function(res){var done=false;function ok(){if(!done){done=true;try{el.removeEventListener(ev,ok);}catch(e){}res();}}try{el.addEventListener(ev,ok);}catch(e){}setTimeout(ok,ms||5000);});}
+$("svn-montar").onclick=async function(){
+var st=$("svn-exp-st");
+if(!fila.length){alert("Fila vazia.");return;}
+if(!musUrl||!musDur){alert("Escolhe música e espera carregar.");return;}
+if(!confirm("MONTAR clipe? Vai mutar Veo3, emendar "+fila.length+" cortes e colar música ("+fmtS(musDur)+"). $0. Confirma?"))return;
+st.textContent="Montando... não fecha a aba.";
+$("svn-final").style.display="none";$("svn-aprova").style.display="none";
+try{
+var canvas=document.createElement("canvas");canvas.width=1280;canvas.height=720;
+var ctx=canvas.getContext("2d");
+ctx.fillStyle="#000";ctx.fillRect(0,0,1280,720);
+var v=document.createElement("video");v.muted=true;v.playsInline=true;v.crossOrigin="anonymous";
+var m=document.createElement("audio");m.src=musUrl;m.crossOrigin="anonymous";
+await waitEv(m,"loadedmetadata",5000);
+var mDur=m.duration||musDur;
+var cStream=canvas.captureStream(30);
+var AC=window.AudioContext||window.webkitAudioContext;
+var actx=new AC();try{await actx.resume();}catch(e){}
+var src=actx.createMediaElementSource(m);
+var dest=actx.createMediaStreamDestination();
+src.connect(dest);
+try{src.connect(actx.destination);}catch(e){}
+var tracks=cStream.getVideoTracks().concat(dest.stream.getAudioTracks());
+var comb=new MediaStream(tracks);
+var mime="video/webm;codecs=vp9,opus";
+if(!window.MediaRecorder||!MediaRecorder.isTypeSupported(mime))mime="video/webm";
+var rec=new MediaRecorder(comb,{mimeType:mime,videoBitsPerSecond:8000000});
+var chunks=[];rec.ondataavailable=function(e){if(e.data&&e.data.size)chunks.push(e.data);};
+var stopped=new Promise(function(res){rec.onstop=res;});
+var drawing=true;
+function draw(){
+if(!drawing)return;
+try{
+if(v.readyState>=2&&v.videoWidth){
+var vw=v.videoWidth,vh=v.videoHeight,cr=1280/720,vr=vw/vh,dw,dh;
+if(vr>cr){dh=720;dw=720*vr;}else{dw=1280;dh=1280/vr;}
+ctx.drawImage(v,(1280-dw)/2,(720-dh)/2,dw,dh);
+}
+}catch(e){}
+if(drawing)requestAnimationFrame(draw);
+}
+draw();
+rec.start(1000);
+try{await m.play();}catch(e){}
+var startT=Date.now(),idx=0;
+while((Date.now()-startT)/1000<mDur+0.5){
+if(m.ended)break;
+var f=fila[idx%fila.length];
+st.textContent="Gravando corte "+(idx+1)+" ... "+fmtS((Date.now()-startT)/1000)+" / "+fmtS(mDur);
+v.src=f.url;
+await waitEv(v,"loadeddata",6000);
+try{v.currentTime=f.in;}catch(e){}
+await sleep(350);
+try{await v.play();}catch(e){}
+await new Promise(function(res){
+var iv=setInterval(function(){
+var el=(Date.now()-startT)/1000;
+if(el>=mDur+0.3||m.ended){clearInterval(iv);res();}
+else if(v.currentTime>=f.out){clearInterval(iv);res();}
+},120);
+setTimeout(function(){try{clearInterval(iv);}catch(e){}res();},(f.dur+4)*1000);
+});
+try{v.pause();}catch(e){}
+idx++;if(idx>300)break;
+}
+try{m.pause();}catch(e){}
+drawing=false;
+try{rec.stop();}catch(e){}
+await stopped;
+try{actx.close();}catch(e){}
+var blob=new Blob(chunks,{type:"video/webm"});
+if(!blob.size)throw new Error("Falha gravar (0 bytes). Tenta de novo.");
+var u=URL.createObjectURL(blob);
+window.__svFinalBlob=blob;
+var fv=$("svn-final");fv.src=u;fv.style.display="block";
+$("svn-aprova").style.display="block";
+st.textContent="✅ Clipe montado! Assiste. APROVA salva no Cofre, REPROVA descarta. $0.";
+}catch(e){$("svn-exp-st").textContent="❌ "+e.message;}
+};
+$("svn-aprova-sim").onclick=async function(){
+var st=$("svn-exp-st"),blob=window.__svFinalBlob;
+if(!blob){st.textContent="Nada pra aprovar.";return;}
+if(!confirm("APROVAR e SALVAR no Cofre de Clipes?"))return;
+st.textContent="Salvando no Cofre...";
+try{
+var nome=sanitize("clipe-"+Date.now()+".webm");
+var r=await fetch(WORKER+"/upload?pasta=clipes&nome="+encodeURIComponent(nome),{method:"PUT",body:blob});
+var txt=await r.text();
+if(!r.ok)throw new Error(txt.slice(0,200));
+var ch="clipes/"+nome;
+bib.clipes.push({chave:ch,nome:nome,data:new Date().toISOString()});
+await saveBib();refreshAll();
+st.textContent="✅ Salvo no Cofre de Clipes! ("+nome+")";
+$("svn-aprova").style.display="none";
+window.__svFinalBlob=null;
+}catch(e){st.textContent="❌ Erro salvar: "+e.message;}
+};
+$("svn-aprova-nao").onclick=function(){
+var fv=$("svn-final");try{fv.pause();fv.removeAttribute("src");fv.load();}catch(e){}
+fv.style.display="none";$("svn-aprova").style.display="none";
+window.__svFinalBlob=null;
+$("svn-exp-st").textContent="Reprovado, descartado. $0.";
+};
+async function gerarUnico(model,input,st){
+for(var tent=1;tent<=4;tent++){
+var body=JSON.stringify({modelo:model,model:model,entrada:input,input:input});
+var r=await fetch(WORKER+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},body:body});
+var txt=await r.text();
+if(txt.indexOf("throttled")>=0||txt.indexOf("429")>=0){
+var esp=12;try{var jj=JSON.parse(txt);if(jj.retry_after)esp=parseInt(jj.retry_after,10)+3;}catch(e){}
+if(esp<10)esp=12;if(esp>40)esp=40;
+if(st)st.textContent="Espera "+esp+"s tent "+tent+"/4 $0 até passar...";
+await sleep(esp*1000);continue;
+}
+var j;try{j=JSON.parse(txt);}catch(e){throw new Error("Worker: "+txt.slice(0,200));}
+var id=j.id||j.prediction_id||(j.prediction&&j.prediction.id);
+var out=j.output||(j.prediction&&j.prediction.output);
+if(out)return out;
+if(!id)throw new Error("Sem ID: "+txt.slice(0,250));
+for(var i=0;i<40;i++){
+await sleep(3000);
+if(st)st.textContent="Gerando... "+(i*3)+"s";
+try{
+var rs=await fetch(WORKER+"/status?id="+encodeURIComponent(id));
+var t2=await rs.text();
+if(t2.indexOf("throttled")>=0){await sleep(8000);continue;}
+var js;try{js=JSON.parse(t2);}catch(e){continue;}
+var op=js.output||(js.prediction&&js.prediction.output);
+if(op)return op;
+var sst=js.status||(js.prediction&&js.prediction.status)||"";
+if(sst==="failed"||sst==="canceled")throw new Error("Falhou: "+t2.slice(0,250));
+}catch(e){if((""+e.message).indexOf("Falhou")===0)throw e;}
+}
+throw new Error("Tempo esgotado");
+}
+throw new Error("429 4x. $0. Manda print.");
+}
+function extraiURL(o){
+if(typeof o==="string"&&o.indexOf("http")===0)return o;
+if(Array.isArray(o)){for(var i=0;i<o.length;i++){if(typeof o[i]==="string"&&o[i].indexOf("http")===0)return o[i];}}
+if(o&&typeof o==="object"){for(var k in o){try{if(typeof o[k]==="string"&&o[k].indexOf("http")===0)return o[k];}catch(e){}}}
+return null;
+}
+var FLUX="black-forest-labs/flux-schnell";
+$("svn-capa-go").onclick=async function(){
+var st=$("svn-capa-st");
+var nome=($("svn-capa-nome").value||"musica").trim();
+var est=($("svn-capa-est").value||"cinematic cover").trim();
+if(!confirm("GERAR CAPA 1:1? $0,003 se passar, $0 se falhar. Confirma?")){st.textContent="Cancelado $0.";return;}
+try{
+st.textContent="Gerando capa...";
+var pr="Square 1:1 single cover art, "+est+", music theme "+nome+", ultra cinematic, HDR photography, premium editorial, extremely sharp details, high contrast";
+var o=await gerarUnico(FLUX,{prompt:pr.slice(0,1000)},st);
+var u=extraiURL(o);
+if(!u)throw new Error("Sem URL.");
+window.__svCapaUrl=u;
+var im=$("svn-capa-prev");im.src=u;im.style.display="block";
+$("svn-capa-ap").style.display="block";
+st.textContent="Capa pronta! APROVA salva, REPROVA descarta.";
+}catch(e){st.textContent="❌ "+e.message;}
+};
+$("svn-capa-sim").onclick=async function(){
+var st=$("svn-capa-st"),u=window.__svCapaUrl;if(!u)return;
+st.textContent="Salvando...";
+try{
+var nome=sanitize("capa-"+Date.now()+".jpg");
+await fetch(WORKER+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:u,pasta:"capas",nome:nome})});
+var ch="capas/"+nome;bib.capas.push({chave:ch,nome:nome,data:new Date().toISOString()});await saveBib();refreshAll();
+st.textContent="✅ Capa no cofre!";$("svn-capa-ap").style.display="none";$("svn-capa-prev").style.display="none";window.__svCapaUrl=null;
+}catch(e){st.textContent="❌ "+e.message;}
+};
+$("svn-capa-nao").onclick=function(){$("svn-capa-ap").style.display="none";$("svn-capa-prev").style.display="none";window.__svCapaUrl=null;$("svn-capa-st").textContent="Reprovada $0.";};
+var FAMS=["Reggae & Ska","Pop & Dance","Piano & Solo","Metal & Hard Rock","LoFi & Chillhop","Latin & Reggaeton","Holiday & Seasonal","HipHop & Urban","Classical & Orchestral","Brazilian Roots & Sertanejo","Afrobeat","Country & Americana","Focus & Productivity","Gospel & Worship","Cinematic & Fantasy","Ambient & Meditation","Soul & Groove","Rock & Alternative","Blues & Roots","Jazz & Lounge","Groove & Bass","Tropical & House","Instrumental Soul","World Fusion","Electronic & Synthwave"];
+(function(){var s=$("svn-th-fam");FAMS.forEach(function(f){var o=document.createElement("option");o.value=f;o.textContent=f;s.appendChild(o);});s.value="Brazilian Roots & Sertanejo";})();
+$("svn-th-go").onclick=async function(){
+var st=$("svn-th-st");
+var fam=$("svn-th-fam").value,txt=($("svn-th-txt").value||"").trim(),ex=($("svn-th-ex").value||"").trim();
+if(!confirm("GERAR THUMB 16:9? $0,003 se passar, $0 se falhar. Confirma?")){st.textContent="Cancelado $0.";return;}
+try{
+st.textContent="Gerando thumb...";
+var pr="Ultra cinematic YouTube thumbnail, 16:9 ratio, "+fam+" theme, "+ex+", text '"+txt+"', one character 50%, HDR photography, premium editorial aesthetic, extremely sharp details, high contrast, max three words text";
+var o=await gerarUnico(FLUX,{prompt:pr.slice(0,1000)},st);
+var u=extraiURL(o);
+if(!u)throw new Error("Sem URL.");
+window.__svThUrl=u;
+var im=$("svn-th-prev");im.src=u;im.style.display="block";
+$("svn-th-ap").style.display="block";
+st.textContent="Thumb pronta! APROVA salva, REPROVA descarta.";
+}catch(e){st.textContent="❌ "+e.message;}
+};
+$("svn-th-sim").onclick=async function(){
+var st=$("svn-th-st"),u=window.__svThUrl;if(!u)return;
+st.textContent="Salvando...";
+try{
+var nome=sanitize("thumb-"+Date.now()+".jpg");
+await fetch(WORKER+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:u,pasta:"thumbs",nome:nome})});
+var ch="thumbs/"+nome;bib.thumbs.push({chave:ch,nome:ch.split("/").pop(),data:new Date().toISOString()});await saveBib();refreshAll();
+st.textContent="✅ Thumb salva!";$("svn-th-ap").style.display="none";$("svn-th-prev").style.display="none";window.__svThUrl=null;
+}catch(e){st.textContent="❌ "+e.message;}
+};
+$("svn-th-nao").onclick=function(){$("svn-th-ap").style.display="none";$("svn-th-prev").style.display="none";window.__svThUrl=null;$("svn-th-st").textContent="Reprovada $0.";};
+(async function init(){
+await loadBib();
+await syncBib();
+refreshAll();
+updateCounter();
+})();
+})();
+</script>
+</body>
+</html>
 </body>
 </html>
