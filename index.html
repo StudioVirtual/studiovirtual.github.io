@@ -3118,6 +3118,41 @@ updateCounter();
 })();
 })();
 </script>
+<!-- ===== RENAME GENERICO V2 INICIO ===== -->
+<script>
+(function(){
+var FINAL_V="IMAGEM & VIDEO AI";
+function renomeia2(){
+try{
+if(document.title.match(/Suno|SUNO|suno|Veo|VEO|VIDEO\.AI/i)){
+document.title=document.title.replace(/Suno|SUNO|suno/g,"MUSIC.AI").replace(/Veo\s?3|VEO\s?3/gi,FINAL_V).replace(/VIDEO\.AI/g,FINAL_V);
+}
+var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null,false);
+var nodes=[];
+while(walker.nextNode()){nodes.push(walker.currentNode);}
+for(var i=0;i<nodes.length;i++){
+var n=nodes[i];
+var t=n.nodeValue;
+if(!t)continue;
+if(t.indexOf("Suno")<0&&t.indexOf("SUNO")<0&&t.indexOf("suno")<0&&t.toLowerCase().indexOf("veo")<0&&t.indexOf("VIDEO.AI")<0)continue;
+var nt=t.replace(/Suno/g,"MUSIC.AI").replace(/SUNO/g,"MUSIC.AI").replace(/suno/g,"MUSIC.AI").replace(/Veo\s?3/gi,FINAL_V).replace(/VEO\s?3/gi,FINAL_V).replace(/VIDEO\.AI/g,FINAL_V);
+if(nt!==t)n.nodeValue=nt;
+}
+var inps=document.querySelectorAll("input[placeholder]");
+for(var k=0;k<inps.length;k++){
+try{
+var ph=inps[k].placeholder||"";
+if(ph.match(/Suno|SUNO|suno|Veo|VEO|VIDEO\.AI/i)){
+inps[k].placeholder=ph.replace(/Suno|SUNO|suno/g,"MUSIC.AI").replace(/Veo\s?3|VEO\s?3/gi,FINAL_V).replace(/VIDEO\.AI/g,FINAL_V);
+}
+}catch(e){}
+}
+}catch(e){}
+}
+setInterval(renomeia2,1500);renomeia2();
+})();
+</script>
+<!-- ===== RENAME GENERICO V2 FIM ===== -->
 </body>
 </html>
 </body>
