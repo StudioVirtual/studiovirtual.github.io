@@ -3294,6 +3294,196 @@ setInterval(garanteDl,2000);garanteDl();
 })();
 </script>
 <!-- ===== FASE1 PARTE1 FIM ===== -->
+<!-- ===== FASE1 PARTE2 INICIO ===== -->
+<style>
+.svn-pre{background:#000;border:1px solid rgba(0,255,136,.3);border-radius:8px;padding:8px;max-height:320px;overflow:auto;white-space:pre-wrap;font-size:12px;color:#d8ffe8}
+.svn-ferr-sec{background:#070b08;border:1px solid rgba(0,255,136,.3);border-radius:8px;padding:8px;margin:8px 0}
+</style>
+<script>
+(function(){
+var WORKER="https://studio-motor.alexmedeirosbsb.workers.dev";
+function $(id){return document.getElementById(id);}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)});}
+function sanitize(n){return (n||"arq").replace(/[^\w\d\-\.\_\(\) ]+/g,"").replace(/\s+/g,"-").slice(0,80);}
+function fmtS(s){if(!isFinite(s)||s<0)s=0;s=Math.round(s);var m=Math.floor(s/60),ss=s%60;return m+":"+(ss<10?"0":"")+ss;}
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+var DOC_FUT=`STUDIO VIRTUAL 2.0 - FUTURAS MUDANCAS - PROMPT PRONTO
+Base: Motor v4 c6a21650 100% multipart 5min OK. Site Editora MUSIC.AI + IMAGEM e VIDEO AI. 7 abas + Ferramentas + Manual + Saldos. Visual neon. ZERO HD. Celular fora. Sem nome comercial.
+
+1) FILEN 100GB VITALICIO (TEXTO DO SOCIO, MANTER)
+VAMOS CONTRATAR OUTRA EMPRESA, A Filen e uma empresa alema focada em privacidade maxima com criptografia de ponta (Zero-Knowledge). Eles descontinuaram os planos vitalicios gigantes, mas mantiveram o plano de entrada ativo.
+Links: https://filen.io/hub/lifetime-plans-an-update/ , https://tarkle.com/blog/best-lifetime-cloud-storage-deals , https://lifetimo.com/deal/filen-lifetime-deal/ , https://filen.io/hub/the-black-friday-sale-2025-is-live/
+O Preco Barato: O plano Starter de 100 GB custa apenas 26,99 euros (cerca de 30 dolares) em pagamento unico.
+Para quem serve: Se voce precisa apenas de um espaco inicial super barato para guardar suas faixas de audio prontas, letras, prompts e imagens estaticas de alta qualidade, 100 GB por esse preco e imbativel.
+USO PREVISTO: Espelho frio de musicas prontas, letras, prompts, capas. Nao troca R2 agora, e backup barato.
+
+2) R2 100GB
+Hoje 10GB gratis $0. 100GB = (100-10)x0.015 = $1.35/mes ~R$7-8 no cartao Cloudflare dash.cloudflare.com Billing. Nao sai de Replicate 19.32 nem RunPod 24.27. Escrita 1M gratis, leitura 10M gratis, saida $0. So ir quando lotar.
+
+3) YOUTUBE DIRETO OAUTH (SEM EMAIL+SENHA, GOOGLE BLOQUEOU SENHA EM 2021)
+console.cloud.google.com cria projeto gratis > liga YouTube Data API v3 > cria OAuth Client ID > cola no Studio meta/youtube.json > aba Canais LOGAR CANAL 1/2/3 > token salva meta/canais.json > no Cofre escolhe clipe+canal+titulo+descricao+thumb > SUBIR. $0. Quota 10000/dia ~6 uploads/dia.
+
+4) LONGOS 2H/8H SONO LOOP
+Mestre curto 2-5min guarda R2. Gera longo em loop so pra subir YouTube, depois apaga longo fica curto. 720p Compacto 2h ~1.9GB cabe 5x em 10GB, 52x em 100GB. 1080p padrao 2h ~7.3GB cabe 1x em 10GB, 13x em 100GB. Tempo real, nao fecha aba. Comeca 30min/1h, 8h de madrugada.
+
+5) MP4 H264 OPCIONAL
+Hoje WebM vp9 opus, YouTube aceita. Futuro converter WebM->MP4 gratis navegador ou Replicate pago, preco na mesa antes.
+
+6) 1080P PADRAO + 4K FUTURO
+Hoje 720p Compacto padrao, 720p Qualidade e 1080p Full HD opcionais via v4. 4K nao agora: trava, 5min 4K 1-2GB, lota R2, VIDEO AI nem vem 4K, YouTube comprime.
+
+7) MASSA CAPAS THUMBS 250 AGENTES
+Hoje 1 por vez $0.003 Flux black-forest-labs/flux-schnell. Futuro lote + RunPod 24.27. 25 familias x10 no Drive.
+
+8) LEGENDA V2 KARAOKE
+Hoje V1 texto fixo. Futuro linha por linha SRT.
+
+9) OUTROS
+Upload direto R2, 2K, stats, agendamento.
+
+PROMPT PARA COLAR NO SOCIO:
+Voce e meu socio STUDIO VIRTUAL 2.0 Editora. Base Motor v4 multipart + Site MUSIC.AI + IMAGEM e VIDEO AI + R2 studio-acervo + Replicate 19.32 + RunPod 24.27. Quero FUTURA MUDANCA item [NUMERO]: [COLE ITEM]. Mantenha painel igual didatico, ZERO HD, sem nome comercial, salva so se APROVAR, apaga com confirmacao, custo na mesa $0 montar. Me de passo mastigado + bloco unico. Doc: [COLE TODO ESTE TEXTO]`;
+var DOC_HIST=`STUDIO VIRTUAL 2.0 - HISTORICO DE CONSTRUCAO COMPLETO - REBUILD DO ZERO SEM RESUMO
+Motor v4 c6a21650 100% + Site Editora MUSIC.AI + IMAGEM e VIDEO AI + neon + Ferramentas + Manual + Saldos + Futuras + Historico
+Regra: ZERO HD tudo nuvem GitHub+R2. Celular fora. Sem nome comercial. Salva final so se APROVAR. Apagar com confirmacao Quer mesmo apagar Nao tem volta. Motor nenhum apagado guardado.
+
+1) CONTAS URLS NOMES
+GitHub StudioVirtual/studiovirtual.github.io main index.html site https://studiovirtual.github.io Edit Ctrl+End antes /body Commit
+Cloudflare alexmedeirosbsb Workers studio-motor https://studio-motor.alexmedeirosbsb.workers.dev Deploy top c6a21650 100% Erro 0% Secret REPLICATE_KEY encrypted Binding ACERVO ou STUDIO_BUCKET -> studio-acervo
+R2 studio-acervo 10GB gratis musicas/ cenas/ clipes/ capas/ thumbs/ meta/ meta/biblioteca.json meta/saldos.json meta/docs/ meta/dados.json legado meta/casting/ meta/motores.json
+Replicate studiovirtual billing replicate.com/account/billing 19.32 uso 0.68 tokens replicate.com/account/api-tokens 4 studio-motor-novo r8_JZ1 topo + Studio Motor + Studiovirtual + Padrao flux black-forest-labs/flux-schnell $3/1000=$0.003 music minimax/music-1.5 guardado video kwaivgi/kling-v2.1 guardado texto meta/meta-llama-3-8b-instruct guardado
+RunPod 24.27 congelado console.runpod.io
+Filen futuro 100GB 26.99 euros unico links doc Futuras
+
+2) WORKER V4 ROTAS
+GET / ping -> motor ligado v4 - nuvem ativa + multipart 5min
+POST /gerar {modelo|model, entrada|input} dono/modelo busca latest_version se sem versao POST api.replicate.com/v1/predictions Bearer
+GET /status?id=
+POST /salvar {url,pasta,nome} fetch put R2
+PUT /upload?pasta=&nome= direto ate 80MB
+GET /upload-init?pasta=&nome= ou ?chave= -> {chave,uploadId}
+PUT /upload-part?chave=&uploadId=&part= 8MB -> {etag}
+POST /upload-complete {chave,uploadId,parts[]} ordena complete
+POST /upload-abort
+GET /arquivo?chave= Range 206 senao 200
+GET /listar?pasta= -> {files[{chave,size}]}
+POST DELETE /apagar ?chave= ou {chave}
+GET /uso -> {bytes,gb,count}
+CORS * Deploy Edit Deploy Promote 100%
+
+3) SITE TABS IDS
+Topo h1 Editora #svn-tabs data-t mus vid edit cmus ccli capa thumb ferr manu sal fut hist
+mus #svn-mus-file #svn-mus-up #svn-mus-st #svn-mus-list
+vid #svn-vid-file #svn-vid-up #svn-vid-st #svn-vid-list ate 5min 400MB fatiado $0
+edit #svn-mus-sel #svn-mus-ref #svn-mus-info #svn-mus-prev #svn-vid-sel #svn-vid #svn-ruler #svn-sel #svn-time #svn-inout #svn-f1 #svn-f2 #svn-m1 #svn-p1 #svn-lento #svn-mark-in #svn-mark-out #svn-loop #svn-prev-cut #svn-todo #svn-tofila #svn-fila #svn-cont #svn-barra-fill #svn-res 720c 720q 1080 #svn-res-est #svn-leg-mode SEM COM #svn-leg-text font size color stroke bg pos #svn-prev-fila #svn-montar #svn-fila-limpa #svn-exp-st #svn-prev-fila-v #svn-final #svn-aprova #svn-aprova-sim #svn-aprova-nao teclado Espaco setas I O
+cmus #svn-cmus-list #svn-cmus-ref | ccli #svn-ccli-list so aprovado
+capa #svn-capa-nome #svn-capa-est #svn-capa-go $0.003 prompt Square 1:1
+thumb #svn-th-fam 25 #svn-th-txt #svn-th-ex #svn-th-go prompt 16:9
+ferr #svn-ferr-vid #svn-ferr-aud #svn-ferr-vidprev #svn-ferr-audprev #svn-ferr-b1 st1 extrair #svn-ferr-b2 st2 semsom #svn-ferr-b3 st3 frame #svn-ferr-frame #svn-ferr-vezes-a b4 st4 #svn-ferr-vezes-v b5 st5
+manu leitura | sal #svn-sal-r2-txt #svn-sal-r2-fill #svn-sal-rep #svn-sal-run | fut #svn-fut-pre copy pdf save | hist #svn-hist-pre
+Neon CSS #050807 #00FF88 Orbitron Inter Bebas Montserrat Google $0
+
+4) FLUXOS
+UploadSmart <=80MB direto senao init 8MB loop part complete.
+Editar: musica meta, video frame IN OUT lento loop prever todo fila VER IN OUT UP DOWN X contador Fila/Musica/Falta Bateu Passou barra amarela verde vermelha prever fila montar canvas 1280x720 2.5Mbps 720c 8Mbps 720q 1920x1080 10Mbps 1080p video muted anonymous audio musica anonymous pre-aquece play pause 0 captureStream 30 + AudioContext destination MediaRecorder vp9 opus draw cover + legenda 4 linhas espera TOCANDO currentTime>0.08 +0.3s FIX buraco grava loop fila ate musica acabar stop Blob preview APROVA clipes/ REPROVA descarta.
+Capa Thumb gerarUnico Flux 4 tentativas retry_after extraiURL preview APROVA salvar REPROVA.
+Ferramentas extrair audio realtime MediaRecorder audio/webm -> musicas/ semsom canvas video-only -> cenas/ frame canvas jpeg -> capas/ dup audio fetch decode createBuffer N vezes WAV 16bit -> musicas/ dup video canvas loop N vezes -> cenas/.
+Saldos /uso + manual salva meta/saldos.json. Docs meta/docs/ ver copiar PDF via print.
+
+5) ASCII
+[Site Editora] --> [Worker v4] --> [Replicate Flux $0.003]
+   |---- /arquivo Range ----| |-- /upload multipart --> [R2 studio-acervo musicas cenas clipes capas thumbs meta]
+MONTAGEM: [MP3 MUSIC.AI]+[MP4 IMAGEM e VIDEO AI]->[CORTE]->[FILA]->[CANVAS+LEGENDA]+[AUDIO]->[WebM]->[APROVA? clipes/]
+CAPA: [Nome+Estilo]->[Flux]->[APROVA? capas/] THUMB igual thumbs/
+YOUTUBE FUTURO: [clipes/]+[OAuth]->[API]->[Canal]
+
+6) DECISOES NAO REPETIR
+RunPod LTX 401 Wan zumbi abandonado. Musicful descartada. Assinaturas descartadas. ACE robo descartado. LTX sem logica descartado. MiniMax 1:58 ruim duration 240 falhou 429 burst1 desligado guardado, fora generico MUSIC.AI. Kling guardado, fora generico IMAGEM e VIDEO AI. Flux $0.003 CONTA OK. Prateleira Tempo Teste removidos. App dentro app proibido troca arquivo resolveu. Comercial proibido. 429 Promote 100% + chave nova. 100MB contornado multipart. Tempo real nao fecha. R2 saida $0 melhor AWS. Filen backup frio. YouTube senha bloqueada OAuth.
+
+7) REBUILD PASSO A PASSO
+1 R2 studio-acervo 2 Worker cola v4 Secret Binding Deploy 100% testa ping uso 3 Replicate token cola Worker 4 GitHub index.html cola site Commit abre Ctrl+Shift+R 5 Testa upload musicas cenas Editora 30s aprova clipes capa thumb frame saldos.
+
+8) PROMPT RECRIAR IGUAL
+Voce e socio STUDIO 2.0. Releia HISTORICO + FUTURAS. Recrie Worker v4 JS todas rotas + index.html Editora todos tabs IDs fluxos neon ZERO HD APROVAR confirmacao. Entregue blocos Site Motor passo Ctrl+End /body Commit Deploy Promote ping. Custo $0. Nao resuma tecnico. Historico: [COLE TUDO] + Futuras: [COLE]
+
+FIM HISTORICO feito DEPOIS v4.`;
+function showTab(k){try{document.querySelectorAll("#svn-tabs button").forEach(function(x){x.classList.remove("ativo");});var b=document.querySelector('#svn-tabs button[data-t="'+k+'"]');if(b)b.classList.add("ativo");document.querySelectorAll(".svn-tab").forEach(function(d){d.classList.remove("ativo");});var t=$("svn-tab-"+k);if(t)t.classList.add("ativo");}catch(e){}}
+function ensureTabs(){
+if($("svn-tab-ferr"))return;
+var defs=[["ferr","Ferramentas"],["manu","MANUAL"],["sal","Saldos"],["fut","FUTURAS"],["hist","HISTORICO"]];
+var bar=$("svn-tabs");if(!bar)return;
+defs.forEach(function(d){var b=document.createElement("button");b.setAttribute("data-t",d[0]);b.textContent=(d[0]==="ferr"?"🛠️ ":d[0]==="manu"?"📖 ":d[0]==="sal"?"💰 ":d[0]==="fut"?"📄 ":"📜 ")+d[1];bar.appendChild(b);});
+var wrap=document.querySelector(".wrap");if(!wrap)return;
+var f=document.createElement("div");f.id="svn-tab-ferr";f.className="svn-tab";
+f.innerHTML=`<b>Ferramentas $0 (extrair, loop sono)</b><br><small>Extrai audio, tira som, frame JPG, duplica loop. $0 navegador.</small><div class="svn-ferr-sec"><b>Fonte</b><br>Video: <select id="svn-ferr-vid" style="min-width:220px"></select> Audio: <select id="svn-ferr-aud" style="min-width:220px"></select> <button id="svn-ferr-ref" class="svn-g">Atualizar</button><video id="svn-ferr-vidprev" controls playsinline style="width:100%;max-height:200px;background:#000;margin-top:6px"></video><audio id="svn-ferr-audprev" controls style="width:100%"></audio></div><div class="svn-ferr-sec"><b>1. Extrair AUDIO do video para Musicas</b><br><button id="svn-ferr-b1" class="svn-b">EXTRAIR AUDIO</button><div id="svn-ferr-st1" style="font-size:12px;color:#8f8"></div></div><div class="svn-ferr-sec"><b>2. Tirar SOM video so imagem para Videos</b><br><button id="svn-ferr-b2" class="svn-b">TIRAR SOM</button><div id="svn-ferr-st2" style="font-size:12px;color:#8f8"></div></div><div class="svn-ferr-sec"><b>3. Salvar FRAME atual JPG para Capas</b><br><button id="svn-ferr-b3" class="svn-b">SALVAR FRAME</button><div id="svn-ferr-st3" style="font-size:12px;color:#8f8"></div><img id="svn-ferr-frame" style="max-width:220px;display:none;border-radius:6px;margin-top:6px"></div><div class="svn-ferr-sec"><b>4. Duplicar AUDIO loop sono</b><br>Vezes: <input id="svn-ferr-vezes-a" type="number" value="2" min="2" max="100" style="width:70px"> <button id="svn-ferr-b4" class="svn-b">DUPLICAR AUDIO</button><div id="svn-ferr-st4" style="font-size:12px;color:#8f8"></div></div><div class="svn-ferr-sec"><b>5. Duplicar VIDEO loop</b><br>Vezes: <input id="svn-ferr-vezes-v" type="number" value="2" min="2" max="30" style="width:70px"> <button id="svn-ferr-b5" class="svn-b">DUPLICAR VIDEO</button><div id="svn-ferr-st5" style="font-size:12px;color:#8f8"></div><small>Para 1h use Editora fila repete sozinha. Arquivo longo pesa muito.</small></div>`;
+wrap.appendChild(f);
+var m=document.createElement("div");m.id="svn-tab-manu";m.className="svn-tab";
+m.innerHTML=`<b>MANUAL - Como usar na ordem</b><br><small>Leia quando esquecer. Ordem certa + cada botao.</small><div class="svn-ferr-sec"><b>ORDEM 1-2-3-4-5</b><br>1 Musicas Baixadas sobe MP3 MUSIC.AI<br>2 Videos Baixados sobe MP4 IMAGEM e VIDEO AI ate 5min<br>3 Montadora Editora escolhe musica corta videos fila resolucao legenda prever montar aprova<br>4 Cofres ouve assiste apaga baixa<br>5 Capa Thumb depois do clipe $0.003<br>6 Ferramentas extrair duplicar<br></div><div class="svn-ferr-sec"><b>MUSICAS E VIDEOS</b><br>Escolher Arquivo + Enviar sobe nuvem. Usar na Editora pula para corte. Apagar pergunta Quer mesmo apagar Nao tem volta e libera espaco. Baixar opcional so quando clicar.<br></div><div class="svn-ferr-sec"><b>EDITORA PASSO 1 MUSICA</b><br>Seleciona musica espera duracao ex 3:49 229s. Atualizar recarrega lista. Play confirma.<br></div><div class="svn-ferr-sec"><b>PASSO 2 CORTE</b><br>Seleciona video. Arrasta regua ve frame exato. 1 frame anda 0.03s. -1s +1s pulo. 0.25x lento acha movimento. I marca IN verde O marca OUT vermelho. LOOP repete corte. PREVER CORTE toca so pedaco. USAR TODO sem corte. MANDAR PRA FILA. Teclado Espaco play setas frame I O.<br></div><div class="svn-ferr-sec"><b>PASSO 3 FILA</b><br>Lista tua ordem ex video1 00:00-00:17 17s. VER IN OUT confere frame. Cima Baixo troca ordem. X tira. Contador Fila 1:26 Musica 3:49 Faltam 2:23 barra amarela falta verde bateu vermelha passou.<br></div><div class="svn-ferr-sec"><b>PASSO 4 FINAL</b><br>Resolucao 720p Compacto cabe 720p Qualidade 1080p Full HD escolhe antes montar. Legenda SEM COM digita cola fonte tamanho cor contorno fundo pos PREVER. PREVER FILA COM MUSICA testa sem salvar. OK MONTAR muta Veo3 emenda 16:9 cola musica tempo real nao fecha aba. APROVAR salva clipes REPROVAR descarta $0.<br></div><div class="svn-ferr-sec"><b>COFRES CAPA THUMB FERRAMENTAS SALDOS</b><br>Cofre guarda + player + Atualizar + Apagar + Baixar. Capa 1:1 nome estilo GERAR $0.003 APROVA REPROVA. Thumb 16:9 familia texto extra GERAR. Ferramentas ver aba. Saldos R2 auto resto manual.<br></div><div class="svn-ferr-sec"><b>REGRAS</b><br>1 aba so. Nao clica 2x rapido da 429. Erro $0. Salva final so APROVA. 10GB gratis. Motor v4 nao mexe.<br></div>`;
+wrap.appendChild(m);
+var s=document.createElement("div");s.id="svn-tab-sal";s.className="svn-tab";
+s.innerHTML=`<b>Saldos</b><br><small>R2 auto. Replicate RunPod manual digita.</small><div class="svn-ferr-sec"><b>R2 Nuvem auto $0</b><br><div id="svn-sal-r2-txt">Carregando...</div><div style="height:10px;background:#333;border-radius:5px;overflow:hidden;margin-top:4px"><div id="svn-sal-r2-fill" style="height:100%;width:0%;background:#00FF88"></div></div><button id="svn-sal-r2-btn" class="svn-b2">Atualizar R2</button></div><div class="svn-ferr-sec"><b>Replicate manual</b><br>$ <input id="svn-sal-rep" type="number" step="0.01" style="width:100px"> <button id="svn-sal-save" class="svn-g">Salvar</button> <button id="svn-sal-rep-open" class="svn-b2">Abrir billing</button></div><div class="svn-ferr-sec"><b>RunPod manual</b><br>$ <input id="svn-sal-run" type="number" step="0.01" style="width:100px"> <button id="svn-sal-save2" class="svn-g">Salvar</button> <button id="svn-sal-run-open" class="svn-b2">Abrir billing</button></div><div id="svn-sal-st" style="font-size:12px;color:#8f8"></div>`;
+wrap.appendChild(s);
+var fu=document.createElement("div");fu.id="svn-tab-fut";fu.className="svn-tab";
+fu.innerHTML=`<b>FUTURAS MUDANCAS ver copiar PDF</b><br><pre id="svn-fut-pre" class="svn-pre"></pre><button id="svn-fut-copy" class="svn-b2">Copiar prompt</button> <button id="svn-fut-pdf" class="svn-b">Baixar PDF</button> <button id="svn-fut-save" class="svn-g">Salvar nuvem</button><div id="svn-fut-st" style="font-size:12px;color:#8f8"></div>`;
+wrap.appendChild(fu);
+var h=document.createElement("div");h.id="svn-tab-hist";h.className="svn-tab";
+h.innerHTML=`<b>HISTORICO DE CONSTRUCAO ver copiar PDF</b><br><small>Feito DEPOIS v4. Tecnico rebuild zero.</small><pre id="svn-hist-pre" class="svn-pre"></pre><button id="svn-hist-copy" class="svn-b2">Copiar</button> <button id="svn-hist-pdf" class="svn-b">Baixar PDF</button> <button id="svn-hist-save" class="svn-g">Salvar nuvem</button><div id="svn-hist-st" style="font-size:12px;color:#8f8"></div>`;
+wrap.appendChild(h);
+document.querySelectorAll("#svn-tabs button").forEach(function(bt){bt.onclick=function(){showTab(bt.getAttribute("data-t"));};});
+try{$("svn-fut-pre").textContent=DOC_FUT;}catch(e){}
+try{$("svn-hist-pre").textContent=DOC_HIST;}catch(e){}
+wireFerr();wireSal();wireDocs();
+}
+async function listar(pasta){try{var r=await fetch(WORKER+"/listar?pasta="+encodeURIComponent(pasta));var t=await r.text();var j;try{j=JSON.parse(t);}catch(e){return[];}var a=[];if(Array.isArray(j))a=j;else if(j&&Array.isArray(j.files))a=j.files;else return[];return a.map(function(it){if(typeof it==="string"){if(it.indexOf("/")>=0)return it;return pasta+"/"+it;}if(it&&typeof it==="object")return it.chave||it.key||"";return"";}).filter(function(x){return x;});}catch(e){return[];}}
+async function uploadBlob(blob,pasta,nome,st){var chave=pasta+"/"+nome;if(blob.size<=80*1024*1024){if(st)st.textContent="Salvando "+(blob.size/1024/1024).toFixed(1)+"MB...";var r=await fetch(WORKER+"/upload?pasta="+encodeURIComponent(pasta)+"&nome="+encodeURIComponent(nome),{method:"PUT",body:blob});var t=await r.text();if(!r.ok)throw new Error(t.slice(0,200));return chave;}var ri=await fetch(WORKER+"/upload-init?pasta="+encodeURIComponent(pasta)+"&nome="+encodeURIComponent(nome));var ji=await ri.json();if(!ji.ok)throw new Error("init");chave=ji.chave;var up=ji.uploadId,ch=8*1024*1024,tot=Math.ceil(blob.size/ch),ps=[];for(var i=0;i<tot;i++){var bl=blob.slice(i*ch,(i+1)*ch);if(st)st.textContent="Fatia "+(i+1)+"/"+tot;var rp=await fetch(WORKER+"/upload-part?chave="+encodeURIComponent(chave)+"&uploadId="+encodeURIComponent(up)+"&part="+(i+1),{method:"PUT",body:bl});var jp=await rp.json();if(!jp.etag)throw new Error("part "+(i+1));ps.push({partNumber:i+1,etag:jp.etag});}var rc=await fetch(WORKER+"/upload-complete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chave:chave,uploadId:up,parts:ps})});var tc=await rc.text();if(!rc.ok)throw new Error(tc.slice(0,200));return chave;}
+function waitEv(el,ev,ms){return new Promise(function(res){var d=false;function ok(){if(!d){d=true;try{el.removeEventListener(ev,ok);}catch(e){}res();}}try{el.addEventListener(ev,ok);}catch(e){}setTimeout(ok,ms||8000);});}
+function wavBlob(buf){var n=buf.numberOfChannels,sr=buf.sampleRate,len=buf.length,bps=2,ba=n*bps,dl=len*ba,ab=new ArrayBuffer(44+dl),v=new DataView(ab);function ws(o,s){for(var i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));}ws(0,"RIFF");v.setUint32(4,36+dl,true);ws(8,"WAVE");ws(12,"fmt ");v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,n,true);v.setUint32(24,sr,true);v.setUint32(28,sr*ba,true);v.setUint16(32,ba,true);v.setUint16(34,16,true);ws(36,"data");v.setUint32(40,dl,true);var off=44,chd=[];for(var c=0;c<n;c++)chd.push(buf.getChannelData(c));for(var i=0;i<len;i++){for(var c2=0;c2<n;c2++){var s=Math.max(-1,Math.min(1,chd[c2][i]));v.setInt16(off,s<0?s*0x8000:s*0x7FFF,true);off+=2;}}return new Blob([ab],{type:"audio/wav"});}
+function wireFerr(){
+try{
+async function ref(){var vs=$("svn-ferr-vid"),as=$("svn-ferr-aud");if(!vs)return;var v=await listar("cenas"),m=await listar("musicas");var cv=vs.value,ca=as.value;vs.innerHTML="";v.forEach(function(ch){var o=document.createElement("option");o.value=ch;o.textContent=ch.split("/").pop();vs.appendChild(o);});as.innerHTML="";m.forEach(function(ch){var o=document.createElement("option");o.value=ch;o.textContent=ch.split("/").pop();as.appendChild(o);});if(cv)vs.value=cv;if(ca)as.value=ca;updPrev();}
+function updPrev(){try{var vc=$("svn-ferr-vid").value;if(vc)$("svn-ferr-vidprev").src=WORKER+"/arquivo?chave="+encodeURIComponent(vc);}catch(e){}try{var ac=$("svn-ferr-aud").value;if(ac)$("svn-ferr-audprev").src=WORKER+"/arquivo?chave="+encodeURIComponent(ac);}catch(e){}}
+var rb=$("svn-ferr-ref");if(rb)rb.onclick=ref;
+var sv=$("svn-ferr-vid");if(sv)sv.onchange=updPrev;
+var sa=$("svn-ferr-aud");if(sa)sa.onchange=updPrev;
+ref();
+var b1=$("svn-ferr-b1");if(b1)b1.onclick=async function(){var st=$("svn-ferr-st1");try{var ch=$("svn-ferr-vid").value;if(!ch){st.textContent="Escolhe video.";return;}var url=WORKER+"/arquivo?chave="+encodeURIComponent(ch);var v=document.createElement("video");v.crossOrigin="anonymous";v.src=url;v.preload="auto";st.textContent="Carregando...";await waitEv(v,"loadedmetadata",15000);var dur=v.duration;if(!dur||!isFinite(dur))throw new Error("Sem duracao");if(!confirm("EXTRAIR AUDIO "+fmtS(dur)+"? $0 demora o tempo do video. Confirma?")){st.textContent="Cancelado.";return;}var AC=window.AudioContext||window.webkitAudioContext;var ax=new AC();try{await ax.resume();}catch(e){}var src=ax.createMediaElementSource(v);var dst=ax.createMediaStreamDestination();src.connect(dst);var mime="audio/webm;codecs=opus";if(!window.MediaRecorder||!MediaRecorder.isTypeSupported(mime))mime="audio/webm";var rec=new MediaRecorder(dst.stream,{mimeType:mime});var chs=[];rec.ondataavailable=function(e){if(e.data&&e.data.size)chs.push(e.data);};var stp=new Promise(function(r){rec.onstop=r;});rec.start();try{await v.play();}catch(e){throw new Error("Play bloqueado, clica de novo.");}var t0=Date.now();await new Promise(function(res){var iv=setInterval(function(){var el=(Date.now()-t0)/1000;st.textContent="Gravando "+fmtS(el)+" / "+fmtS(dur);if(v.ended||el>=dur+1){clearInterval(iv);res();}},500);v.onended=function(){clearInterval(iv);res();};setTimeout(function(){try{clearInterval(iv);}catch(e){}res();},(dur+5)*1000);});try{v.pause();}catch(e){}try{rec.stop();}catch(e){}await stp;try{ax.close();}catch(e){}var blob=new Blob(chs,{type:"audio/webm"});if(!blob.size)throw new Error("0 bytes");var nome=sanitize("audio-extraido-"+Date.now()+".webm");await uploadBlob(blob,"musicas",nome,st);st.textContent="✅ Salvo musicas/"+nome;}catch(e){st.textContent="❌ "+e.message;}};
+var b2=$("svn-ferr-b2");if(b2)b2.onclick=async function(){var st=$("svn-ferr-st2");try{var ch=$("svn-ferr-vid").value;if(!ch){st.textContent="Escolhe video.";return;}var url=WORKER+"/arquivo?chave="+encodeURIComponent(ch);var v=document.createElement("video");v.muted=true;v.crossOrigin="anonymous";v.src=url;st.textContent="Carregando...";await waitEv(v,"loadedmetadata",15000);var dur=v.duration,W=v.videoWidth||1280,H=v.videoHeight||720;if(W>1920){var k=1920/W;W=1920;H=Math.round(H*k);}if(!confirm("TIRAR SOM "+fmtS(dur)+"? $0. Confirma?")){st.textContent="Cancelado.";return;}var cv=document.createElement("canvas");cv.width=W;cv.height=H;var cx=cv.getContext("2d");var stm=cv.captureStream(30);var mime="video/webm;codecs=vp9";if(!MediaRecorder.isTypeSupported(mime))mime="video/webm";var rec=new MediaRecorder(stm,{mimeType:mime,videoBitsPerSecond:6000000});var chs=[];rec.ondataavailable=function(e){if(e.data&&e.data.size)chs.push(e.data);};var stp=new Promise(function(r){rec.onstop=r;});var dw=true;function dr(){if(!dw)return;try{if(v.readyState>=2)cx.drawImage(v,0,0,W,H);}catch(e){}if(dw)requestAnimationFrame(dr);}dr();rec.start();try{await v.play();}catch(e){}var t0=Date.now();await new Promise(function(res){var iv=setInterval(function(){st.textContent="Gravando "+fmtS((Date.now()-t0)/1000)+" / "+fmtS(dur);if(v.ended||(Date.now()-t0)/1000>=dur+1){clearInterval(iv);res();}},500);v.onended=function(){clearInterval(iv);res();};setTimeout(function(){try{clearInterval(iv);}catch(e){}res();},(dur+5)*1000);});try{v.pause();}catch(e){}dw=false;try{rec.stop();}catch(e){}await stp;var blob=new Blob(chs,{type:"video/webm"});if(!blob.size)throw new Error("0 bytes");var nome=sanitize("video-sem-som-"+Date.now()+".webm");await uploadBlob(blob,"cenas",nome,st);st.textContent="✅ Salvo cenas/"+nome;}catch(e){st.textContent="❌ "+e.message;}};
+var b3=$("svn-ferr-b3");if(b3)b3.onclick=async function(){var st=$("svn-ferr-st3");try{var pv=$("svn-ferr-vidprev");if(!pv||!pv.videoWidth){st.textContent="Carrega video e pausa no frame.";return;}var cv=document.createElement("canvas");cv.width=pv.videoWidth;cv.height=pv.videoHeight;cv.getContext("2d").drawImage(pv,0,0);var blob=await new Promise(function(r){cv.toBlob(r,"image/jpeg",0.92);});if(!blob)throw new Error("Falha frame");var im=$("svn-ferr-frame");im.src=URL.createObjectURL(blob);im.style.display="block";var nome=sanitize("frame-"+Date.now()+".jpg");await uploadBlob(blob,"capas",nome,st);st.textContent="✅ Frame salvo capas/"+nome;}catch(e){st.textContent="❌ "+e.message;}};
+var b4=$("svn-ferr-b4");if(b4)b4.onclick=async function(){var st=$("svn-ferr-st4");try{var ch=$("svn-ferr-aud").value;if(!ch){st.textContent="Escolhe audio.";return;}var vz=parseInt($("svn-ferr-vezes-a").value,10)||2;if(vz<2)vz=2;if(vz>100)vz=100;st.textContent="Baixando...";var r=await fetch(WORKER+"/arquivo?chave="+encodeURIComponent(ch));var ab=await r.arrayBuffer();st.textContent="Decodificando...";var AC=window.AudioContext||window.webkitAudioContext;var ax=new AC();var og=await ax.decodeAudioData(ab);var nd=og.duration*vz;if(!confirm("DUPLICAR "+vz+"x "+fmtS(og.duration)+" -> "+fmtS(nd)+" ? $0. Confirma?")){st.textContent="Cancelado.";return;}st.textContent="Duplicando...";var sr=og.sampleRate,nc=og.numberOfChannels,len=Math.ceil(sr*nd);var nb;try{nb=ax.createBuffer(nc,len,sr);}catch(e){throw new Error("Memoria cheia, usa menos vezes.");}for(var c=0;c<nc;c++){var so=og.getChannelData(c),sn=nb.getChannelData(c);for(var k=0;k<vz;k++){var off=k*so.length;if(off>=len)break;var q=Math.min(so.length,len-off);for(var i=0;i<q;i++)sn[off+i]=so[i];}}st.textContent="Codificando WAV...";var blob=wavBlob(nb);try{ax.close();}catch(e){}var nome=sanitize("audio-loop-"+vz+"x-"+Date.now()+".wav");await uploadBlob(blob,"musicas",nome,st);st.textContent="✅ Salvo musicas/"+nome+" "+fmtS(nd);}catch(e){st.textContent="❌ "+e.message;}};
+var b5=$("svn-ferr-b5");if(b5)b5.onclick=async function(){var st=$("svn-ferr-st5");try{var ch=$("svn-ferr-vid").value;if(!ch){st.textContent="Escolhe video.";return;}var vz=parseInt($("svn-ferr-vezes-v").value,10)||2;if(vz<2)vz=2;if(vz>30)vz=30;var url=WORKER+"/arquivo?chave="+encodeURIComponent(ch);var v=document.createElement("video");v.muted=true;v.crossOrigin="anonymous";v.src=url;st.textContent="Carregando...";await waitEv(v,"loadedmetadata",15000);var dur=v.duration,W=v.videoWidth||1280,H=v.videoHeight||720;if(W>1920){var k=1920/W;W=1920;H=Math.round(H*k);}var tot=dur*vz;if(tot>1800&&!confirm("Vai gerar "+fmtS(tot)+" pesado. Continua?")){st.textContent="Cancelado.";return;}if(!confirm("DUPLICAR VIDEO "+vz+"x "+fmtS(dur)+" -> "+fmtS(tot)+" ? $0 tempo real. Confirma?")){st.textContent="Cancelado.";return;}var cv=document.createElement("canvas");cv.width=W;cv.height=H;var cx=cv.getContext("2d");var stm=cv.captureStream(30);var mime="video/webm;codecs=vp9";if(!MediaRecorder.isTypeSupported(mime))mime="video/webm";var rec=new MediaRecorder(stm,{mimeType:mime,videoBitsPerSecond:6000000});var chs=[];rec.ondataavailable=function(e){if(e.data&&e.data.size)chs.push(e.data);};var stp=new Promise(function(r){rec.onstop=r;});var dw=true;function dr(){if(!dw)return;try{if(v.readyState>=2)cx.drawImage(v,0,0,W,H);}catch(e){}if(dw)requestAnimationFrame(dr);}dr();rec.start();for(var n=0;n<vz;n++){st.textContent="Volta "+(n+1)+"/"+vz;v.currentTime=0;try{await v.play();}catch(e){}await new Promise(function(res){var iv=setInterval(function(){if(v.ended||v.currentTime>=dur-0.1){clearInterval(iv);res();}},200);v.onended=function(){clearInterval(iv);res();};setTimeout(function(){try{clearInterval(iv);}catch(e){}res();},(dur+4)*1000);});try{v.pause();}catch(e){}}dw=false;try{rec.stop();}catch(e){}await stp;var blob=new Blob(chs,{type:"video/webm"});if(!blob.size)throw new Error("0 bytes");var nome=sanitize("video-loop-"+vz+"x-"+Date.now()+".webm");await uploadBlob(blob,"cenas",nome,st);st.textContent="✅ Salvo cenas/"+nome;}catch(e){st.textContent="❌ "+e.message;}};
+}catch(e){}
+}
+function wireSal(){
+try{
+async function r2(){var t=$("svn-sal-r2-txt"),f=$("svn-sal-r2-fill");if(!t)return;t.textContent="Lendo...";try{var r=await fetch(WORKER+"/uso");var j=await r.json();var gb=j.gb||0,ct=j.count||0;var pct=Math.min(100,gb/10*100);t.textContent="Usado "+gb.toFixed(3)+"GB / 10GB ("+pct.toFixed(1)+"%) | "+ct+" arquivos"+(gb>10?" | Extra "+((gb-10)*0.015).toFixed(2)+"$":" | $0");if(f){f.style.width=pct+"%";f.style.background=pct<80?"#00FF88":pct<100?"#FFEB3B":"#f44336";}}catch(e){t.textContent="Erro: "+e.message;}}
+var b=$("svn-sal-r2-btn");if(b)b.onclick=r2;r2();
+async function load(){try{var r=await fetch(WORKER+"/arquivo?chave=meta/saldos.json");if(r.ok){var j=await r.json();if(j.rep)$("svn-sal-rep").value=j.rep;if(j.run)$("svn-sal-run").value=j.run;}}catch(e){}}
+async function save(){var st=$("svn-sal-st");var o={rep:$("svn-sal-rep").value,run:$("svn-sal-run").value,at:new Date().toISOString()};st.textContent="Salvando...";try{await fetch(WORKER+"/upload?pasta=meta&nome=saldos.json",{method:"PUT",body:JSON.stringify(o)});st.textContent="✅ Salvo!";}catch(e){st.textContent="❌ "+e.message;}}
+var s1=$("svn-sal-save");if(s1)s1.onclick=save;var s2=$("svn-sal-save2");if(s2)s2.onclick=save;
+var o1=$("svn-sal-rep-open");if(o1)o1.onclick=function(){window.open("https://replicate.com/account/billing","_blank");};
+var o2=$("svn-sal-run-open");if(o2)o2.onclick=function(){window.open("https://console.runpod.io/","_blank");};
+load();
+}catch(e){}
+}
+function dlPDF(titulo,txto){try{var w=window.open("","_blank");if(!w){alert("Libera popup.");return;}w.document.write("<html><head><meta charset='UTF-8'><title>"+esc(titulo)+"</title><style>body{font-family:Arial;padding:20px}pre{white-space:pre-wrap;font-size:12px}</style></head><body><h2>"+esc(titulo)+"</h2><pre>"+esc(txto)+"</pre><script>window.onload=function(){setTimeout(function(){window.print();},500);}<\/script></body></html>");w.document.close();}catch(e){alert(e.message);}}
+function cpTxt(t,st){try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){st.textContent="✅ Copiado! Cola no prompt.";},function(){fallback();});}else fallback();function fallback(){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");st.textContent="✅ Copiado!";}catch(e){st.textContent="Seleciona e Ctrl+C.";}document.body.removeChild(ta);}}catch(e){st.textContent="Erro copiar.";}}
+function wireDocs(){
+try{
+var c1=$("svn-fut-copy");if(c1)c1.onclick=function(){cpTxt(DOC_FUT,$("svn-fut-st"));};
+var p1=$("svn-fut-pdf");if(p1)p1.onclick=function(){dlPDF("FUTURAS MUDANCAS STUDIO 2.0",DOC_FUT);$("svn-fut-st").textContent="Escolhe Salvar como PDF na janela.";};
+var s1=$("svn-fut-save");if(s1)s1.onclick=async function(){var st=$("svn-fut-st");st.textContent="Salvando...";try{await fetch(WORKER+"/upload?pasta=meta/docs&nome=futuras.txt",{method:"PUT",body:DOC_FUT});st.textContent="✅ Salvo meta/docs/futuras.txt";}catch(e){st.textContent="❌ "+e.message;}};
+var c2=$("svn-hist-copy");if(c2)c2.onclick=function(){cpTxt(DOC_HIST,$("svn-hist-st"));};
+var p2=$("svn-hist-pdf");if(p2)p2.onclick=function(){dlPDF("HISTORICO CONSTRUCAO STUDIO 2.0",DOC_HIST);$("svn-hist-st").textContent="Escolhe Salvar como PDF.";};
+var s2=$("svn-hist-save");if(s2)s2.onclick=async function(){var st=$("svn-hist-st");st.textContent="Salvando...";try{await fetch(WORKER+"/upload?pasta=meta/docs&nome=historico.txt",{method:"PUT",body:DOC_HIST});st.textContent="✅ Salvo meta/docs/historico.txt";}catch(e){st.textContent="❌ "+e.message;}};
+try{fetch(WORKER+"/upload?pasta=meta/docs&nome=futuras.txt",{method:"PUT",body:DOC_FUT});}catch(e){}
+try{fetch(WORKER+"/upload?pasta=meta/docs&nome=historico.txt",{method:"PUT",body:DOC_HIST});}catch(e){}
+}catch(e){}
+}
+setInterval(function(){try{ensureTabs();}catch(e){}},2000);
+ensureTabs();
+})();
+</script>
+<!-- ===== FASE1 PARTE2 FIM ===== -->
 </body>
 </html>
 </body>
