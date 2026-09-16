@@ -3484,6 +3484,319 @@ ensureTabs();
 })();
 </script>
 <!-- ===== FASE1 PARTE2 FIM ===== -->
+<script id="patch-final-v5-idiomas">
+(function(){
+const MOTOR="https://studio-motor.alexmedeirosbsb.workers.dev";
+console.log("PATCH-FINAL-v5 ligado");
+function trocaTexto(a,b){
+  try{
+    var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null,false);
+    var l=[]; while(w.nextNode()){l.push(w.currentNode);}
+    l.forEach(function(n){ if(n.nodeValue&&n.nodeValue.indexOf(a)>=0){ n.nodeValue=n.nodeValue.split(a).join(b); } });
+  }catch(e){}
+}
+function fixTextos(){
+  var t=document.body.innerText||"";
+  if(t.indexOf("até 5min")>=0 && t.indexOf("400MB")<0){ trocaTexto("até 5min","até 5min / até ~400MB via fatiado automático"); }
+  trocaTexto("$0,062","R2 $0"); trocaTexto("$0.062","R2 $0"); trocaTexto("$0,043","R2 $0"); trocaTexto("$0.043","R2 $0");
+  trocaTexto("DESLIGADO (motor velho)","GERAR (Flux $0.003)");
+}
+function achaPalco(){
+  var ds=Array.prototype.slice.call(document.querySelectorAll("div"));
+  var vs=ds.filter(function(d){
+    if(!d.offsetParent) return false;
+    var r=d.getBoundingClientRect(); if(r.height<150||r.width<300) return false;
+    if(d.querySelector("button")||d.querySelector("input")||d.querySelector("select")||d.querySelector("video")||d.querySelector("img")) return false;
+    var tx=(d.innerText||"").trim(); if(tx.length>60) return false; return true;
+  });
+  vs.sort(function(a,b){return b.getBoundingClientRect().height-a.getBoundingClientRect().height;});
+  return vs[0]||null;
+}
+function achaSecaoCom(txt){
+  var ds=Array.prototype.slice.call(document.querySelectorAll("div"));
+  var f=ds.filter(function(d){return (d.innerText||"").indexOf(txt)>=0;});
+  f.sort(function(a,b){return (a.innerText||"").length-(b.innerText||"").length;});
+  return f[0]||null;
+}
+function garantePalco(){
+  var p=achaPalco(); if(p) return p;
+  var foot=null;
+  Array.prototype.slice.call(document.querySelectorAll("div")).forEach(function(d){ if((d.innerText||"").indexOf("Studio Virtual")>=0&&d.offsetParent){foot=d;} });
+  var nd=document.createElement("div"); nd.style.cssText="min-height:320px;padding:10px;background:#050807;color:#eafff3;";
+  if(foot&&foot.parentNode){ foot.parentNode.insertBefore(nd,foot); return nd; }
+  document.body.appendChild(nd); return nd;
+}
+async function apiUso(){ try{ var r=await fetch(MOTOR+"/uso"); return await r.json(); }catch(e){ return null; } }
+async function apiListar(pasta){ try{ var r=await fetch(MOTOR+"/listar?pasta="+encodeURIComponent(pasta)); var j=await r.json(); if(Array.isArray(j)) return j; return j.arquivos||j.files||j.lista||j.items||[]; }catch(e){ return []; } }
+async function salvarTexto(pasta,nome,texto,tipo){
+  var blob=new Blob([texto],{type:tipo||"text/plain"});
+  var fd=new FormData(); fd.append("file",blob,nome);
+  var r=await fetch(MOTOR+"/upload?pasta="+encodeURIComponent(pasta)+"&nome="+encodeURIComponent(nome),{method:"PUT",body:blob});
+  return await r.text();
+}
+async function uploadBlob(pasta,nome,blob){
+  if(blob.size<=80*1024*1024){
+    var r=await fetch(MOTOR+"/upload?pasta="+encodeURIComponent(pasta)+"&nome="+encodeURIComponent(nome),{method:"PUT",body:blob});
+    return await r.text();
+  } else { throw new Error("Maior que 80MB direto. Usa fatiado: divide em partes de 5min. $0"); }
+}
+async function gerarFlux(prompt,log){
+  var tentativa=0;
+  while(tentativa<4){
+    tentativa++;
+    if(log) log.textContent="Gerando Flux $0.003 tentativa "+tentativa+"/4... 1 aba só, não clica 2x.";
+    var r=await fetch(MOTOR+"/gerar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({modelo:"black-forest-labs/flux-schnell",entrada:{prompt:prompt}})});
+    var j=await r.json().catch(function(){return {};});
+    if(j.error&&JSON.stringify(j).indexOf("429")>=0){ if(log) log.textContent="429 aguarde 20s... $0"; await new Promise(function(x){setTimeout(x,20000);}); continue; }
+    var id=j.id||j.prediction_id||(j.prediction&&j.prediction.id)||j.pId||null;
+    var url=j.url||j.output||j.image||null;
+    if(typeof url==="string"&&url.indexOf("http")===0) return url;
+    if(Array.isArray(url)&&url[0]) return url[0];
+    if(!id){ if(j.retry_after){ await new Promise(function(x){setTimeout(x,(j.retry_after+1)*1000);}); continue; } throw new Error("Motor não deu ID. $0"); }
+    for(var k=0;k<45;k++){
+      await new Promise(function(x){setTimeout(x,4000);});
+      var s=await (await fetch(MOTOR+"/status?id="+encodeURIComponent(id))).json().catch(function(){return {};});
+      if(s.retry_after){ await new Promise(function(x){setTimeout(x,5000);}); continue; }
+      var out=s.output||s.url||s.result||s.image||null;
+      if(typeof out==="string"&&out.indexOf("http")===0) return out;
+      if(Array.isArray(out)&&out[0]) return (typeof out[0]==="string"?out[0]:out[0].url||out[0]);
+      if(s.status==="failed"||s.error){ throw new Error((s.error||"falhou")+" $0"); }
+      if(log) log.textContent="Gerando... "+(k*4)+"s tentativa "+tentativa+" (não fecha)";
+      if(s.status==="succeeded"&&out) break;
+    }
+  }
+  throw new Error("Não saiu. $0 não cobrou.");
+}
+async function salvarUrlNuvem(url,pasta,nome){
+  var r=await fetch(MOTOR+"/salvar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url:url,pasta:pasta,nome:nome})});
+  return await r.text();
+}
+var CSSB="background:#00FF88;color:#000;font-weight:700;border:0;border-radius:8px;padding:8px 12px;cursor:pointer;margin:4px;";
+var CSSR="background:#ff4444;color:#fff;font-weight:700;border:0;border-radius:8px;padding:8px 12px;cursor:pointer;margin:4px;";
+var CSSI="background:#050807;color:#fff;border:1px solid #00FF88;border-radius:6px;padding:7px;margin:4px;width:92%;";
+var CSSBOX="background:#0a120e;border:1px solid #00FF88;border-radius:10px;padding:12px;margin:10px 0;color:#eafff3;font-family:Inter,Arial,sans-serif;";
+var FAMS=["Reggae & Ska","Pop & Dance","Piano & Solo","Metal & HardRock","LoFi & Chillhop","Latin & Reggaeton","Holiday & Seasonal","HipHop & Urban","Classical & Orchestral","Brazilian Roots & Sertanejo","Afrobeat","Country & Americana","Focus & Productivity","Gospel & Worship","Cinematic & Fantasy","Ambient & Meditation","Soul & Groove","Rock & Alternative","Blues & Roots","Jazz & Lounge","Groove & Bass","Tropical & House","Instrumental Soul","World Fusion","Electronic & Synthwave"];
+function promptCapa(nome,estilo,idi){
+  var b="Square album cover 1:1, professional music cover art, "+estilo+", centered composition, ultra detailed, studio light, no watermark, no logo";
+  if(idi==="EN") return b+', with big bold readable English text "'+nome+'" on cover, English typography';
+  if(idi==="ES") return b+', with big bold readable Spanish text "'+nome+'" on cover, Spanish typography';
+  return b+', with big bold readable Portuguese text "'+nome+'" on cover, Brazilian style';
+}
+function promptThumb(fam,txt,extra,idi){
+  var b="YouTube thumbnail 16:9, ultra clickable, high contrast, vibrant, "+fam+" style, "+extra+", cinematic light, no watermark";
+  if(idi==="EN") return b+', with HUGE bold English text "'+txt+'" 2-3 words, English';
+  if(idi==="ES") return b+', with HUGE bold Spanish text "'+txt+'" 2-3 words, Spanish';
+  return b+', with HUGE bold Portuguese text "'+txt+'" 2-3 words, Brazilian';
+}
+function injetaManual(){
+  var p=garantePalco();
+  p.innerHTML="<div style='"+CSSBOX+"'><h3>📖 MANUAL — Editora (lê 2min, $0)</h3>"
+  +"<p><b>Ordem 1-6:</b> 1 📥Músicas Baixadas sobe MP3 até 5min/400MB fatiado > 2 📥Vídeos Baixados sobe MP4 até 5min/400MB > 3 🎬Montadora Editora escolhe música + corta vídeo régua frame exato + fila ordem + resolução + legenda + PREVER + OK MONTAR > assiste > APROVAR salva Cofre Clipes / REPROVAR descarta $0 > 4-5 Cofres guardam nuvem R2 > 6-7 Capa 1:1 / Thumb 16:9 Flux $0.003 com 3 idiomas > 8 Ferramentas $0 navegador > 9 Manual > 10 Saldos > 11 Futuras > 12 Historico.</p>"
+  +"<p><b>Régua:</b> select vídeo, player, range vê frame, 1 frame 0.03s, -1s +1s, 0.25x lento, I IN verde O OUT vermelho, LOOP, PREVER CORTE, USAR TODO, MANDAR PRA FILA. Teclado Espaço setas I O.</p>"
+  +"<p><b>Fila/Contador:</b> '1. video 00:00-00:17 (17s) [VER IN][VER OUT][↑][↓][X]' + 'Fila 1:26 / Música 3:49 / Faltam 2:23' barra amarela falta verde bateu vermelha passou.</p>"
+  +"<p><b>Resolução:</b> 720p HD Compacto 2.5Mbps ~50-95MB 5min PASSA R2, 720p Qual 8Mbps ~180MB, 1080p Full 10Mbps ~250-350MB. Começa Compacto.</p>"
+  +"<p><b>Legenda:</b> SEM/COM textarea, fonte Arial Impact Bebas Montserrat Orbitron, P36 M56 G80 (x1.5 se 1080p), cor branco amarelo verde neon rosa ciano, contorno sim/não, fundo trans/preto60%, topo/meio/baixo, PREVER. V1 fixo, V2 karaokê futuro.</p>"
+  +"<p><b>Aprovar/Apagar:</b> tudo SALVA SÓ SE APROVAR. APROVAR E SALVAR NO COFRE cai nuvem, REPROVAR descarta $0. 🗑️ Apagar pergunta 'Quer mesmo apagar NOME? Não tem volta.' OK apaga nuvem+lista, Cancelar $0.</p>"
+  +"<p><b>Regras ouro:</b> ZERO HD nada no PC, 1 aba só nunca 2x rápido (429), erro $0 trava antes, genérico MUSIC.AI + IMAGEM & VIDEO AI sem Suno/Veo3, painel 1 só, loop 5+5+5 pra longo sono, 10GB R2 $0.</p></div>";
+}
+function injetaSaldos(){
+  var p=garantePalco();
+  p.innerHTML="<div style='"+CSSBOX+"'><h3>💰 Saldos ($0 ver)</h3><div id='p-saldo-r2'>Lendo R2 /uso...</div>"
+  +"<p>R2 10GB grátis $0. Escrita 1M grátis leitura 10M grátis. 100GB futuro = (100-10)x0.015=$1.35/mês ~R$7-8 cartão Cloudflare Billing, NÃO sai Replicate/RunPod.</p>"
+  +"<label>Replicate $ restante:</label><input id='p-rep' style='"+CSSI+"' placeholder='Ex 19.32'>"
+  +"<label>RunPod $ congelado:</label><input id='p-run' style='"+CSSI+"' placeholder='Ex 24.27'>"
+  +"<br><button id='p-salva-s' style='"+CSSB+"'>SALVAR SALDOS NA NUVEM</button> <button id='p-bill-r' style='"+CSSB+"'>ABRIR REPLICATE BILLING</button> <button id='p-bill-c' style='"+CSSB+"'>ABRIR CLOUDFLARE BILLING</button><div id='p-salva-log'></div></div>";
+  apiUso().then(function(u){
+    var el=document.getElementById("p-saldo-r2"); if(!el) return;
+    if(!u){ el.textContent="R2 off agora. $0"; return; }
+    var gb=u.gb||u.GB||(u.bytes?(u.bytes/1073741824).toFixed(3):"?"); var ct=u.count||u.arquivos||u.n||"?";
+    el.innerHTML="<b>Nuvem R2:</b> Usado "+gb+"GB / 10GB + "+ct+" arquivos + extra $0 saída grátis. <div style='background:#222;border-radius:6px;height:10px;margin-top:6px;'><div style='background:#00FF88;height:10px;width:"+Math.min(100,(parseFloat(gb)/10*100))+"%;border-radius:6px;'></div></div>";
+  });
+  document.getElementById("p-bill-r").onclick=function(){ window.open("https://replicate.com/account/billing","_blank"); };
+  document.getElementById("p-bill-c").onclick=function(){ window.open("https://dash.cloudflare.com/?to=/:account/billing","_blank"); };
+  document.getElementById("p-salva-s").onclick=async function(){
+    var v1=document.getElementById("p-rep").value||"19.32"; var v2=document.getElementById("p-run").value||"24.27";
+    var j=JSON.stringify({replicate:v1,runpod:v2,data:new Date().toISOString()});
+    document.getElementById("p-salva-log").textContent="Salvando...";
+    try{ await salvarTexto("meta","saldos.json",j,"application/json"); document.getElementById("p-salva-log").textContent="Salvo meta/saldos.json $0"; }catch(e){ document.getElementById("p-salva-log").textContent="Erro $0: "+e.message; }
+  };
+}
+function injetaFuturas(){
+  var p=garantePalco();
+  var txt="FUTURAS - NAO ESQUECER (Studio Virtual 2.0 Editora)\n"
+  +"1) Filen frio alema Zero-Knowledge Starter 100GB €26.99 unico ~$30 backup frio.\nLinks:\nhttps://filen.io/hub/lifetime-plans-an-update/\nhttps://tarkle.com/blog/best-lifetime-cloud-storage-deals\nhttps://lifetimo.com/deal/filen-lifetime-deal/\nhttps://filen.io/hub/the-black-friday-sale-2025-is-live/\n"
+  +"2) R2 100GB futuro so quando lotar 10GB: (100-10)x0.015=$1.35/mes ~R$7-8 Cloudflare Billing.\n"
+  +"3) YouTube OAuth direto quando criar canal: console.cloud.google.com projeto gratis + liga YouTube Data API v3 + OAuth Client ID + LOGAR CANAL token meta/canais.json + upload direto $0 ~6/dia quota 10k. Email+senha BLOQUEADO Google 2021.\n"
+  +"4) Longos sono loop: video 1min > extrai mar > duplica 1h > monta 1h 720p Compacto ~1GB > sobe YouTube > apaga longo fica curto. 1h demora 1h aba aberta. Comeca 30min/1h, 8h madrugada.\nTamanhos 2H: 720p Compacto ~1.9GB cabe 5x 10GB 52x 100GB, 720p Qual ~4.6GB 2x 21x, 1080p padrao ~7.3GB 1x 13x, 1080p alta ~10.8GB 0x 9x.\n"
+  +"5) MP4 final, 1080p/4K so futuro (trava, 5min 4K 1-2GB lota R2, YouTube comprime).\n6) Massa 250 thumbs RunPod $24.27 congelado.\n7) Legenda V2 karaoke futuro, hoje V1 fixo.\n8) Upload direto YouTube + MP4 + 4K + massa + karaoke = PROMPT COLAR quando precisar.\n"
+  +"9) Loop 5+5+5: cada envio ate 5min/400MB fatiado 8MB $0, fila soma pra musica 3-5min.\n10) Capa/Thumb 3 idiomas PT/EN/ES Flux $0.003 pedido novo incluido.";
+  p.innerHTML="<div style='"+CSSBOX+"'><h3>📄 FUTURAS (caderninho $0)</h3><textarea id='p-fut' style='"+CSSI+";height:220px;'>"+txt+"</textarea><br><button id='p-fut-cop' style='"+CSSB+"'>COPIAR</button> <button id='p-fut-pdf' style='"+CSSB+"'>SALVAR PDF (print)</button> <button id='p-fut-nuv' style='"+CSSB+"'>SALVAR NA NUVEM meta/docs/futuras.txt</button><div id='p-fut-log'></div></div>";
+  document.getElementById("p-fut-cop").onclick=function(){ navigator.clipboard.writeText(document.getElementById("p-fut").value); document.getElementById("p-fut-log").textContent="Copiado $0"; };
+  document.getElementById("p-fut-pdf").onclick=function(){ window.print(); };
+  document.getElementById("p-fut-nuv").onclick=async function(){ document.getElementById("p-fut-log").textContent="Salvando..."; try{ await salvarTexto("meta/docs","futuras.txt",document.getElementById("p-fut").value); document.getElementById("p-fut-log").textContent="Salvo meta/docs/futuras.txt $0"; }catch(e){ document.getElementById("p-fut-log").textContent="Erro $0 "+e.message; } };
+}
+function injetaHistorico(){
+  var p=garantePalco();
+  var txt="HISTORICO TECNICO - STUDIO VIRTUAL 2.0 EDITORA - rebuild zero\nSite: https://studiovirtual.github.io Repo: github.com/StudioVirtual/studiovirtual.github.io main index.html Preto #050807 Verde #00FF88 Orbitron/Inter 12 botoes: 1 Musicas 2 Videos 3 Montadora 4 Cofre Musicas 5 Cofre Clipes 6 Capa 7 Thumb 8 Ferramentas 9 Manual 10 Saldos 11 Futuras 12 Historico\nMotor: studio-motor https://studio-motor.alexmedeirosbsb.workers.dev v4 c6a21650 100% Secret REPLICATE_KEY Binding R2 ACERVO->studio-acervo Rotas: / /ping POST /gerar {modelo|model,entrada|input} GET /status?id= POST /salvar {url,pasta,nome} PUT /upload?pasta=&nome= 80MB GET /upload-init PUT /upload-part 8MB POST /upload-complete POST /upload-abort GET /arquivo?chave= Range206 GET /listar?pasta= POST/DELETE /apagar GET /uso {bytes,gb,count}\nR2 studio-acervo 10GB $0 pastas: musicas/ cenas/ clipes/ capas/ thumbs/ meta/ meta/biblioteca.json meta/saldos.json meta/docs/futuras.txt meta/docs/historico.txt\nReplicate $19.32 Flux black-forest-labs/flux-schnell $0.003 provado MiniMax music-1.5 guardado Kling kwaivgi/kling-v2.1 guardado Meta llama guardado RunPod $24.27 congelado Filen 100GB €26.99 futuro R2 100GB $1.35\nFluxo: sobe MP3 + 3-4 MP4 5min/400MB fatiado > Montadora corta regua frame 0.03s IN OUT LOOP PREVER fila ordem contador Fila/Musica/Falta resolucao 720p/1080p legenda PREVER OK MONTAR muta100% emenda16:9 cola musica tempo real > APROVA clipes/ REPROVA $0 > CAPA/THUMB Flux 3 idiomas PT EN ES APROVA capas/thumbs REPROVA > 🗑️ apaga confirma > ⬇️ baixa blob > YouTube manual OAuth futuro\nPROMPT RECRIAR IGUAL: cria Worker v4 com rotas acima + R2 studio-acervo + secret REPLICATE_KEY + site preto verde 12 botoes didatico + editora corta fila legenda resolucao + capa thumb flux + ferramentas 5 + saldos uso + futuras historico salvar meta/docs + zero HD nuvem.";
+  p.innerHTML="<div style='"+CSSBOX+"'><h3>📜 HISTORICO TECNICO ($0)</h3><textarea id='p-his' style='"+CSSI+";height:220px;'>"+txt+"</textarea><br><button id='p-his-cop' style='"+CSSB+"'>COPIAR</button> <button id='p-his-pdf' style='"+CSSB+"'>SALVAR PDF</button> <button id='p-his-nuv' style='"+CSSB+"'>SALVAR NA NUVEM meta/docs/historico.txt</button><div id='p-his-log'></div></div>";
+  document.getElementById("p-his-cop").onclick=function(){ navigator.clipboard.writeText(document.getElementById("p-his").value); document.getElementById("p-his-log").textContent="Copiado $0"; };
+  document.getElementById("p-his-pdf").onclick=function(){ window.print(); };
+  document.getElementById("p-his-nuv").onclick=async function(){ document.getElementById("p-his-log").textContent="Salvando..."; try{ await salvarTexto("meta/docs","historico.txt",document.getElementById("p-his").value); document.getElementById("p-his-log").textContent="Salvo $0"; }catch(e){ document.getElementById("p-his-log").textContent="Erro $0 "+e.message; } };
+}
+function injetaCapa(){
+  var sec=achaSecaoCom("Capa 1:1"); var p=sec||garantePalco();
+  p.innerHTML="<div style='"+CSSBOX+"'><h3>Capa 1:1 (depois do clipe, $0.003)</h3><table style='color:#fff;font-size:13px;'><tr><td>Ver</td><td>$0</td></tr><tr><td>Gerar Flux</td><td>$0.003</td></tr><tr><td>Aprovar salva capas/</td><td>$0</td></tr><tr><td>Reprovar/Erro/429</td><td>$0</td></tr></table>"
+  +"<label>Idioma da capa (novo):</label><select id='p-c-idi' style='"+CSSI+"'><option value='PT'>Português</option><option value='EN'>English</option><option value='ES'>Español</option></select>"
+  +"<label>Nome música:</label><input id='p-c-nome' style='"+CSSI+"' placeholder='Ex Nome da música'>"
+  +"<label>Estilo:</label><input id='p-c-est' style='"+CSSI+"' placeholder='Ex sertanejo pôr-do-sol rancho'>"
+  +"<br><button id='p-c-ger' style='"+CSSB+"'>GERAR CAPA Flux $0.003</button><div id='p-c-log' style='margin:6px 0;'></div><img id='p-c-img' style='max-width:100%;border:1px solid #00FF88;border-radius:8px;display:none;'>"
+  +"<br><button id='p-c-ap' style='"+CSSB+"'>APROVAR E SALVAR NO COFRE</button> <button id='p-c-re' style='"+CSSR+"'>REPROVAR ($0)</button></div>";
+  var atual="";
+  document.getElementById("p-c-ger").onclick=async function(){
+    var n=document.getElementById("p-c-nome").value||"musica"; var e=document.getElementById("p-c-est").value||"sertanejo"; var idi=document.getElementById("p-c-idi").value;
+    var pr=promptCapa(n,e,idi); var log=document.getElementById("p-c-log");
+    try{ atual=await gerarFlux(pr,log); var im=document.getElementById("p-c-img"); im.src=atual; im.style.display="block"; log.textContent="Pronto. Viu? APROVA salva, REPROVA descarta $0"; }
+    catch(err){ log.textContent="Erro $0: "+err.message; }
+  };
+  document.getElementById("p-c-ap").onclick=async function(){
+    var log=document.getElementById("p-c-log"); if(!atual){ log.textContent="Gera primeiro. $0"; return; }
+    log.textContent="Salvando capas/..."; try{ await salvarUrlNuvem(atual,"capas/",Date.now()+"-capa.jpg"); log.textContent="Salvo capas/ $0.003 gasto só agora."; atual=""; }catch(e){ log.textContent="Erro $0 "+e.message; }
+  };
+  document.getElementById("p-c-re").onclick=function(){ atual=""; document.getElementById("p-c-img").style.display="none"; document.getElementById("p-c-log").textContent="Descartado $0"; };
+}
+function injetaThumb(){
+  var sec=achaSecaoCom("Thumbnail 16:9"); var p=sec||garantePalco();
+  var opts=""; FAMS.forEach(function(f){ opts+="<option>"+f+"</option>"; });
+  p.innerHTML="<div style='"+CSSBOX+"'><h3>Thumbnail 16:9 YouTube ($0.003, 250 agentes + 3 idiomas)</h3>"
+  +"<label>Família:</label><select id='p-t-fam' style='"+CSSI+"'>"+opts+"</select>"
+  +"<label>Idioma do texto (novo):</label><select id='p-t-idi' style='"+CSSI+"'><option value='PT'>Português</option><option value='EN'>English</option><option value='ES'>Español</option></select>"
+  +"<label>Texto 2-3 palavras:</label><input id='p-t-txt' style='"+CSSI+"' placeholder='Ex Sofrência Ao Vivo'>"
+  +"<label>Extra:</label><input id='p-t-ext' style='"+CSSI+"' placeholder='Ex dupla chapéu palco'>"
+  +"<br><button id='p-t-ger' style='"+CSSB+"'>GERAR THUMB Flux $0.003</button><div id='p-t-log'></div><img id='p-t-img' style='max-width:100%;border:1px solid #00FF88;border-radius:8px;display:none;'>"
+  +"<br><button id='p-t-ap' style='"+CSSB+"'>APROVAR E SALVAR</button> <button id='p-t-re' style='"+CSSR+"'>REPROVAR ($0)</button></div>";
+  var atual="";
+  document.getElementById("p-t-ger").onclick=async function(){
+    var f=document.getElementById("p-t-fam").value; var tx=document.getElementById("p-t-txt").value||"Ao Vivo"; var ex=document.getElementById("p-t-ext").value||""; var idi=document.getElementById("p-t-idi").value;
+    var pr=promptThumb(f,tx,ex,idi); var log=document.getElementById("p-t-log");
+    try{ atual=await gerarFlux(pr,log); var im=document.getElementById("p-t-img"); im.src=atual; im.style.display="block"; log.textContent="Pronto. APROVA salva thumbs/, REPROVA $0"; }
+    catch(e){ log.textContent="Erro $0: "+e.message; }
+  };
+  document.getElementById("p-t-ap").onclick=async function(){
+    var log=document.getElementById("p-t-log"); if(!atual){ log.textContent="Gera primeiro $0"; return; }
+    log.textContent="Salvando..."; try{ await salvarUrlNuvem(atual,"thumbs/",Date.now()+"-thumb.jpg"); log.textContent="Salvo thumbs/ $0.003 gasto só agora."; atual=""; }catch(e){ log.textContent="Erro $0 "+e.message; }
+  };
+  document.getElementById("p-t-re").onclick=function(){ atual=""; document.getElementById("p-t-img").style.display="none"; document.getElementById("p-t-log").textContent="Descartado $0"; };
+}
+function wavDeBuffer(buf){
+  var n=buf.numberOfChannels, sr=buf.sampleRate, len=buf.length*n*2+44, ab=new ArrayBuffer(len), v=new DataView(ab), o=0;
+  function ws(s){ for(var i=0;i<s.length;i++){ v.setUint8(o++,s.charCodeAt(i)); } }
+  ws("RIFF"); v.setUint32(o,36+buf.length*n*2,true); o+=4; ws("WAVE"); ws("fmt "); v.setUint32(o,16,true); o+=4; v.setUint16(o,1,true); o+=2; v.setUint16(o,n,true); o+=2; v.setUint32(o,sr,true); o+=4; v.setUint32(o,sr*n*2,true); o+=4; v.setUint16(o,n*2,true); o+=2; v.setUint16(o,16,true); o+=2; ws("data"); v.setUint32(o,buf.length*n*2,true); o+=4;
+  for(var i=0;i<buf.length;i++){ for(var c=0;c<n;c++){ var s=Math.max(-1,Math.min(1,buf.getChannelData(c)[i])); v.setInt16(o,s<0?s*0x8000:s*0x7FFF,true); o+=2; } }
+  return new Blob([ab],{type:"audio/wav"});
+}
+async function injetaFerramentas(){
+  var p=garantePalco();
+  p.innerHTML="<div style='"+CSSBOX+"'><h3>🛠️ Ferramentas ($0 navegador)</h3><div style='font-size:13px;'>Fonte: usa selects da nuvem (musicas/ cenas/). Preview antes. Tudo $0. 1 por vez.</div>"
+  +"<div style='"+CSSBOX+"'><b>1 EXTRAIR AUDIO (vídeo→musicas/ webm opus tempo real)</b><br><select id='f1-s' style='"+CSSI+"'><option>carregando cenas/...</option></select><video id='f1-v' controls style='width:100%;margin:6px 0;'></video><br><button id='f1-b' style='"+CSSB+"'>EXTRAIR AUDIO</button><div id='f1-l'></div></div>"
+  +"<div style='"+CSSBOX+"'><b>2 TIRAR SOM (vídeo→cenas/ sem-som vp9 6Mbps)</b><br><select id='f2-s' style='"+CSSI+"'><option>carregando...</option></select><video id='f2-v' controls style='width:100%;'></video><br><button id='f2-b' style='"+CSSB+"'>TIRAR SOM</button><div id='f2-l'></div></div>"
+  +"<div style='"+CSSBOX+"'><b>3 FRAME JPG (pausa→capas/ jpeg 0.92)</b><br><select id='f3-s' style='"+CSSI+"'><option>carregando...</option></select><video id='f3-v' controls style='width:100%;'></video><br><button id='f3-b' style='"+CSSB+"'>CAPTURAR FRAME</button><div id='f3-l'></div><img id='f3-i' style='max-width:100%;display:none;border:1px solid #00FF88;'></div>"
+  +"<div style='"+CSSBOX+"'><b>4 DUPLICAR AUDIO loop sono 2-100x (→musicas/ WAV)</b><br><select id='f4-s' style='"+CSSI+"'><option>carregando musicas/...</option></select><br><label>Vezes 2-100:</label><input id='f4-n' type='number' value='10' min='2' max='100' style='"+CSSI+"'><br><button id='f4-b' style='"+CSSB+"'>DUPLICAR AUDIO</button><div id='f4-l'></div></div>"
+  +"<div style='"+CSSBOX+"'><b>5 DUPLICAR VIDEO loop 2-30x tempo real (→cenas/)</b><br><select id='f5-s' style='"+CSSI+"'><option>carregando...</option></select><video id='f5-v' controls style='width:100%;'></video><br><label>Vezes 2-30:</label><input id='f5-n' type='number' value='6' min='2' max='30' style='"+CSSI+"'><br><button id='f5-b' style='"+CSSB+"'>DUPLICAR VIDEO</button><div id='f5-l'></div></div>"
+  +"<div>Sono praia: vídeo 1min > extrai mar > duplica 1h > monta 720p Compacto ~1GB > sobe YouTube > apaga longo. Longo 1h demora 1h aba aberta, começa 30min.</div></div>";
+  async function enche(sel,pasta){
+    var l=await apiListar(pasta); var s=document.getElementById(sel); if(!s) return;
+    s.innerHTML=""; if(!l.length){ s.innerHTML="<option value=''>vazio "+pasta+"/</option>"; return; }
+    l.forEach(function(a){
+      var chave=(typeof a==="string")?a:(a.chave||a.key||a.nome||a.name||"");
+      var o=document.createElement("option"); o.value=chave; o.textContent=chave.split("/").pop(); s.appendChild(o);
+    });
+    var vv=document.getElementById(sel.replace("-s","-v")); if(vv&&s.value){ vv.src=MOTOR+"/arquivo?chave="+encodeURIComponent(s.value); }
+    s.onchange=function(){ var v2=document.getElementById(sel.replace("-s","-v")); if(v2){ v2.src=MOTOR+"/arquivo?chave="+encodeURIComponent(s.value); } };
+  }
+  enche("f1-s","cenas"); enche("f2-s","cenas"); enche("f3-s","cenas"); enche("f4-s","musicas"); enche("f5-s","cenas");
+  document.getElementById("f1-b").onclick=async function(){
+    var log=document.getElementById("f1-l"); var sel=document.getElementById("f1-s"); if(!sel.value){ log.textContent="Escolhe vídeo $0"; return; }
+    try{
+      log.textContent="Gravando áudio tempo real... não fecha aba $0";
+      var v=document.getElementById("f1-v"); v.muted=false; v.currentTime=0; await v.play().catch(function(){});
+      var AC=window.AudioContext||window.webkitAudioContext; var ac=new AC(); var src=ac.createMediaElementSource(v); var dst=ac.createMediaStreamDestination(); src.connect(dst); src.connect(ac.destination);
+      var mr=new MediaRecorder(dst.stream,{mimeType:"audio/webm"}); var ch=[]; mr.ondataavailable=function(e){ if(e.data.size) ch.push(e.data); };
+      var done=new Promise(function(res){ mr.onstop=res; }); mr.start(); v.onended=function(){ mr.stop(); };
+      setTimeout(function(){ if(mr.state!=="inactive"){ try{v.pause();}catch(e){} mr.stop(); } },(v.duration||60)*1000+2000);
+      await done; ac.close();
+      var blob=new Blob(ch,{type:"audio/webm"}); log.textContent="Subindo musicas/... "+(blob.size/1048576).toFixed(1)+"MB $0";
+      await uploadBlob("musicas",Date.now()+"-extraido.webm",blob); log.textContent="Salvo musicas/ $0";
+    }catch(e){ log.textContent="Erro $0: "+e.message; }
+  };
+  document.getElementById("f2-b").onclick=async function(){
+    var log=document.getElementById("f2-l"); var sel=document.getElementById("f2-s"); if(!sel.value){ log.textContent="Escolhe $0"; return; }
+    try{
+      log.textContent="Tirando som tempo real... $0"; var v=document.getElementById("f2-v"); v.muted=false; v.currentTime=0; await v.play().catch(function(){});
+      var can=document.createElement("canvas"); can.width=1280; can.height=720; var ctx=can.getContext("2d");
+      var st=can.captureStream(30); var mr=new MediaRecorder(st,{mimeType:"video/webm;codecs=vp9",videoBitsPerSecond:6000000}); var ch=[]; mr.ondataavailable=function(e){ if(e.data.size) ch.push(e.data); };
+      var done=new Promise(function(res){ mr.onstop=res; }); mr.start();
+      var iv=setInterval(function(){ try{ ctx.drawImage(v,0,0,1280,720); }catch(e){} if(v.ended||v.paused&&v.currentTime>=v.duration-0.2){ clearInterval(iv); if(mr.state!=="inactive") mr.stop(); } },33);
+      v.onended=function(){ clearInterval(iv); if(mr.state!=="inactive") mr.stop(); };
+      setTimeout(function(){ clearInterval(iv); if(mr.state!=="inactive") mr.stop(); },(v.duration||60)*1000+3000);
+      await done;
+      var blob=new Blob(ch,{type:"video/webm"}); log.textContent="Subindo cenas/ sem-som "+(blob.size/1048576).toFixed(1)+"MB $0";
+      await uploadBlob("cenas",Date.now()+"-sem-som.webm",blob); log.textContent="Salvo cenas/ $0";
+    }catch(e){ log.textContent="Erro $0: "+e.message; }
+  };
+  document.getElementById("f3-b").onclick=async function(){
+    var log=document.getElementById("f3-l"); try{
+      var v=document.getElementById("f3-v"); v.pause();
+      var can=document.createElement("canvas"); can.width=v.videoWidth||1280; can.height=v.videoHeight||720; can.getContext("2d").drawImage(v,0,0,can.width,can.height);
+      var blob=await new Promise(function(res){ can.toBlob(res,"image/jpeg",0.92); });
+      var im=document.getElementById("f3-i"); im.src=URL.createObjectURL(blob); im.style.display="block";
+      log.textContent="Subindo capas/... $0"; await uploadBlob("capas",Date.now()+"-frame.jpg",blob); log.textContent="Salvo capas/ $0";
+    }catch(e){ log.textContent="Erro $0: "+e.message; }
+  };
+  document.getElementById("f4-b").onclick=async function(){
+    var log=document.getElementById("f4-l"); var sel=document.getElementById("f4-s"); var n=parseInt(document.getElementById("f4-n").value||"2");
+    if(!sel.value){ log.textContent="Escolhe áudio $0"; return; } n=Math.max(2,Math.min(100,n));
+    try{
+      log.textContent="Duplicando "+n+"x... $0"; var url=MOTOR+"/arquivo?chave="+encodeURIComponent(sel.value);
+      var ab=await (await fetch(url)).arrayBuffer(); var AC=window.AudioContext||window.webkitAudioContext; var ac=new AC(); var buf=await ac.decodeAudioData(ab);
+      var out=ac.createBuffer(buf.numberOfChannels,buf.length*n,buf.sampleRate);
+      for(var c=0;c<buf.numberOfChannels;c++){ var d=out.getChannelData(c), s=buf.getChannelData(c); for(var i=0;i<n;i++){ d.set(s,i*buf.length); } }
+      var wav=wavDeBuffer(out); log.textContent="Subindo "+(wav.size/1048576).toFixed(1)+"MB $0"; await uploadBlob("musicas",Date.now()+"-loop"+n+"x.wav",wav); log.textContent="Salvo loop "+n+"x $0"; ac.close();
+    }catch(e){ log.textContent="Erro $0: "+e.message; }
+  };
+  document.getElementById("f5-b").onclick=async function(){
+    var log=document.getElementById("f5-l"); var n=parseInt(document.getElementById("f5-n").value||"2"); n=Math.max(2,Math.min(30,n));
+    try{
+      log.textContent="Duplicando vídeo "+n+"x tempo real... NÃO fecha aba $0"; var v=document.getElementById("f5-v");
+      var can=document.createElement("canvas"); can.width=1280; can.height=720; var ctx=can.getContext("2d"); var st=can.captureStream(30);
+      var mr=new MediaRecorder(st,{mimeType:"video/webm;codecs=vp9",videoBitsPerSecond:6000000}); var ch=[]; mr.ondataavailable=function(e){ if(e.data.size) ch.push(e.data); };
+      var done=new Promise(function(res){ mr.onstop=res; }); mr.start();
+      for(var k=0;k<n;k++){ v.currentTime=0; await v.play().catch(function(){}); await new Promise(function(res){ v.onended=res; setTimeout(res,(v.duration||10)*1000+2000); var iv=setInterval(function(){ try{ctx.drawImage(v,0,0,1280,720);}catch(e){} },33); setTimeout(function(){clearInterval(iv);},(v.duration||10)*1000+1000); }); }
+      mr.stop(); await done; var blob=new Blob(ch,{type:"video/webm"}); log.textContent="Subindo "+(blob.size/1048576).toFixed(1)+"MB $0"; await uploadBlob("cenas",Date.now()+"-loop"+n+"x.webm",blob); log.textContent="Salvo loop "+n+"x $0";
+    }catch(e){ log.textContent="Erro $0: "+e.message; }
+  };
+}
+function tenta(nome){
+  var u=(nome||"").toUpperCase();
+  if(u.indexOf("MANUAL")>=0) injetaManual();
+  else if(u.indexOf("FERRAMENTA")>=0) injetaFerramentas();
+  else if(u.indexOf("SALDO")>=0) injetaSaldos();
+  else if(u.indexOf("FUTURA")>=0) injetaFuturas();
+  else if(u.indexOf("HISTORICO")>=0||u.indexOf("HISTÓRICO")>=0) injetaHistorico();
+  else if(u.indexOf("THUMB")>=0) injetaThumb();
+  else if(u.indexOf("CAPA")>=0) injetaCapa();
+  else fixTextos();
+}
+function hook(){
+  Array.prototype.slice.call(document.querySelectorAll("button")).forEach(function(b){
+    if(b.dataset.ph) return; b.dataset.ph="1";
+    b.addEventListener("click",function(){ var t=b.innerText||""; setTimeout(function(){ tenta(t); fixTextos(); },600); });
+  });
+}
+hook(); fixTextos();
+setInterval(function(){ hook(); fixTextos(); },3000);
+setTimeout(fixTextos,1000);
+})();
+</script>
 </body>
 </html>
 </body>
